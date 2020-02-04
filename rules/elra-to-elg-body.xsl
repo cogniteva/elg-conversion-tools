@@ -22,17 +22,27 @@
 
     <!-- var:identificationInfo  -->
     <xsl:variable name="identificationInfo">
-       <xsl:copy-of select="//ms:DescribedEntity/ms:identificationInfo/*"/>
+       <xsl:copy-of select="//ms:MetadataRecord/ms:identificationInfo/*"/>
     </xsl:variable>
 
     <!-- var:distributionInfo  -->
     <xsl:variable name="distributionInfo">
-       <xsl:copy-of select="//ms:DescribedEntity/ms:distributionInfo/*"/>
+       <xsl:copy-of select="//ms:MetadataRecord/ms:distributionInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:contactPerson  -->
+    <xsl:variable name="contactPerson">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:contactPerson/*"/>
+    </xsl:variable>
+
+    <!-- var:versionInfo  -->
+    <xsl:variable name="versionInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:versionInfo/*"/>
     </xsl:variable>
 
     <!-- var:lexicalConceptualResourceInfo  -->
     <xsl:variable name="lexicalConceptualResourceInfo">
-       <xsl:copy-of select="//ms:DescribedEntity/ms:resourceComponentType/ms:lexicalConceptualResourceInfo/*"/>
+       <xsl:copy-of select="//ms:MetadataRecord/ms:resourceComponentType/ms:lexicalConceptualResourceInfo/*"/>
     </xsl:variable>
 
     <!-- var:resourceType  -->
@@ -55,79 +65,112 @@
        <xsl:copy-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo"/>
     </xsl:variable>
     
-    <!-- LanguageResource  -->
+    <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
             <xsl:copy-of select="@*"/>
-            <!-- LanguageResource  -->
-            <LanguageResource>
-                <!-- entityType  -->
-                <entityType><xsl:value-of select="$LanguageResourceEntityType" /></entityType>
-                <!-- resourceName  -->
-                <xsl:copy-of select="$identificationInfo/ms:resourceName"/>
-                <!-- description  -->
-                <xsl:copy-of select="$identificationInfo/ms:description"/>
-                <!--  LRIdentifier islrn: -->
-                <LRIdentifier>islrn:<xsl:value-of select="$identificationInfo/ms:ISLRN" /></LRIdentifier>
-                <!--  LRIdentifier elra: -->
-                <LRIdentifier>elra:<xsl:value-of select="$identificationInfo/ms:identifier" /></LRIdentifier>
-                <!--  LRIdentifier elra: -->
-                <LRIdentifier>metashare:<xsl:value-of select="$identificationInfo/ms:metaShareId" /></LRIdentifier>
-                <!-- additionalInfo/landingPage -->
-                <xsl:for-each select="$identificationInfo/ms:url">
-                    <additionalInfo><landingPage><xsl:value-of select="." /></landingPage></additionalInfo>
-                </xsl:for-each>
-
-                <!-- LRSubclass  -->
-                <LRSubclass>
-                    <!-- lexicalConceptualResource  -->
-                    <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
-                        <lexicalConceptualResource>
-                            <!-- lrType  -->
-                            <lrType><xsl:value-of select="$LexicalConceptualResource" /></lrType>
-                            <!-- lcrSubclass  -->
-                            <lcrSubclass><xsl:value-of select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" /></lcrSubclass>
-                            <!-- ms:encodingLevel -->
-                            <encodingLevel>ToBeDefined</encodingLevel>
-                            <!-- LexicalConceptualResourceMediaPart  -->
-                            <LexicalConceptualResourceMediaPart>
-                            <!-- LexicalConceptualResourceTextPart  -->
-                            <xsl:if test="$mediaTypeName = 'lexicalConceptualResourceTextInfo' ">
-                                <LexicalConceptualResourceTextPart>
-                                    <!-- lcrMediaType  -->
-                                    <lcrMediaType>LexicalConceptualResourceTextPart</lcrMediaType>
-                                    <!-- mediaType  -->
-                                    <xsl:copy-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:mediaType" />
-                                    <!-- lingualityType  -->
-                                    <xsl:copy-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:lingualityInfo/ms:lingualityType" />
-                                    <!-- language -->
-                                    <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
-                                        <language>
-                                            <!-- languageTag -->
-                                            <languageTag><xsl:value-of select="./ms:languageId" /></languageTag>
-                                        </language>
-                                        <metalanguage>
-                                            <!-- languageTag -->
-                                            <languageTag>ToBeDefined</languageTag>
-                                        </metalanguage>
+            <!-- MetadataRecordIdentifier -->
+            <MetadataRecordIdentifier  ms:MetadataRecordIdentifierScheme="http://purl.org/spar/datacite/handle">ToBeDefined</MetadataRecordIdentifier>
+            <!-- metadataCreationDate -->
+            <metadataCreationDate>2020-02-04</metadataCreationDate>
+            <!-- metadataLastDateUpdated -->
+            <metadataLastDateUpdated>2020-02-04</metadataLastDateUpdated>
+            <!-- metadataCurator -->
+            <xsl:for-each select="$contactPerson">
+                <metadataCurator>
+                    <actorType>Person</actorType>
+                    <xsl:copy-of select="./ms:surname" />
+                    <xsl:copy-of select="./ms:givenName" />
+                    <email><xsl:value-of select="./ms:communicationInfo/ms:email" /></email>
+                </metadataCurator>
+            </xsl:for-each>
+            <!-- compliesWith -->
+            <compliesWith>http://w3id.org/meta-share/meta-share/ELG-SHARE</compliesWith>
+            <!-- DescribedEntity -->
+            <DescribedEntity>
+                <!-- LanguageResource  -->
+                <LanguageResource>
+                    <!-- entityType  -->
+                    <entityType><xsl:value-of select="$LanguageResourceEntityType" /></entityType>
+                    <!-- resourceName  -->
+                    <xsl:copy-of select="$identificationInfo/ms:resourceName"/>
+                    <!-- description  -->
+                    <xsl:copy-of select="$identificationInfo/ms:description"/>
+                    <!--  LRIdentifier islrn: -->
+                    <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/handle">islrn:<xsl:value-of select="$identificationInfo/ms:ISLRN" /></LRIdentifier>
+                    <!--  LRIdentifier elra: -->
+                    <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/handle">elra:<xsl:value-of select="$identificationInfo/ms:identifier" /></LRIdentifier>
+                    <!--  LRIdentifier metashare: -->
+                    <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/handle">metashare:<xsl:value-of select="$identificationInfo/ms:metaShareId" /></LRIdentifier>
+                    <!-- version  -->
+                    <version><xsl:value-of select="$versionInfo/ms:version"/></version>
+                    <!-- additionalInfo/landingPage -->
+                    <xsl:for-each select="$identificationInfo/ms:url">
+                        <additionalInfo><landingPage><xsl:value-of select="." /></landingPage></additionalInfo>
+                    </xsl:for-each>
+                    <!-- keyword -->
+                    <keyword xml:lang="en-US">ToBeDefined-00</keyword>
+                    <keyword xml:lang="en-US">ToBeDefined-01</keyword>
+                    <keyword xml:lang="en-US">ToBeDefined-nn</keyword>
+                    <!-- LRSubclass  -->
+                    <LRSubclass>
+                        <!-- lexicalConceptualResource  -->
+                        <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
+                            <LexicalConceptualResource>
+                                <!-- lrType  -->
+                                <lrType><xsl:value-of select="$LexicalConceptualResource" /></lrType>
+                                <!-- lcrSubclass  -->
+                                <lcrSubclass>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" /></lcrSubclass>
+                                <!-- ms:encodingLevel -->
+                                <!-- ToBeDefined -->
+                                <encodingLevel>http://w3id.org/meta-share/meta-share/morphology</encodingLevel>
+                                <!-- LexicalConceptualResourceMediaPart  -->
+                                <LexicalConceptualResourceMediaPart>
+                                <!-- LexicalConceptualResourceTextPart  -->
+                                <xsl:if test="$mediaTypeName = 'lexicalConceptualResourceTextInfo' ">
+                                    <LexicalConceptualResourceTextPart>
+                                        <!-- lcrMediaType  -->
+                                        <lcrMediaType>LexicalConceptualResourceTextPart</lcrMediaType>
+                                        <!-- mediaType  -->
+                                        <mediaType>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:mediaType" /></mediaType>
+                                        <!-- lingualityType  -->
+                                        <lingualityType>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:lingualityInfo/ms:lingualityType" /></lingualityType>
+                                        <!-- language -->
+                                        <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
+                                            <language>
+                                                <!-- languageTag -->
+                                                <languageTag><xsl:value-of select="./ms:languageId" /></languageTag>
+                                            </language>
+                                            <metalanguage>
+                                                <!-- languageTag -->
+                                                <languageTag>ToBeDefined</languageTag>
+                                            </metalanguage>
+                                        </xsl:for-each>
+                                    </LexicalConceptualResourceTextPart>
+                                </xsl:if>
+                                </LexicalConceptualResourceMediaPart>
+                                <!-- ms:DatasetDistribution -->
+                                <DatasetDistribution>
+                                </DatasetDistribution>
+                                <!-- ms:personalDataIncluded -->
+                                <personalDataIncluded>false</personalDataIncluded>
+                                <!-- ms:sensitiveDataIncluded -->
+                                <sensitiveDataIncluded>false</sensitiveDataIncluded>
+                                <!-- hasSubset -->
+                                <hasSubset>
+                                    <!-- sizePerLanguage -->
+                                    <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:sizeInfo">
+                                        <sizePerLanguage>
+                                            <amount><xsl:value-of select="./ms:size" /></amount>
+                                            <sizeUnit>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:sizeUnit" /></sizeUnit>
+                                        </sizePerLanguage>
                                     </xsl:for-each>
-                                </LexicalConceptualResourceTextPart>
-                            </xsl:if>
-                            </LexicalConceptualResourceMediaPart>
-                            <!-- hasSubset -->
-                            <hasSubset>
-                                <!-- sizePerLanguage -->
-                                <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:sizeInfo">
-                                    <sizePerLanguage>
-                                        <amount><xsl:value-of select="./ms:size" /></amount>
-                                        <sizeUnit><xsl:value-of select="./ms:sizeUnit" /></sizeUnit>
-                                    </sizePerLanguage>
-                                </xsl:for-each>
-                            </hasSubset>
-                        </lexicalConceptualResource>
-                    </xsl:if>
-                </LRSubclass>
-            </LanguageResource>
+                                </hasSubset>
+                            </LexicalConceptualResource>
+                        </xsl:if>
+                    </LRSubclass>
+                </LanguageResource>
+            </DescribedEntity>
         </xsl:copy>
     </xsl:template>
 

@@ -26,9 +26,9 @@
         </xsl:element>
     </xsl:template>
 
-    <!-- rename root to DescribedEntity and add extra namespaces -->
+    <!-- rename root to MetadataRecord and add extra namespaces -->
     <xsl:template match="/*">
-        <xsl:element name="DescribedEntity" namespace="{namespace-uri()}">
+        <xsl:element name="MetadataRecord" namespace="{namespace-uri()}">
             <xsl:namespace name="ms" select="'http://w3id.org/meta-share/meta-share/'"/>
             <xsl:namespace name="datacite" select="'http://purl.org/spar/datacite/'"/>
             <xsl:namespace name="omtd" select="'http://w3id.org/meta-share/omtd-share/'"/>
@@ -39,6 +39,13 @@
 
    <!-- replace schemaLocation -->
    <xsl:template match="@xsi:schemaLocation">
-      <xsl:attribute name="xsi:schemaLocation">http://w3id.org/meta-share/meta-share/ http://gitlab.com/european-language-grid/platform/ELG-SHARE-schema/Schema/ELG-SHARE.xsd</xsl:attribute>
+        <xsl:attribute name="xsi:schemaLocation">http://w3id.org/meta-share/meta-share/ http://gitlab.com/european-language-grid/platform/ELG-SHARE-schema/Schema/ELG-SHARE.xsd</xsl:attribute>
    </xsl:template>
+
+    <!-- lang to xml:lang -->
+    <xsl:template match="@lang">
+        <xsl:attribute name="xml:lang">
+            <xsl:value-of select="."/>
+        </xsl:attribute> 
+    </xsl:template> 
 </xsl:stylesheet>
