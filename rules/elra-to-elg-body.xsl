@@ -146,6 +146,9 @@
                                                 <!-- languageTag -->
                                                 <languageTag><xsl:value-of select="./ms:languageId" /></languageTag>
                                             </language>
+                                        </xsl:for-each>
+                                        <!-- metalanguage -->
+                                        <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
                                             <metalanguage>
                                                 <!-- languageTag -->
                                                 <languageTag>ToBeDefined</languageTag>
@@ -191,19 +194,20 @@
                                         <membershipInstitution>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:membershipInfo/ms:membershipInstitution" /></membershipInstitution>
                                         <!-- ms:availabilityStartDate -->
                                         <xsl:copy-of select="./ms:availabilityStartDate" />
-                                        <!-- distributionRightsHolder -->
-                                        <distributionRightsHolder>
-                                        <!-- Organization -->
+                                        <!-- distributionRightsHolder/Organization -->
                                         <xsl:if test="name(./ms:distributionRightsHolder/*[1]) = 'organizationInfo' ">
-                                            <Organization>
-                                                <actorType>Organization</actorType>
-                                                <xsl:copy-of select="./ms:distributionRightsHolder/ms:organizationInfo/ms:organizationName" />
-                                                <!-- ToBeDefined -->
-                                                <!-- CanBeDifferent -->
-                                                <website>https://elda.org</website>
-                                            </Organization>
+                                            <!-- distributionRightsHolder -->
+                                            <distributionRightsHolder>
+                                                <!-- Organization -->
+                                                <Organization>
+                                                    <actorType>Organization</actorType>
+                                                    <xsl:copy-of select="./ms:distributionRightsHolder/ms:organizationInfo/ms:organizationName" />
+                                                    <!-- ToBeDefined -->
+                                                    <!-- CanBeDifferent -->
+                                                    <website>https://elda.org</website>
+                                                </Organization>
+                                            </distributionRightsHolder>
                                         </xsl:if>
-                                        </distributionRightsHolder>
                                     </DatasetDistribution>
                                 </xsl:for-each>
                                 <!-- ms:personalDataIncluded -->
@@ -211,26 +215,28 @@
                                 <!-- ms:sensitiveDataIncluded -->
                                 <sensitiveDataIncluded>false</sensitiveDataIncluded>
                                 <!-- hasSubset -->
-                                <!-- ToBeDefined -->
-                                <hasSubset>
-                                    <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:sizeInfo">
-                                        <!-- sizePerLanguage -->
-                                        <sizePerLanguage>
-                                            <amount><xsl:value-of select="./ms:size" /></amount>
-                                            <xsl:if test="./ms:sizeUnit = 'terms' ">
-                                                <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                                            </xsl:if>
-                                        </sizePerLanguage>
-                                      <!-- sizePerTextFormat -->
-                                      <!-- ToBeDefined -->
-                                        <sizePerTextFormat>
-                                            <amount><xsl:value-of select="./ms:size" /></amount>
-                                            <xsl:if test="./ms:sizeUnit = 'terms' ">
-                                                <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                                            </xsl:if>
-                                        </sizePerTextFormat>
-                                    </xsl:for-each>
-                                </hasSubset>
+                                <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:sizeInfo">
+                                    <xsl:if test="./ms:size != 'no size available' ">
+                                        <!-- ToBeDefined -->
+                                        <hasSubset>
+                                            <!-- sizePerLanguage -->
+                                            <sizePerLanguage>
+                                                <amount><xsl:value-of select="./ms:size" /></amount>
+                                                <xsl:if test="./ms:sizeUnit = 'terms' ">
+                                                    <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                                                </xsl:if>
+                                            </sizePerLanguage>
+                                            <!-- sizePerTextFormat -->
+                                            <!-- ToBeDefined -->
+                                            <sizePerTextFormat>
+                                                <amount><xsl:value-of select="./ms:size" /></amount>
+                                                <xsl:if test="./ms:sizeUnit = 'terms' ">
+                                                    <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                                                </xsl:if>
+                                            </sizePerTextFormat>
+                                        </hasSubset>
+                                    </xsl:if>
+                                </xsl:for-each>
                             </LexicalConceptualResource>
                         </xsl:if>
                     </LRSubclass>
