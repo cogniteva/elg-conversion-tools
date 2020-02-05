@@ -166,6 +166,18 @@
                                                 <licenceTermsName xml:lang="en-US"><xsl:value-of select="./ms:licence" /></licenceTermsName>
                                                 <!-- licenceTermsURL -->
                                                 <licenceTermsURL>http://elda.org/ToBeDefined/<xsl:value-of select="translate(lower-case(./ms:licence),'_','-')" />#<xsl:value-of select="lower-case(./ms:restrictionsOfUse)" /></licenceTermsURL>
+                                                <!-- conditionOfUse:academicUser -->
+<!--
+                                                <xsl:if test="../ms:userNature = 'academic' ">
+                                                    <conditionOfUse>http://w3id.org/meta-share/meta-share/academicUser</conditionOfUse>
+                                                </xsl:if>
+-->
+                                                <!-- conditionOfUse:commercial -->
+<!--
+                                                <xsl:if test="../ms:userNature = 'commercial' ">
+                                                    <conditionOfUse>http://w3id.org/meta-share/meta-share/commercialUser</conditionOfUse>
+                                                </xsl:if>
+-->
                                             </licenceTerms>
                                         </xsl:for-each>
                                         <!-- cost -->
