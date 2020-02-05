@@ -22,5 +22,10 @@ OUTPUT_XML_NAME_ROOT="$INPUT_XML_NAME-elg-root.xml"
 OUTPUT_XML_NAME="$INPUT_XML_NAME-elg.xml"
 
 java net.sf.saxon.Transform -o:"$OUTPUT_XML_NAME_ROOT" -s:"$INPUT_XML_TMP" -xsl:./rules/elra-to-elg-root.xsl
-java net.sf.saxon.Transform -o:"elg-xml/$OUTPUT_XML_NAME" -s:"$OUTPUT_XML_NAME_ROOT" -xsl:./rules/elra-to-elg-body.xsl
-#rm -f "${OUTPUT_XML_NAME_ROOT:?}"
+java net.sf.saxon.Transform -o:"$OUTPUT_XML_NAME" -s:"$OUTPUT_XML_NAME_ROOT" -xsl:./rules/elra-to-elg-body.xsl
+
+xmllint --noblanks "$OUTPUT_XML_NAME" > "elg-xml/$OUTPUT_XML_NAME"
+
+#rm -f "${OUTPUT_XML_NAME:?}"
+rm -f "${OUTPUT_XML_NAME_ROOT:?}"
+rm -f "${INPUT_XML_TMP:?}"
