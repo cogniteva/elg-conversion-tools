@@ -11,15 +11,6 @@
     > 
     <xsl:output encoding='UTF-8' indent='yes' method='xml'/>
 
-    <!-- var:LanguageResourceEntityType  -->
-    <xsl:variable name="LanguageResourceEntityType">LanguageResource</xsl:variable>
-
-    <!-- var:LicenseTermsEntityType  -->
-    <xsl:variable name="LicenseTermsEntityType">LicenceTerms</xsl:variable>
-
-    <!-- var:LexicalConceptualResource  -->
-    <xsl:variable name="LexicalConceptualResource">LexicalConceptualResource</xsl:variable>
-
     <!-- var:identificationInfo  -->
     <xsl:variable name="identificationInfo">
        <xsl:copy-of select="//ms:MetadataRecord/ms:identificationInfo/*"/>
@@ -43,6 +34,11 @@
     <!-- var:metadataInfo  -->
     <xsl:variable name="metadataInfo">
        <xsl:copy-of select="//ms:MetadataRecord/ms:metadataInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:metadataCreator  -->
+    <xsl:variable name="metadataCreator">
+       <xsl:copy-of select="$metadataInfo/ms:metadataCreator/*"/>
     </xsl:variable>
 
     <!-- var:lexicalConceptualResourceInfo  -->
@@ -75,11 +71,11 @@
         <xsl:copy>
             <xsl:copy-of select="@*"/>
             <!-- MetadataRecordIdentifier -->
-            <MetadataRecordIdentifier  ms:MetadataRecordIdentifierScheme="http://purl.org/spar/datacite/handle">ToBeDefined</MetadataRecordIdentifier>
+            <MetadataRecordIdentifier ms:MetadataRecordIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">value automatically assigned - leave as is</MetadataRecordIdentifier>
             <!-- metadataCreationDate -->
             <metadataCreationDate><xsl:value-of select="$metadataInfo/ms:metadataCreationDate"/></metadataCreationDate>
             <!-- metadataLastDateUpdated -->
-            <metadataLastDateUpdated>2020-02-04</metadataLastDateUpdated>
+            <metadataLastDateUpdated><xsl:value-of  select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/></metadataLastDateUpdated>
             <!-- metadataCurator -->
             <xsl:for-each select="$contactPerson">
                 <metadataCurator>
@@ -91,39 +87,71 @@
             </xsl:for-each>
             <!-- compliesWith -->
             <compliesWith>http://w3id.org/meta-share/meta-share/ELG-SHARE</compliesWith>
+            <!-- metadataCreator -->
+            <xsl:if test="$metadataCreator != ''">
+                <metadataCreator>
+                    <actorType>Person</actorType>
+                    <xsl:copy-of select="$metadataCreator/ms:surname" />
+                    <xsl:copy-of select="$metadataCreator/ms:givenName" />
+                    <email><xsl:value-of select="$metadataCreator/ms:communicationInfo/ms:email" /></email>
+                </metadataCreator>
+            </xsl:if>
+            <!--  sourceOfMetadataRecord  -->
+            <xsl:if test="$metadataInfo/ms:source != ''">
+                <sourceOfMetadataRecord><xsl:value-of select="$metadataInfo/ms:source"/></sourceOfMetadataRecord>
+            </xsl:if>
+            <!-- sourceMetadataRecord  -->
+            <!-- ToBeDefined -->
+            <!--  revision  -->
+            <xsl:if test="$metadataInfo/ms:revision != ''">
+                <revision xml:lang="en"><xsl:value-of select="$metadataInfo/ms:revision"/></revision>
+            </xsl:if>
             <!-- DescribedEntity -->
             <DescribedEntity>
                 <!-- LanguageResource  -->
                 <LanguageResource>
                     <!-- entityType  -->
-                    <entityType><xsl:value-of select="$LanguageResourceEntityType" /></entityType>
+                    <entityType>LanguageResource</entityType>
+                    <!-- physicalResource  -->
+                    <!-- ToBeDefined -->
                     <!-- resourceName  -->
-                    <xsl:copy-of select="$identificationInfo/ms:resourceName"/>
+                    <xsl:for-each select="$identificationInfo/ms:resourceName">
+                        <resourceName xml:lang="{./@xml:lang}" ><xsl:value-of select="." /></resourceName>
+                    </xsl:for-each>
+                    <!-- resourceShortName  -->
+                    <xsl:copy-of select="$identificationInfo/ms:resourceShortName"/>
                     <!-- description  -->
                     <xsl:copy-of select="$identificationInfo/ms:description"/>
                     <!--  LRIdentifier islrn: -->
-                    <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/handle">islrn:<xsl:value-of select="$identificationInfo/ms:ISLRN" /></LRIdentifier>
+                    <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/islrn"><xsl:value-of select="$identificationInfo/ms:ISLRN" /></LRIdentifier>
                     <!--  LRIdentifier elra: -->
-                    <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/handle">elra:<xsl:value-of select="$identificationInfo/ms:identifier" /></LRIdentifier>
-                    <!--  LRIdentifier metashare: -->
-                    <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/handle">metashare:<xsl:value-of select="$identificationInfo/ms:metaShareId" /></LRIdentifier>
+                    <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other"><xsl:value-of select="$identificationInfo/ms:identifier" /></LRIdentifier>
+                    <!-- logo  -->
+                    <!-- ToBeDefined -->
                     <!-- version  -->
-                    <version><xsl:value-of select="$versionInfo/ms:version"/></version>
-                    <!-- additionalInfo/landingPage -->
+                    <xsl:copy-of select="$versionInfo/ms:version"/>
+                    <!-- versionDate  -->
+                    <versionDate><xsl:value-of select="$versionInfo/ms:lastDateUpdated"/></versionDate>
+                    <!-- updateFrequency -->
+                    <xsl:copy-of select="$versionInfo/ms:updateFrequency"/>
+                    <!-- revision -->
+                    <xsl:copy-of select="$versionInfo/ms:revision"/>
+                    <!-- additionalInfo -->
                     <xsl:for-each select="$identificationInfo/ms:url">
+                        <!-- additionalInfo/landingPage -->
                         <additionalInfo><landingPage><xsl:value-of select="." /></landingPage></additionalInfo>
                     </xsl:for-each>
                     <!-- keyword -->
-                    <keyword xml:lang="en-US">ToBeDefined-00</keyword>
-                    <keyword xml:lang="en-US">ToBeDefined-01</keyword>
-                    <keyword xml:lang="en-US">ToBeDefined-nn</keyword>
+                    <keyword xml:lang="en">ToBeDefined-00</keyword>
+                    <keyword xml:lang="en">ToBeDefined-01</keyword>
+                    <keyword xml:lang="en">ToBeDefined-nn</keyword>
                     <!-- LRSubclass  -->
                     <LRSubclass>
                         <!-- lexicalConceptualResource  -->
                         <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
                             <LexicalConceptualResource>
                                 <!-- lrType  -->
-                                <lrType><xsl:value-of select="$LexicalConceptualResource" /></lrType>
+                                <lrType>LexicalConceptualResource</lrType>
                                 <!-- lcrSubclass  -->
                                 <lcrSubclass>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" /></lcrSubclass>
                                 <!-- ms:encodingLevel -->
@@ -148,12 +176,7 @@
                                             </language>
                                         </xsl:for-each>
                                         <!-- metalanguage -->
-                                        <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
-                                            <metalanguage>
-                                                <!-- languageTag -->
-                                                <languageTag>ToBeDefined</languageTag>
-                                            </metalanguage>
-                                        </xsl:for-each>
+                                        <metalanguage><languageTag>und</languageTag></metalanguage>
                                     </LexicalConceptualResourceTextPart>
                                 </xsl:if>
                                 </LexicalConceptualResourceMediaPart>
@@ -202,8 +225,7 @@
                                                 <Organization>
                                                     <actorType>Organization</actorType>
                                                     <xsl:copy-of select="./ms:distributionRightsHolder/ms:organizationInfo/ms:organizationName" />
-                                                    <!-- ToBeDefined -->
-                                                    <!-- CanBeDifferent -->
+                                                    <!-- ToBeDefined:CanBeDifferent -->
                                                     <website>https://elda.org</website>
                                                 </Organization>
                                             </distributionRightsHolder>
