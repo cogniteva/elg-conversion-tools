@@ -223,9 +223,9 @@
                         </resourceCreator>
                     </xsl:for-each>
                     <!-- creationStartDate  -->
-                    <xsl:copy-of select="$resourceCreationInfo/ms:creationStartDate">
+                    <xsl:copy-of select="$resourceCreationInfo/ms:creationStartDate"/>
                     <!-- creationEndDate  -->
-                    <xsl:copy-of select="$resourceCreationInfo/ms:creationEndDate">
+                    <xsl:copy-of select="$resourceCreationInfo/ms:creationEndDate"/>
                     <!-- LRSubclass  -->
                     <LRSubclass>
                         <!-- lexicalConceptualResource  -->
