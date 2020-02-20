@@ -253,12 +253,19 @@
                     <!-- actualUse  -->
                     <xsl:for-each select="$usageInfo/ms:actualUseInfo">
                         <actualUse>
+                            <!-- usedInApplication -->
                             <xsl:for-each select="./ms:useNLPSpecific">
                                 <usedInApplication>
+                                    <!-- FIXTHIS() OMTD classes are not strictly mapped with useNLPSpecific -->
+                                    <!--
                                     <xsl:variable name="ltclass"><xsl:value-of select="ms:upperFirst(.)" /></xsl:variable>
                                     <LTClassRecommended><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',$ltclass)" /></LTClassRecommended>
+                                    -->
+                                    <!-- HOTFIX() use LTClassOther -->
+                                    <LTClassOther><xsl:value-of select="." /></LTClassOther>
                                 </usedInApplication>
                             </xsl:for-each>
+                            <!-- usageProject -->
                             <xsl:for-each select="./ms:usageProject">
                                 <usageProject>
                                     <xsl:copy-of select="./ms:projectName" />
@@ -267,10 +274,18 @@
                                     </xsl:for-each>
                                 </usageProject>
                             </xsl:for-each>
+                            <!-- usageReport -->
+                            <xsl:for-each select="./ms:usageReport/ms:documentInfo">
+                                <usageReport>
+                                    <xsl:copy-of select="./ms:title" />
+                                </usageReport>
+                            </xsl:for-each>
+                             <!-- actualUseDetails -->
                             <xsl:copy-of select="./ms:actualUseDetails"/>
                             <actualUseDetails xml:lang="en"><xsl:value-of select="./ms:actualUse"/></actualUseDetails>
                         </actualUse>
                     </xsl:for-each>
+                    
                     <!-- LRSubclass  -->
                     <LRSubclass>
                         <!-- lexicalConceptualResource  -->
