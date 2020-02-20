@@ -114,7 +114,35 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:function>
-    
+
+    <!-- template:ActorPerson  -->
+    <xsl:template name="ActorPerson">
+        <xsl:param name="el" />
+        <actorType>Person</actorType>
+        <xsl:copy-of select="$el/ms:surname" />
+        <xsl:copy-of select="$el/ms:givenName" />
+        <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
+    </xsl:template>
+
+    <!-- template:ActorOrganization -->
+    <xsl:template name="ActorOrganization">
+        <xsl:param name="el" />
+        <actorType>Organization</actorType>
+        <xsl:copy-of select="$el/ms:organizationName" />
+        <xsl:for-each select="$el/ms:communicationInfo/ms:url">
+            <website><xsl:value-of select="." /></website>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:GenericProject -->
+    <xsl:template name="GenericProject">
+        <xsl:param name="el" />
+        <xsl:copy-of select="$el/ms:projectName" />
+        <xsl:for-each select="$el/ms:url">
+            <website><xsl:value-of select="." /></website>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -128,10 +156,9 @@
             <!-- metadataCurator -->
             <xsl:for-each select="$contactPerson">
                 <metadataCurator>
-                    <actorType>Person</actorType>
-                    <xsl:copy-of select="./ms:surname" />
-                    <xsl:copy-of select="./ms:givenName" />
-                    <xsl:copy-of select="./ms:communicationInfo/ms:email" />
+                    <xsl:call-template name="ActorPerson">
+                        <xsl:with-param name="el" select="." />
+                    </xsl:call-template>
                 </metadataCurator>
             </xsl:for-each>
             <!-- compliesWith -->
@@ -139,10 +166,9 @@
             <!-- metadataCreator -->
             <xsl:if test="$metadataCreator != ''">
                 <metadataCreator>
-                    <actorType>Person</actorType>
-                    <xsl:copy-of select="$metadataCreator/ms:surname" />
-                    <xsl:copy-of select="$metadataCreator/ms:givenName" />
-                    <xsl:copy-of select="$metadataCreator/ms:communicationInfo/ms:email" />
+                    <xsl:call-template name="ActorPerson">
+                        <xsl:with-param name="el" select="$metadataCreator" />
+                    </xsl:call-template>
                 </metadataCreator>
             </xsl:if>
             <!--  sourceOfMetadataRecord  -->
@@ -216,10 +242,9 @@
                     <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:personInfo">
                         <resourceCreator>
                             <Person>
-                                <actorType>Person</actorType>
-                                <xsl:copy-of select="./ms:surname" />
-                                <xsl:copy-of select="./ms:givenName" />
-                                <xsl:copy-of select="./ms:communicationInfo/ms:email" />
+                                <xsl:call-template name="ActorPerson">
+                                    <xsl:with-param name="el" select="." />
+                                </xsl:call-template>
                             </Person>
                         </resourceCreator>
                     </xsl:for-each>
@@ -227,11 +252,9 @@
                     <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:organizationInfo">
                         <resourceCreator>
                             <Organization>
-                                <actorType>Organization</actorType>
-                                <xsl:copy-of select="./ms:organizationName" />
-                                <xsl:for-each select="./ms:communicationInfo/ms:url">
-                                    <website><xsl:value-of select="." /></website>
-                                </xsl:for-each>
+                                <xsl:call-template name="ActorOrganization">
+                                    <xsl:with-param name="el" select="." />
+                                </xsl:call-template>
                             </Organization>
                         </resourceCreator>
                     </xsl:for-each>
@@ -242,10 +265,9 @@
                     <!-- fundingProject -->
                     <xsl:for-each select="$resourceCreationInfo/ms:fundingProject">
                         <fundingProject>
-                            <xsl:copy-of select="./ms:projectName" />
-                            <xsl:for-each select="./ms:url">
-                                <website><xsl:value-of select="." /></website>
-                            </xsl:for-each>
+                            <xsl:call-template name="GenericProject">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
                         </fundingProject>
                     </xsl:for-each>
                     <!-- intendedApplication -->
@@ -268,10 +290,9 @@
                             <!-- usageProject -->
                             <xsl:for-each select="./ms:usageProject">
                                 <usageProject>
-                                    <xsl:copy-of select="./ms:projectName" />
-                                    <xsl:for-each select="./ms:url">
-                                        <website><xsl:value-of select="." /></website>
-                                    </xsl:for-each>
+                                    <xsl:call-template name="GenericProject">
+                                        <xsl:with-param name="el" select="." />
+                                    </xsl:call-template>
                                 </usageProject>
                             </xsl:for-each>
                             <!-- usageReport -->
@@ -285,7 +306,53 @@
                             <actualUseDetails xml:lang="en"><xsl:value-of select="./ms:actualUse"/></actualUseDetails>
                         </actualUse>
                     </xsl:for-each>
-                    
+                    <!-- validated -->
+                    <!-- ToBeDefined : QUESTION() can this be equal to AND($validationInfo/ms:validated/*) ? -->
+                    <!-- validation -->
+                    <xsl:for-each select="$validationInfo">
+                        <validation>
+                            <!-- validationType -->
+                            <xsl:if test="./ms:validationType != ''">
+                                <validationType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationType)" /></validationType>
+                            </xsl:if>
+                            <!-- validationMode -->
+                            <xsl:if test="./ms:validationMode != ''">
+                                <validationMode><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationMode)" /></validationMode>
+                            </xsl:if>
+                            <!-- validationDetails -->
+                            <validationDetails xml:lang="en"><xsl:value-of select="if (./ms:validated = 'true') then 'validated' else 'not validated'"/></validationDetails>
+                            <xsl:if test="./ms:validationModeDetails != ''">
+                                <validationDetails xml:lang="und"><xsl:value-of select="./ms:validationModeDetails"/></validationDetails>
+                            </xsl:if>
+                            <xsl:if test="./ms:validationExtentDetails != ''">
+                                <validationDetails xml:lang="und"><xsl:value-of select="./ms:validationExtentDetails"/></validationDetails>
+                            </xsl:if>
+                            <!-- validationExtent -->
+                            <xsl:if test="./ms:validationExtent != ''">
+                                <validationExtent><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationExtent)" /></validationExtent>
+                            </xsl:if>
+                            <!-- validator | Person -->
+                            <xsl:for-each select="./ms:validator/ms:personInfo">
+                                <validator>
+                                    <Person>
+                                        <xsl:call-template name="ActorPerson">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </Person>
+                                </validator>
+                            </xsl:for-each>
+                            <!-- validator | Organization -->
+                            <xsl:for-each select="./ms:validator/ms:organizationInfo">
+                                <validator>
+                                    <Organization>
+                                        <xsl:call-template name="ActorOrganization">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </Organization>
+                                </validator>
+                            </xsl:for-each>
+                        </validation>
+                    </xsl:for-each>
                     <!-- LRSubclass  -->
                     <LRSubclass>
                         <!-- lexicalConceptualResource  -->
