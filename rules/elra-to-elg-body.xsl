@@ -1,4 +1,5 @@
 <!-- rules to transform ELRA XML files into ELG XML files -->
+<!-- Copyright (c) 2020 Cogniteva -->
 <xsl:stylesheet
     version="2.0"
     xmlns="http://w3id.org/meta-share/meta-share/"
@@ -26,11 +27,6 @@
        <xsl:copy-of select="//ms:MetadataRecord/ms:contactPerson/*"/>
     </xsl:variable>
 
-    <!-- var:versionInfo  -->
-    <xsl:variable name="versionInfo">
-       <xsl:copy-of select="//ms:MetadataRecord/ms:versionInfo/*"/>
-    </xsl:variable>
-
     <!-- var:metadataInfo  -->
     <xsl:variable name="metadataInfo">
        <xsl:copy-of select="//ms:MetadataRecord/ms:metadataInfo/*"/>
@@ -41,9 +37,49 @@
        <xsl:copy-of select="$metadataInfo/ms:metadataCreator/*"/>
     </xsl:variable>
 
+    <!-- var:versionInfo  -->
+    <xsl:variable name="versionInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:versionInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:validationInfo  -->
+    <xsl:variable name="validationInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:validationInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:usageInfo  -->
+    <xsl:variable name="usageInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:usageInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:resourceDocumentationInfo  -->
+    <xsl:variable name="resourceDocumentationInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:resourceDocumentationInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:resourceCreationInfo  -->
+    <xsl:variable name="resourceCreationInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:resourceCreationInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:relationInfo  -->
+    <xsl:variable name="relationInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:relationInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:corpusInfo  -->
+    <xsl:variable name="corpusInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:resourceComponentType/ms:corpusInfo/*"/>
+    </xsl:variable>
+
     <!-- var:lexicalConceptualResourceInfo  -->
     <xsl:variable name="lexicalConceptualResourceInfo">
        <xsl:copy-of select="//ms:MetadataRecord/ms:resourceComponentType/ms:lexicalConceptualResourceInfo/*"/>
+    </xsl:variable>
+
+    <!-- var:languageDescriptionInfo  -->
+    <xsl:variable name="languageDescriptionInfo">
+       <xsl:copy-of select="//ms:MetadataRecord/ms:resourceComponentType/ms:languageDescriptionInfo/*"/>
     </xsl:variable>
 
     <!-- var:resourceType  -->
@@ -140,6 +176,16 @@
                     <xsl:for-each select="$identificationInfo/ms:url">
                         <!-- additionalInfo/landingPage -->
                         <additionalInfo><landingPage><xsl:value-of select="." /></landingPage></additionalInfo>
+                    </xsl:for-each>
+                    <!-- contact -->
+                    <!-- ToBeDefined -->
+                    <!-- mailingListName -->
+                    <!-- NoMapAvalaible -->
+                    <!-- discussionURL -->
+                    <!-- NoMapAvalaible -->
+                    <!-- citation -->
+                    <xsl:for-each select="$resourceDocumentationInfo/ms:citation/ms:documentUnstructured">
+                        <citationText xml:lang="und"><xsl:value-of select="." /></citationText>
                     </xsl:for-each>
                     <!-- keyword -->
                     <keyword xml:lang="en">ToBeDefined-00</keyword>

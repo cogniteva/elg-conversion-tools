@@ -1,4 +1,5 @@
 <!-- rules to transform ELRA XML files into ELG XML files -->
+<!-- Copyright (c) 2020 Cogniteva -->
 <xsl:stylesheet
     version="2.0"
     xmlns="http://w3id.org/meta-share/meta-share/"
