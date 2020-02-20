@@ -222,10 +222,19 @@
                             </Organization>
                         </resourceCreator>
                     </xsl:for-each>
-                    <!-- creationStartDate  -->
+                    <!-- creationStartDate -->
                     <xsl:copy-of select="$resourceCreationInfo/ms:creationStartDate"/>
-                    <!-- creationEndDate  -->
+                    <!-- creationEndDate -->
                     <xsl:copy-of select="$resourceCreationInfo/ms:creationEndDate"/>
+                    <!-- fundingProject -->
+                    <xsl:for-each select="$resourceCreationInfo/ms:fundingProject">
+                        <fundingProject>
+                            <xsl:copy-of select="./ms:projectName" />
+                            <xsl:for-each select="./ms:url">
+                                <website><xsl:value-of select="." /></website>
+                            </xsl:for-each>
+                        </fundingProject>
+                    </xsl:for-each>
                     <!-- LRSubclass  -->
                     <LRSubclass>
                         <!-- lexicalConceptualResource  -->
