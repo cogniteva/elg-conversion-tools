@@ -101,6 +101,19 @@
     <xsl:variable name="lexicalConceptualResourceTextInfo">
        <xsl:copy-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo"/>
     </xsl:variable>
+
+    <!-- function:upperFirst  -->
+    <!-- based on @see https://stackoverflow.com/a/29550250/2042871 -->
+    <xsl:function name="ms:upperFirst">
+        <xsl:param name="text" />
+        <xsl:for-each select="tokenize($text,' ')">
+            <xsl:value-of select="upper-case(substring(.,1,1))" />
+            <xsl:value-of select="substring(.,2)" />
+            <xsl:if test="position() ne last()">
+                <xsl:text> </xsl:text>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:function>
     
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
@@ -192,9 +205,9 @@
                     <!-- keyword -->
                     <keyword xml:lang="en"><xsl:value-of select="lower-case($resourceType)" /></keyword>
                     <!-- domain -->
-                    <!-- ToBeDefined | corpusAudioInfo.domainInfo.domain | .lexicalConceptualResourceAudioInfo.domainInfo.domain -->
+                    <!-- ToBeDefined : corpusAudioInfo.domainInfo.domain | .lexicalConceptualResourceAudioInfo.domainInfo.domain -->
                     <!-- subject -->
-                    <!-- ToBeDefined | audioClassificationInfo.subject_topic -->
+                    <!-- ToBeDefined : audioClassificationInfo.subject_topic -->
                     <!-- resourceProvider -->
                     <!-- NoMapAvalaible -->
                     <!-- publicationDate -->
@@ -234,6 +247,29 @@
                                 <website><xsl:value-of select="." /></website>
                             </xsl:for-each>
                         </fundingProject>
+                    </xsl:for-each>
+                    <!-- intendedApplication -->
+                    <!-- ToBeDefined -->
+                    <!-- actualUse  -->
+                    <xsl:for-each select="$usageInfo/ms:actualUseInfo">
+                        <actualUse>
+                            <xsl:for-each select="./ms:useNLPSpecific">
+                                <usedInApplication>
+                                    <xsl:variable name="ltclass"><xsl:value-of select="ms:upperFirst(.)" /></xsl:variable>
+                                    <LTClassRecommended><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',$ltclass)" /></LTClassRecommended>
+                                </usedInApplication>
+                            </xsl:for-each>
+                            <xsl:for-each select="./ms:usageProject">
+                                <usageProject>
+                                    <xsl:copy-of select="./ms:projectName" />
+                                    <xsl:for-each select="./ms:url">
+                                        <website><xsl:value-of select="." /></website>
+                                    </xsl:for-each>
+                                </usageProject>
+                            </xsl:for-each>
+                            <xsl:copy-of select="./ms:actualUseDetails"/>
+                            <actualUseDetails xml:lang="en"><xsl:value-of select="./ms:actualUse"/></actualUseDetails>
+                        </actualUse>
                     </xsl:for-each>
                     <!-- LRSubclass  -->
                     <LRSubclass>
@@ -279,7 +315,7 @@
                                         <xsl:for-each select="./ms:licenceInfo">
                                             <licenceTerms>
                                                 <!-- licenceTermsName -->
-                                                <licenceTermsName xml:lang="en-US"><xsl:value-of select="./ms:licence" /></licenceTermsName>
+                                                <licenceTermsName xml:lang="en"><xsl:value-of select="./ms:licence" /></licenceTermsName>
                                                 <!-- licenceTermsURL -->
                                                 <licenceTermsURL>http://elda.org/ToBeDefined/<xsl:value-of select="translate(lower-case(./ms:licence),'_','-')" />#<xsl:value-of select="lower-case(./ms:restrictionsOfUse)" /></licenceTermsURL>
                                                 <!-- conditionOfUse:academicUser -->
