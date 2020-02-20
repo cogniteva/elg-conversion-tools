@@ -115,8 +115,8 @@
         </xsl:for-each>
     </xsl:function>
 
-    <!-- template:ActorPerson  -->
-    <xsl:template name="ActorPerson">
+    <!-- template:GenericPerson  -->
+    <xsl:template name="GenericPerson">
         <xsl:param name="el" />
         <actorType>Person</actorType>
         <xsl:copy-of select="$el/ms:surname" />
@@ -124,8 +124,8 @@
         <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
     </xsl:template>
 
-    <!-- template:ActorOrganization -->
-    <xsl:template name="ActorOrganization">
+    <!-- template:GenericOrganization -->
+    <xsl:template name="GenericOrganization">
         <xsl:param name="el" />
         <actorType>Organization</actorType>
         <xsl:copy-of select="$el/ms:organizationName" />
@@ -156,7 +156,7 @@
             <!-- metadataCurator -->
             <xsl:for-each select="$contactPerson">
                 <metadataCurator>
-                    <xsl:call-template name="ActorPerson">
+                    <xsl:call-template name="GenericPerson">
                         <xsl:with-param name="el" select="." />
                     </xsl:call-template>
                 </metadataCurator>
@@ -166,7 +166,7 @@
             <!-- metadataCreator -->
             <xsl:if test="$metadataCreator != ''">
                 <metadataCreator>
-                    <xsl:call-template name="ActorPerson">
+                    <xsl:call-template name="GenericPerson">
                         <xsl:with-param name="el" select="$metadataCreator" />
                     </xsl:call-template>
                 </metadataCreator>
@@ -242,7 +242,7 @@
                     <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:personInfo">
                         <resourceCreator>
                             <Person>
-                                <xsl:call-template name="ActorPerson">
+                                <xsl:call-template name="GenericPerson">
                                     <xsl:with-param name="el" select="." />
                                 </xsl:call-template>
                             </Person>
@@ -252,7 +252,7 @@
                     <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:organizationInfo">
                         <resourceCreator>
                             <Organization>
-                                <xsl:call-template name="ActorOrganization">
+                                <xsl:call-template name="GenericOrganization">
                                     <xsl:with-param name="el" select="." />
                                 </xsl:call-template>
                             </Organization>
@@ -335,7 +335,7 @@
                             <xsl:for-each select="./ms:validator/ms:personInfo">
                                 <validator>
                                     <Person>
-                                        <xsl:call-template name="ActorPerson">
+                                        <xsl:call-template name="GenericPerson">
                                             <xsl:with-param name="el" select="." />
                                         </xsl:call-template>
                                     </Person>
@@ -345,7 +345,7 @@
                             <xsl:for-each select="./ms:validator/ms:organizationInfo">
                                 <validator>
                                     <Organization>
-                                        <xsl:call-template name="ActorOrganization">
+                                        <xsl:call-template name="GenericOrganization">
                                             <xsl:with-param name="el" select="." />
                                         </xsl:call-template>
                                     </Organization>
@@ -353,8 +353,38 @@
                             </xsl:for-each>
                         </validation>
                     </xsl:for-each>
-                    <!-- LRSubclass  -->
+                    <!-- isDocumentedBy -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isDescribedBy -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isCitedBy -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isReviewedBy -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isPartOf -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isPartWith -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isSimilarTo -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isExactMatchWith -->
+                    <!-- NoMapAvalaible -->
+                    <!-- hasMetadata -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isArchivedBy -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isContinuationOf -->
+                    <!-- NoMapAvalaible -->
+                    <!-- replaces -->
+                    <!-- NoMapAvalaible -->
+                    <!-- isVersionOf -->
+                    <!-- NoMapAvalaible -->
+                    <!-- relation -->
+                    <!-- NoMapAvalaible -->
+                    <!-- LRSubclass -->
                     <LRSubclass>
+                        <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
+                        </xsl:if>
                         <!-- lexicalConceptualResource  -->
                         <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
                             <LexicalConceptualResource>
