@@ -84,7 +84,7 @@
 
     <!-- var:resourceType  -->
     <xsl:variable name="resourceType">
-       <xsl:copy-of select="$lexicalConceptualResourceInfo/ms:resourceType"/>
+       <xsl:copy-of select="//ms:MetadataRecord/ms:resourceComponentType//ms:resourceType"/>
     </xsl:variable>
 
     <!-- var:mediaType  -->
@@ -118,7 +118,7 @@
                     <actorType>Person</actorType>
                     <xsl:copy-of select="./ms:surname" />
                     <xsl:copy-of select="./ms:givenName" />
-                    <email><xsl:value-of select="./ms:communicationInfo/ms:email" /></email>
+                    <xsl:copy-of select="./ms:communicationInfo/ms:email" />
                 </metadataCurator>
             </xsl:for-each>
             <!-- compliesWith -->
@@ -129,7 +129,7 @@
                     <actorType>Person</actorType>
                     <xsl:copy-of select="$metadataCreator/ms:surname" />
                     <xsl:copy-of select="$metadataCreator/ms:givenName" />
-                    <email><xsl:value-of select="$metadataCreator/ms:communicationInfo/ms:email" /></email>
+                    <xsl:copy-of select="$metadataCreator/ms:communicationInfo/ms:email" />
                 </metadataCreator>
             </xsl:if>
             <!--  sourceOfMetadataRecord  -->
@@ -187,10 +187,41 @@
                     <xsl:for-each select="$resourceDocumentationInfo/ms:citation/ms:documentUnstructured">
                         <citationText xml:lang="und"><xsl:value-of select="." /></citationText>
                     </xsl:for-each>
+                    <!-- iprHolder -->
+                    <!-- NotToBeMapped -->
                     <!-- keyword -->
-                    <keyword xml:lang="en">ToBeDefined-00</keyword>
-                    <keyword xml:lang="en">ToBeDefined-01</keyword>
-                    <keyword xml:lang="en">ToBeDefined-nn</keyword>
+                    <keyword xml:lang="en"><xsl:value-of select="lower-case($resourceType)" /></keyword>
+                    <!-- domain -->
+                    <!-- ToBeDefined | corpusAudioInfo.domainInfo.domain | .lexicalConceptualResourceAudioInfo.domainInfo.domain -->
+                    <!-- subject -->
+                    <!-- ToBeDefined | audioClassificationInfo.subject_topic -->
+                    <!-- resourceProvider -->
+                    <!-- NoMapAvalaible -->
+                    <!-- publicationDate -->
+                    <!-- NoMapAvalaible -->
+                    <!-- resourceCreator | Person -->
+                    <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:personInfo">
+                        <resourceCreator>
+                            <Person>
+                                <actorType>Person</actorType>
+                                <xsl:copy-of select="./ms:surname" />
+                                <xsl:copy-of select="./ms:givenName" />
+                                <xsl:copy-of select="./ms:communicationInfo/ms:email" />
+                            </Person>
+                        </resourceCreator>
+                    </xsl:for-each>
+                    <!-- resourceCreator | Organization -->
+                    <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:organizationInfo">
+                        <resourceCreator>
+                            <Organization>
+                                <actorType>Organization</actorType>
+                                <xsl:copy-of select="./ms:organizationName" />
+                                <xsl:for-each select="./ms:communicationInfo/ms:url">
+                                    <website><xsl:value-of select="." /></website>
+                                </xsl:for-each>
+                            </Organization>
+                        </resourceCreator>
+                    </xsl:for-each>
                     <!-- LRSubclass  -->
                     <LRSubclass>
                         <!-- lexicalConceptualResource  -->
