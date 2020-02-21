@@ -105,7 +105,13 @@ java net.sf.saxon.Transform -o:"$OUTPUT_XML_NAME" -s:"$OUTPUT_XML_NAME_ROOT" \
 
 # =============================================================================
 # minimize xml result
-xmllint --noblanks "$OUTPUT_XML_NAME" > "elg-xml/$OUTPUT_XML_NAME"
+minimize_elg_xml=${MINIMIZE_ELG_XML:-1}
+if [ "$minimize_elg_xml" == "1" ]; then
+  echo "Minimizing $OUTPUT_XML_NAME..."
+  xmllint --noblanks "$OUTPUT_XML_NAME" > "elg-xml/$OUTPUT_XML_NAME"
+else
+  cp "$OUTPUT_XML_NAME" "elg-xml/$OUTPUT_XML_NAME"
+fi
 
 # =============================================================================
 # validate result
@@ -115,6 +121,6 @@ fi
 
 # =============================================================================
 # remove temporal files
-#rm -f "${OUTPUT_XML_NAME:?}"
+rm -f "${OUTPUT_XML_NAME:?}"
 rm -f "${OUTPUT_XML_NAME_ROOT:?}"
 rm -f "${INPUT_XML_TMP:?}"
