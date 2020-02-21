@@ -163,6 +163,9 @@
         <xsl:param name="el" />
         <actorType>Organization</actorType>
         <xsl:copy-of select="$el/ms:organizationName" />
+        <!-- <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"> -->
+        <!--    <xsl:value-of select="$el/ms:organizationName" /> -->
+        <!-- </OrganizationIdentifier> -->
         <xsl:for-each select="$el/ms:communicationInfo/ms:url">
             <website><xsl:value-of select="." /></website>
         </xsl:for-each>
@@ -230,6 +233,7 @@
         <!-- DatasetDistribution -->
         <xsl:for-each select="$distributionInfo/*">
             <DatasetDistribution>
+                <!-- QUESTION() What happen with distributionInfo/availability? -->
                 <!-- DatasetDistributionForm -->
                 <xsl:choose>
                     <xsl:when test="normalize-space(./ms:distributionAccessMedium) != ''">
@@ -559,10 +563,15 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:if>
-                    <!-- additionalInfo -->
+                    <!-- additionalInfo | landingPage -->
                     <xsl:for-each select="$identificationInfo/ms:url">
                         <!-- additionalInfo/landingPage -->
                         <additionalInfo><landingPage><xsl:value-of select="." /></landingPage></additionalInfo>
+                    </xsl:for-each>
+                    <!-- additionalInfo | email -->
+                    <xsl:for-each select="$contactPerson/ms:communicationInfo/ms:email">
+                        <!-- additionalInfo/landingPage -->
+                        <additionalInfo><email><xsl:value-of select="." /></email></additionalInfo>
                     </xsl:for-each>
                     <!-- contact -->
                     <!-- ToBeDefined -->
@@ -611,7 +620,7 @@
                             <!-- usedInApplication -->
                             <xsl:for-each select="./ms:useNLPSpecific">
                                 <usedInApplication>
-                                    <!-- FIXTHIS() OMTD classes are not strictly mapped with useNLPSpecific -->
+                                    <!-- FIXTHIS() OMTD classes are not strictly mapped with METASHARE useNLPSpecific -->
                                     <!--
                                     <xsl:variable name="ltclass"><xsl:value-of select="ms:upperFirst(.)" /></xsl:variable>
                                     <LTClassRecommended><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',$ltclass)" /></LTClassRecommended>
