@@ -197,8 +197,33 @@
         </xsl:for-each>
     </xsl:template>
 
-    <!-- template:ElementDefaultLang  -->
-    <xsl:template name="ElementDefaultLang">
+    <!-- template:ElementCopy  -->
+    <xsl:template name="ElementCopy">
+        <xsl:param name="el" />
+        <xsl:param name="elementName" />
+        <xsl:if test="normalize-space($el) != ''">
+            <xsl:choose>
+                <xsl:when test="$el/@lang">
+                    <xsl:element name="{$elementName}">
+                        <xsl:copy-of  select="$el/@*"/>
+                        <xsl:value-of select="normalize-space($el)"/>
+                    </xsl:element>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:element name="{$elementName}">
+                        <xsl:attribute name="xml:lang">
+                            <xsl:value-of select="$elementLang"/>
+                        </xsl:attribute>
+                        <xsl:copy-of  select="$el/@*"/>
+                        <xsl:value-of select="normalize-space($el)"/>
+                    </xsl:element>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- template:ElementCopyWithDefaultLang  -->
+    <xsl:template name="ElementCopyWithDefaultLang">
         <xsl:param name="el" />
         <xsl:param name="elementLang" />
         <xsl:param name="elementName" />
@@ -517,7 +542,7 @@
             </multilingualityType>
         </xsl:if>
         <!-- multilingualityTypeDetails -->
-        <xsl:call-template name="ElementDefaultLang">
+        <xsl:call-template name="ElementCopyWithDefaultLang">
             <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:multilingualityTypeDetails" />
             <xsl:with-param name="elementLang" select="'en'" />
             <xsl:with-param name="elementName" select="'multilingualityTypeDetails'" />
@@ -545,7 +570,7 @@
                     <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:languageVarietyType)" />
                 </languageVarietyType>
                 <!-- languageVarietyName -->
-                <xsl:call-template name="ElementDefaultLang">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
                     <xsl:with-param name="el" select="./ms:languageVarietyName" />
                     <xsl:with-param name="elementLang" select="'en'" />
                     <xsl:with-param name="elementName" select="'languageVarietyName'" />
@@ -728,7 +753,7 @@
                                 </usageReport>
                             </xsl:for-each>
                             <!-- actualUseDetails -->
-                            <xsl:call-template name="ElementDefaultLang">
+                            <xsl:call-template name="ElementCopyWithDefaultLang">
                                 <xsl:with-param name="el" select="./ms:actualUseDetails" />
                                 <xsl:with-param name="elementLang" select="'en'" />
                                 <xsl:with-param name="elementName" select="'actualUseDetails'" />
