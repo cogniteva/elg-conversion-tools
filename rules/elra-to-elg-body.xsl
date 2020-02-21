@@ -212,6 +212,9 @@
         <!-- <regionId><xsl:value-of select="$el/ms:region" /></regionId> -->
         <!-- variantId  -->
         <!-- <variantId><xsl:value-of select="$el/ms:variant" /></variantId> -->
+        <!-- languageName -->
+        <!-- QUESTION() why languageName is not longer available -->
+        <!-- <languageName><xsl:value-of select="$el/ms:languageName" /></languageName> -->
     </xsl:template>
 
     <!-- template:Subset -->
@@ -692,7 +695,11 @@
                                 <!-- userQuery -->
                                 <!-- annotation -->
                                 <annotation>
-                                    <!-- TODO() ms:corpusAudioInfo/ms:annotationInfo-->
+                                    <!-- TODO() ms:corpusAudioInfo/ms:annotationInfo -->
+                                    <!--        ms:corpusTextInfo/ms:annotationInfo -->
+                                    <!--        ms:corpusVideoInfo/ms:annotationInfo -->
+                                    <!--        ms:corpusTextNumericalInfo/ms:annotationInfo -->
+                                    <!--        ms:corpusImageInfo/ms:annotationInfo -->
                                     <annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</annotationType>
                                 </annotation>
                                 <!-- hasSubset -->
@@ -756,8 +763,9 @@
                                         <!-- language -->
                                         <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
                                             <language>
-                                                <!-- languageTag -->
-                                                <languageTag><xsl:value-of select="./ms:languageId" /></languageTag>
+                                                <xsl:call-template name="Language">
+                                                    <xsl:with-param name="el" select="." />
+                                                </xsl:call-template>
                                             </language>
                                         </xsl:for-each>
                                         <!-- metalanguage -->
