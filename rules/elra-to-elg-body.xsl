@@ -194,6 +194,28 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:ElementDefaultLang  -->
+    <xsl:template name="ElementDefaultLang">
+        <xsl:param name="el" />
+        <xsl:param name="elementLang" />
+        <xsl:param name="elementName" />
+        <xsl:if test="normalize-space($el) != ''">
+            <xsl:choose>
+                <xsl:when test="$el/@lang">
+                    <xsl:copy-of select="$el"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:element name="{$elementName}">
+                        <xsl:attribute name="xml:lang">
+                            <xsl:value-of select="$elementLang"/>
+                        </xsl:attribute>
+                        <xsl:value-of select="$el"/>
+                    </xsl:element>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
+    </xsl:template>
+
     <!-- template:GenericProject -->
     <xsl:template name="GenericProject">
         <xsl:param name="el" />
@@ -343,7 +365,7 @@
         </xsl:choose>
     </xsl:template>
 
-    <!-- template:Subset -->
+    <!-- template:hasSubset -->
     <xsl:template name="hasSubset">
         <xsl:param name="el" />
         <xsl:for-each select="$el/ms:sizeInfo">
@@ -365,6 +387,38 @@
                     </sizePerTextFormat>
                 </hasSubset>
             </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:annotation -->
+    <xsl:template name="annotation">
+        <xsl:param name="el" />
+        <xsl:for-each select="$el/ms:annotationInfo">
+            <!-- var:annotationType -->
+            <xsl:variable name="annotationType">
+               <xsl:choose>
+                    <xsl:when test="lower-case(./ms:annotationType) = 'other'">
+                        <xsl:value-of select="'Domain-specificAnnotation'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'speechannotation')">
+                        <xsl:value-of select="'SpeechAct'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'semanticannotation')">
+                        <xsl:value-of select="'SemanticAnnotationType'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'morphosyntacticannotation')">
+                        <xsl:value-of select="'MorphologicalAnnotationType'" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="./ms:annotationType" />
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <!-- NOTE() castable is avalaible only using Saxon-SA -->
+            <!-- <xsl:if test="not($annotationType castable as ms:AnnotationType)"> -->
+            <!-- </xsl:if> -->
+            <!-- annotation -->
+            <annotation><annotationType><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', $annotationType)" /></annotationType></annotation>
         </xsl:for-each>
     </xsl:template>
 
@@ -402,7 +456,7 @@
         <!--  ToDo() -->
         <!-- language -->
         <xsl:choose>
-            <xsl:when test="normalize-space($el/ms:languageInfo) != ''">
+            <xsl:when test="count($el/ms:languageInfo) > 0">
                 <xsl:for-each select="$el/ms:languageInfo">
                     <language>
                         <xsl:call-template name="Language">
@@ -580,8 +634,12 @@
                                     <xsl:copy-of select="./ms:title" />
                                 </usageReport>
                             </xsl:for-each>
-                             <!-- actualUseDetails -->
-                            <xsl:copy-of select="./ms:actualUseDetails"/>
+                            <!-- actualUseDetails -->
+                            <xsl:call-template name="ElementDefaultLang">
+                                <xsl:with-param name="el" select="./ms:actualUseDetails" />
+                                <xsl:with-param name="elementLang" select="'en'" />
+                                <xsl:with-param name="elementName" select="'actualUseDetails'" />
+                            </xsl:call-template>
                             <actualUseDetails xml:lang="en"><xsl:value-of select="./ms:actualUse"/></actualUseDetails>
                         </actualUse>
                     </xsl:for-each>
@@ -822,14 +880,52 @@
                                 <!-- register -->
                                 <!-- userQuery -->
                                 <!-- annotation -->
-                                <annotation>
-                                    <!-- TODO() ms:corpusAudioInfo/ms:annotationInfo -->
-                                    <!--        ms:corpusTextInfo/ms:annotationInfo -->
-                                    <!--        ms:corpusVideoInfo/ms:annotationInfo -->
-                                    <!--        ms:corpusTextNumericalInfo/ms:annotationInfo -->
-                                    <!--        ms:corpusImageInfo/ms:annotationInfo -->
-                                    <annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</annotationType>
-                                </annotation>
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                    <!-- annotation | corpusTextInfo -->
+                                    <xsl:for-each select="./ms:corpusTextInfo">
+                                        <xsl:call-template name="annotation">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- annotation | corpusAudioInfo -->
+                                    <xsl:for-each select="./ms:corpusAudioInfo">
+                                        <xsl:call-template name="annotation">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- annotation | corpusVideoInfo -->
+                                    <xsl:for-each select="./ms:corpusVideoInfo">
+                                        <xsl:call-template name="annotation">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- annotation | corpusImageInfo -->
+                                    <xsl:for-each select="./ms:corpusImageInfo">
+                                        <xsl:call-template name="annotation">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- annotation | corpusTextNumericalInfo -->
+                                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
+                                        <xsl:call-template name="annotation">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- annotation | corpusTextNgramInfo -->
+                                    <!-- ToBeDefined -->
+                                </xsl:for-each>
+                                <!-- append at least one mandatory annotation -->
+                                <xsl:if test=
+                        "((count($corpusInfo/ms:corpusMediaType/ms:corpusTextInfo/ms:annotationInfo) = 0) and
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusAudioInfo/ms:annotationInfo)  = 0) and
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusVideoInfo/ms:annotationInfo)  = 0) and
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusImageInfo/ms:annotationInfo)  = 0) and
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusTextNumericalInfo/ms:annotationInfo) = 0))">
+                                    <annotation>
+                                        <!-- QUESTION() What's the best default value?-->
+                                        <annotationType>http://w3id.org/meta-share/omtd-share/Domain-specificAnnotation</annotationType>
+                                    </annotation>
+                                </xsl:if>
                                 <!-- hasSubset -->
                                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                                     <!-- hasSubset | corpusTextInfo -->
