@@ -168,6 +168,32 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:Actor  -->
+    <xsl:template name="Actor">
+        <xsl:param name="el" />
+        <xsl:param name="actorElement" />
+        <!-- Person -->
+        <xsl:for-each select="$el/ms:personInfo">
+            <xsl:element name="{$actorElement}">
+                <Person>
+                    <xsl:call-template name="GenericPerson">
+                        <xsl:with-param name="el" select="." />
+                    </xsl:call-template>
+                </Person>
+            </xsl:element>
+        </xsl:for-each>
+        <!-- Organization -->
+        <xsl:for-each select="$el/ms:organizationInfo">
+            <xsl:element name="{$actorElement}">
+                <Organization>
+                    <xsl:call-template name="GenericOrganization">
+                        <xsl:with-param name="el" select="." />
+                    </xsl:call-template>
+                </Organization>
+            </xsl:element>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:GenericProject -->
     <xsl:template name="GenericProject">
         <xsl:param name="el" />
@@ -217,18 +243,6 @@
                                     <licenceTermsURL>http://example.org/licenses/<xsl:value-of select="translate(upper-case($licenseName),'_','-')" />#<xsl:value-of select="lower-case($restrictions)" /></licenceTermsURL>
                                 </xsl:otherwise>
                             </xsl:choose>
-                            <!-- conditionOfUse:academicUser -->
-    <!--
-                            <xsl:if test="../ms:userNature = 'academic' ">
-                                <conditionOfUse>http://w3id.org/meta-share/meta-share/academicUser</conditionOfUse>
-                            </xsl:if>
-    -->
-                            <!-- conditionOfUse:commercial -->
-    <!--
-                            <xsl:if test="../ms:userNature = 'commercial' ">
-                                <conditionOfUse>http://w3id.org/meta-share/meta-share/commercialUser</conditionOfUse>
-                            </xsl:if>
-    -->
                         </licenceTerms>
                     </xsl:if>
                     <!-- ELRA licenses -->
@@ -260,22 +274,14 @@
                     <currency>http://w3id.org/meta-share/meta-share/euro</currency>
                 </cost>
                 <!-- membershipInstitution -->
-                <membershipInstitution>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:membershipInfo/ms:membershipInstitution" /></membershipInstitution>
+                <membershipInstitution><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:membershipInfo/ms:membershipInstitution)" /></membershipInstitution>
                 <!-- ms:availabilityStartDate -->
                 <xsl:copy-of select="./ms:availabilityStartDate" />
-                <!-- distributionRightsHolder/Organization -->
-                <xsl:if test="name(./ms:distributionRightsHolder/*[1]) = 'organizationInfo' ">
-                    <!-- distributionRightsHolder -->
-                    <distributionRightsHolder>
-                        <!-- Organization -->
-                        <Organization>
-                            <actorType>Organization</actorType>
-                            <xsl:copy-of select="./ms:distributionRightsHolder/ms:organizationInfo/ms:organizationName" />
-                            <!-- ToBeDefined:CanBeDifferent -->
-                            <website>https://elda.org</website>
-                        </Organization>
-                    </distributionRightsHolder>
-                </xsl:if>
+                <!-- ms:distributionRightsHolder -->
+                <xsl:call-template name="Actor">
+                    <xsl:with-param name="el" select="./ms:distributionRightsHolder" />
+                    <xsl:with-param name="actorElement" select="'distributionRightsHolder'" />
+                </xsl:call-template>
             </DatasetDistribution>
         </xsl:for-each>
     </xsl:template>
@@ -498,26 +504,11 @@
                     <!-- NoMapAvalaible -->
                     <!-- publicationDate -->
                     <!-- NoMapAvalaible -->
-                    <!-- resourceCreator | Person -->
-                    <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:personInfo">
-                        <resourceCreator>
-                            <Person>
-                                <xsl:call-template name="GenericPerson">
-                                    <xsl:with-param name="el" select="." />
-                                </xsl:call-template>
-                            </Person>
-                        </resourceCreator>
-                    </xsl:for-each>
-                    <!-- resourceCreator | Organization -->
-                    <xsl:for-each select="$resourceCreationInfo/ms:resourceCreator/ms:organizationInfo">
-                        <resourceCreator>
-                            <Organization>
-                                <xsl:call-template name="GenericOrganization">
-                                    <xsl:with-param name="el" select="." />
-                                </xsl:call-template>
-                            </Organization>
-                        </resourceCreator>
-                    </xsl:for-each>
+                    <!-- ms:resourceCreator -->
+                    <xsl:call-template name="Actor">
+                        <xsl:with-param name="el" select="$resourceCreationInfo/ms:resourceCreator" />
+                        <xsl:with-param name="actorElement" select="'resourceCreator'" />
+                    </xsl:call-template>
                     <!-- creationStartDate -->
                     <xsl:copy-of select="$resourceCreationInfo/ms:creationStartDate"/>
                     <!-- creationEndDate -->
