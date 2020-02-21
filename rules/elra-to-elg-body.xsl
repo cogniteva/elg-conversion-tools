@@ -247,6 +247,50 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:CorpusPart -->
+    <xsl:template name="CorpusPart">
+        <xsl:param name="el" />
+        <xsl:param name="corpusMediaType" />
+        <!-- corpusMediaType  -->
+        <corpusMediaType><xsl:value-of select="$corpusMediaType" /></corpusMediaType>
+        <!-- mediaType: CorpusTextPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusTextPart'"> 
+            <mediaType>http://w3id.org/meta-share/meta-share/text</mediaType>
+        </xsl:if>
+        <!-- mediaType: CorpusAudioPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusAudioPart'"> 
+            <mediaType>http://w3id.org/meta-share/meta-share/audio</mediaType>
+        </xsl:if>
+        <!-- mediaType: CorpusVideoPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusVideoPart'"> 
+            <mediaType>http://w3id.org/meta-share/meta-share/video</mediaType>
+        </xsl:if>
+        <!-- mediaType: CorpusImagePart -->
+        <xsl:if test="$corpusMediaType = 'CorpusImagePart'"> 
+            <mediaType>http://w3id.org/meta-share/meta-share/image</mediaType>
+        </xsl:if>
+        <!-- mediaType: CorpusTextNumericalPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusTextNumericalPart'"> 
+            <mediaType>http://w3id.org/meta-share/meta-share/textNumerical</mediaType>
+        </xsl:if>
+        <!-- lingualityType  -->
+        <lingualityType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:lingualityType)" /></lingualityType>
+        <!-- multilingualityType -->
+        <!--  ToDo() -->
+        <!-- multilingualityTypeDetails -->
+        <!--  ToDo() -->
+        <!-- language -->
+        <xsl:for-each select="$el/ms:languageInfo">
+            <language>
+                <xsl:call-template name="Language">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </language>
+        </xsl:for-each>
+        <!-- ms:languageVariety -->
+        <!-- modalityType -->
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -494,88 +538,138 @@
                                 <lrType>Corpus</lrType>
                                 <!-- corpusSubclass : QUESTION() how to deduce this information ? -->
                                 <corpusSubclass><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', 'rawCorpus')" /></corpusSubclass>
-                                <!-- CorpusMediaPart | CorpusTextPart -->
-                                <!-- CorpusMediaPart | CorpusAudioPart -->
-                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType/ms:corpusAudioInfo">
-                                    <!-- CorpusMediaPart -->
-                                    <CorpusMediaPart>
-                                        <!-- CorpusAudioPart -->
-                                        <CorpusAudioPart>
-                                            <!-- corpusMediaType  -->
-                                            <corpusMediaType>CorpusAudioPart</corpusMediaType>
-                                            <!-- mediaType  -->
-                                            <mediaType>http://w3id.org/meta-share/meta-share/audio</mediaType>
-                                            <!-- lingualityType  -->
-                                            <lingualityType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:lingualityInfo/ms:lingualityType)" /></lingualityType>
-                                            <!-- multilingualityType -->
-                                            <!--  ToDo() -->
-                                            <!-- multilingualityTypeDetails -->
-                                            <!--  ToDo() -->
-                                            <!-- language -->
-                                            <xsl:for-each select="./ms:languageInfo">
-                                                <language>
-                                                    <xsl:call-template name="Language">
-                                                        <xsl:with-param name="el" select="." />
-                                                    </xsl:call-template>
-                                                </language>
-                                            </xsl:for-each>
-                                            <!-- ms:languageVariety -->
-                                            <!--  ToDo() -->
-                                            <!-- modalityType -->
-                                            <!-- AudioGenre -->
-                                            <!-- SpeechGenre -->
-                                            <!-- speechItem -->
-                                            <!-- nonSpeechItem -->
-                                            <!-- legend -->
-                                            <!-- noiseLevel -->
-                                            <!-- naturality -->
-                                            <!-- conversationalType -->
-                                            <!-- scenarioType -->
-                                            <!-- audience -->
-                                            <!-- interactivity -->
-                                            <!-- interaction -->
-                                            <!-- recordingDeviceType -->
-                                            <!-- recordingDeviceTypeDetails -->
-                                            <!-- recordingPlatformSoftware -->
-                                            <!-- recordingEnvironment -->
-                                            <!-- sourceChannel -->
-                                            <!-- sourceChannelType -->
-                                            <!-- sourceChannelName -->
-                                            <!-- sourceChannelDetails -->
-                                            <!-- recorder -->
-                                            <!-- capturingDeviceType -->
-                                            <!-- capturingDeviceTypeDetails -->
-                                            <!-- capturingDetails -->
-                                            <!-- capturingEnvironment -->
-                                            <!-- sensorTechnology -->
-                                            <!-- sceneIllumination -->
-                                            <!-- numberOfParticipants -->
-                                            <!-- ageGroupOfParticipants -->
-                                            <!-- ageRangeStartOfParticipants -->
-                                            <!-- ageRangeEndOfParticipants -->
-                                            <!-- sexOfParticipants -->
-                                            <!-- originOfParticipants -->
-                                            <!-- dialectAccentOfParticipants -->
-                                            <!-- hearingImpairmentOfParticipants -->
-                                            <!-- speakingImpairmentOfParticipants -->
-                                            <!-- numberOfTrainedSpeakers -->
-                                            <!-- speechInfluence -->
-                                            <!-- participant -->
-                                            <!-- creationMode -->
-                                            <!-- isCreatedBy -->
-                                            <!-- hasOriginalSource -->
-                                            <!-- originalSourceDescription -->
-                                            <!-- syntheticData -->
-                                            <!-- creationDetails -->
-                                            <!-- linkToOtherMedia -->
-                                        </CorpusAudioPart>
-                                        <!-- hasSubset -->
-<!--
-                                        <xsl:call-template name="hasSubset">
-                                            <xsl:with-param name="el" select="./ms:audioSizeInfo" />
-                                        </xsl:call-template>
--->
-                                    </CorpusMediaPart>
+                                <!-- corpusMediaType -->
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                    <!-- CorpusMediaPart | CorpusTextPart -->
+                                    <xsl:for-each select="./ms:corpusTextInfo">
+                                        <!-- CorpusMediaPart -->
+                                        <CorpusMediaPart>
+                                            <!-- CorpusTextPart -->
+                                            <CorpusTextPart>
+                                                <!-- common corpus elements  -->
+                                                <xsl:call-template name="CorpusPart">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
+                                                </xsl:call-template>
+                                            </CorpusTextPart>
+                                        </CorpusMediaPart>
+                                    </xsl:for-each>
+                                    <!-- CorpusMediaPart | CorpusAudioPart -->
+                                    <xsl:for-each select="./ms:corpusAudioInfo">
+                                        <!-- CorpusMediaPart -->
+                                        <CorpusMediaPart>
+                                            <!-- CorpusAudioPart -->
+                                            <CorpusAudioPart>
+                                                <!-- common corpus elements  -->
+                                                <xsl:call-template name="CorpusPart">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
+                                                </xsl:call-template>
+                                                <!-- AudioGenre -->
+                                                <!-- SpeechGenre -->
+                                                <!-- speechItem -->
+                                                <!-- nonSpeechItem -->
+                                                <!-- legend -->
+                                                <!-- noiseLevel -->
+                                                <!-- naturality -->
+                                                <!-- conversationalType -->
+                                                <!-- scenarioType -->
+                                                <!-- audience -->
+                                                <!-- interactivity -->
+                                                <!-- interaction -->
+                                                <!-- recordingDeviceType -->
+                                                <!-- recordingDeviceTypeDetails -->
+                                                <!-- recordingPlatformSoftware -->
+                                                <!-- recordingEnvironment -->
+                                                <!-- sourceChannel -->
+                                                <!-- sourceChannelType -->
+                                                <!-- sourceChannelName -->
+                                                <!-- sourceChannelDetails -->
+                                                <!-- recorder -->
+                                                <!-- capturingDeviceType -->
+                                                <!-- capturingDeviceTypeDetails -->
+                                                <!-- capturingDetails -->
+                                                <!-- capturingEnvironment -->
+                                                <!-- sensorTechnology -->
+                                                <!-- sceneIllumination -->
+                                                <!-- numberOfParticipants -->
+                                                <!-- ageGroupOfParticipants -->
+                                                <!-- ageRangeStartOfParticipants -->
+                                                <!-- ageRangeEndOfParticipants -->
+                                                <!-- sexOfParticipants -->
+                                                <!-- originOfParticipants -->
+                                                <!-- dialectAccentOfParticipants -->
+                                                <!-- hearingImpairmentOfParticipants -->
+                                                <!-- speakingImpairmentOfParticipants -->
+                                                <!-- numberOfTrainedSpeakers -->
+                                                <!-- speechInfluence -->
+                                                <!-- participant -->
+                                                <!-- creationMode -->
+                                                <!-- isCreatedBy -->
+                                                <!-- hasOriginalSource -->
+                                                <!-- originalSourceDescription -->
+                                                <!-- syntheticData -->
+                                                <!-- creationDetails -->
+                                                <!-- linkToOtherMedia -->
+                                            </CorpusAudioPart>
+                                            <!-- hasSubset -->
+    <!--
+                                            <xsl:call-template name="hasSubset">
+                                                <xsl:with-param name="el" select="./ms:audioSizeInfo" />
+                                            </xsl:call-template>
+    -->
+                                        </CorpusMediaPart>
+                                    </xsl:for-each>
+                                    <!-- CorpusMediaPart | CorpusVideoPart -->
+                                    <xsl:for-each select="./ms:corpusVideoInfo">
+                                        <!-- CorpusMediaPart -->
+                                        <CorpusMediaPart>
+                                            <!-- CorpusVideoPart -->
+                                            <CorpusVideoPart>
+                                                <!-- common corpus elements  -->
+                                                <xsl:call-template name="CorpusPart">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
+                                                </xsl:call-template>
+                                                <!-- typeOfVideoContent : QUESTION() what would be a default value ?  -->
+                                                <xsl:if test="not(./ms:videoContentInfo)">
+                                                    <typeOfVideoContent xml:lang="en">undefined</typeOfVideoContent>
+                                                </xsl:if>
+                                                <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
+                                                    <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
+                                                </xsl:for-each>
+                                            </CorpusVideoPart>
+                                        </CorpusMediaPart>
+                                    </xsl:for-each>
+                                    <!-- CorpusMediaPart | CorpusImagePart -->
+                                    <xsl:for-each select="./ms:corpusImageInfo">
+                                        <!-- CorpusMediaPart -->
+                                        <CorpusMediaPart>
+                                            <!-- CorpusImagePart -->
+                                            <CorpusImagePart>
+                                                <!-- common corpus elements  -->
+                                                <xsl:call-template name="CorpusPart">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
+                                                </xsl:call-template>
+                                            </CorpusImagePart>
+                                        </CorpusMediaPart>
+                                    </xsl:for-each>
+                                    <!-- CorpusMediaPart | CorpusTextNumericalPart -->
+                                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
+                                        <!-- CorpusMediaPart -->
+                                        <CorpusMediaPart>
+                                            <!-- CorpusTextNumericalPart -->
+                                            <CorpusTextNumericalPart>
+                                                <!-- common corpus elements  -->
+                                                <xsl:call-template name="CorpusPart">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
+                                                </xsl:call-template>
+                                            </CorpusTextNumericalPart>
+                                        </CorpusMediaPart>
+                                    </xsl:for-each>
+                                    <!-- QUESTION() Where to map corpusTextNgramInfo? -->
                                 </xsl:for-each>
                                 <!-- DatasetDistribution -->
                                 <xsl:call-template name="DatasetDistribution"/>
