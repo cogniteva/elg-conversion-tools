@@ -232,7 +232,7 @@
                         </xsl:if>
                     </sizePerLanguage>
                     <!-- sizePerTextFormat -->
-                    <!-- ToBeDefined -->
+                    <!-- ToBeDefined : QUESTION() why sizePerTextFormat is mandatory? -->
                     <sizePerTextFormat>
                         <amount><xsl:value-of select="./ms:size" /></amount>
                         <xsl:if test="./ms:sizeUnit = 'terms' ">
@@ -612,12 +612,6 @@
                                                 <!-- creationDetails -->
                                                 <!-- linkToOtherMedia -->
                                             </CorpusAudioPart>
-                                            <!-- hasSubset -->
-    <!--
-                                            <xsl:call-template name="hasSubset">
-                                                <xsl:with-param name="el" select="./ms:audioSizeInfo" />
-                                            </xsl:call-template>
-    -->
                                         </CorpusMediaPart>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | CorpusVideoPart -->
@@ -669,6 +663,7 @@
                                             </CorpusTextNumericalPart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
+                                    <!-- CorpusMediaPart | corpusTextNgramInfo -->
                                     <!-- QUESTION() Where to map corpusTextNgramInfo? -->
                                 </xsl:for-each>
                                 <!-- DatasetDistribution -->
@@ -679,6 +674,7 @@
                                 <!-- personalDataDetails -->
                                 <!-- ToBeDefined -->
                                 <!-- sensitiveDataIncluded -->
+                                <!-- ToBeDefined : QUESTION() could be false by default? -->
                                 <sensitiveDataIncluded>false</sensitiveDataIncluded>
                                 <!-- ToBeDefined -->
                                 <!-- sensitiveDataDetails -->
@@ -696,8 +692,44 @@
                                 <!-- userQuery -->
                                 <!-- annotation -->
                                 <annotation>
+                                    <!-- TODO() ms:corpusAudioInfo/ms:annotationInfo-->
                                     <annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</annotationType>
                                 </annotation>
+                                <!-- hasSubset -->
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                    <!-- hasSubset | corpusTextInfo -->
+                                    <xsl:for-each select="./ms:corpusTextInfo">
+                                        <xsl:call-template name="hasSubset">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- hasSubset | corpusAudioInfo -->
+                                    <xsl:for-each select="./ms:corpusAudioInfo">
+                                        <xsl:call-template name="hasSubset">
+                                            <xsl:with-param name="el" select="./ms:audioSizeInfo" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- hasSubset | corpusVideoInfo -->
+                                    <xsl:for-each select="./ms:corpusVideoInfo">
+                                        <xsl:call-template name="hasSubset">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- hasSubset | corpusImageInfo -->
+                                    <xsl:for-each select="./ms:corpusImageInfo">
+                                        <xsl:call-template name="hasSubset">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- hasSubset | corpusTextNumericalInfo -->
+                                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
+                                        <xsl:call-template name="hasSubset">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- hasSubset | corpusTextNgramInfo -->
+                                    <!-- ToBeDefined -->
+                                </xsl:for-each>
                             </Corpus>
                         </xsl:if>
                         <!-- lexicalConceptualResource  -->
