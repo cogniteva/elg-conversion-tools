@@ -474,6 +474,20 @@
             </xsl:otherwise>
         </xsl:choose>
         <!-- languageVariety -->
+        <xsl:for-each select="$el/ms:languageInfo/ms:languageVarietyInfo">
+            <languageVariety>
+                <!-- languageVarietyType -->
+                <languageVarietyType>
+                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:languageVarietyType)" />
+                </languageVarietyType>
+                <!-- languageVarietyName -->
+                <xsl:call-template name="ElementDefaultLang">
+                    <xsl:with-param name="el" select="./ms:languageVarietyName" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'languageVarietyName'" />
+                </xsl:call-template>
+            </languageVariety>
+        </xsl:for-each>
         <!-- modalityType -->
         <!-- creationMode -->
         <xsl:if test="normalize-space($el/ms:creationInfo/ms:creationMode) != ''">
