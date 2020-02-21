@@ -197,28 +197,15 @@
         </xsl:for-each>
     </xsl:template>
 
-    <!-- template:ElementCopy  -->
+    <!-- template:ElementCopy -->
     <xsl:template name="ElementCopy">
         <xsl:param name="el" />
         <xsl:param name="elementName" />
         <xsl:if test="normalize-space($el) != ''">
-            <xsl:choose>
-                <xsl:when test="$el/@lang">
-                    <xsl:element name="{$elementName}">
-                        <xsl:copy-of  select="$el/@*"/>
-                        <xsl:value-of select="normalize-space($el)"/>
-                    </xsl:element>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:element name="{$elementName}">
-                        <xsl:attribute name="xml:lang">
-                            <xsl:value-of select="$elementLang"/>
-                        </xsl:attribute>
-                        <xsl:copy-of  select="$el/@*"/>
-                        <xsl:value-of select="normalize-space($el)"/>
-                    </xsl:element>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:element name="{$elementName}">
+                <xsl:copy-of  select="$el/@*"/>
+                <xsl:value-of select="normalize-space($el)"/>
+            </xsl:element>
         </xsl:if>
     </xsl:template>
 
