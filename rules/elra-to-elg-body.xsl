@@ -576,34 +576,34 @@
                                         </xsl:call-template>
 -->
                                     </CorpusMediaPart>
-                                    <!-- DatasetDistribution -->
-                                    <xsl:call-template name="DatasetDistribution"/>
-                                    <!-- personalDataIncluded -->
-                                    <!-- ToBeDefined : QUESTION() could be false by default? -->
-                                    <personalDataIncluded>false</personalDataIncluded>
-                                    <!-- personalDataDetails -->
-                                    <!-- ToBeDefined -->
-                                    <!-- sensitiveDataIncluded -->
-                                    <sensitiveDataIncluded>false</sensitiveDataIncluded>
-                                    <!-- ToBeDefined -->
-                                    <!-- sensitiveDataDetails -->
-                                    <!-- anonymized -->
-                                    <!-- anonymizationDetails -->
-                                    <!-- isAnalysedBy -->
-                                    <!-- isEditedBy -->
-                                    <!-- isElicitedBy -->
-                                    <!-- isAnnotatedVersionOf -->
-                                    <!-- isAlignedVersionOf -->
-                                    <!-- isConvertedVersionOf -->
-                                    <!-- timeCoverage -->
-                                    <!-- geographicCoverage -->
-                                    <!-- register -->
-                                    <!-- userQuery -->
-                                    <!-- annotation -->
-                                    <annotation>
-                                        <annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</annotationType>
-                                    </annotation>
                                 </xsl:for-each>
+                                <!-- DatasetDistribution -->
+                                <xsl:call-template name="DatasetDistribution"/>
+                                <!-- personalDataIncluded -->
+                                <!-- ToBeDefined : QUESTION() could be false by default? -->
+                                <personalDataIncluded>false</personalDataIncluded>
+                                <!-- personalDataDetails -->
+                                <!-- ToBeDefined -->
+                                <!-- sensitiveDataIncluded -->
+                                <sensitiveDataIncluded>false</sensitiveDataIncluded>
+                                <!-- ToBeDefined -->
+                                <!-- sensitiveDataDetails -->
+                                <!-- anonymized -->
+                                <!-- anonymizationDetails -->
+                                <!-- isAnalysedBy -->
+                                <!-- isEditedBy -->
+                                <!-- isElicitedBy -->
+                                <!-- isAnnotatedVersionOf -->
+                                <!-- isAlignedVersionOf -->
+                                <!-- isConvertedVersionOf -->
+                                <!-- timeCoverage -->
+                                <!-- geographicCoverage -->
+                                <!-- register -->
+                                <!-- userQuery -->
+                                <!-- annotation -->
+                                <annotation>
+                                    <annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</annotationType>
+                                </annotation>
                             </Corpus>
                         </xsl:if>
                         <!-- lexicalConceptualResource  -->
