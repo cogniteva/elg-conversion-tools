@@ -272,7 +272,7 @@
                             <xsl:choose>
                                 <xsl:when test="substring($licenseName,1,3) = 'CC-'">
                                     <licenceTermsURL><xsl:value-of select="concat('https://spdx.org/licenses/',$licenseName, '.html')" /></licenceTermsURL>
-                                    <ms:LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX"><xsl:value-of select="$licenseName" /></ms:LicenceIdentifier>
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX"><xsl:value-of select="$licenseName" /></LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <licenceTermsURL>http://example.org/licenses/<xsl:value-of select="translate(upper-case($licenseName),'_','-')" />#<xsl:value-of select="lower-case($restrictions)" /></licenceTermsURL>
@@ -297,7 +297,7 @@
                             <!-- licenceTermsUrl -->
                             <licenceTermsURL><xsl:value-of select="concat('http://www.elra.info/licenses/',$licenceTermsIdentifier, '.html')" /></licenceTermsURL>
                             <!-- LicenceIdentifier -->
-                            <ms:LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/other"><xsl:value-of select="$licenceTermsIdentifier" /></ms:LicenceIdentifier>
+                            <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/other"><xsl:value-of select="$licenceTermsIdentifier" /></LicenceIdentifier>
                         </licenceTerms>
                     </xsl:if>
                 </xsl:for-each>
@@ -473,8 +473,14 @@
                 <language><languageTag>und</languageTag></language>
             </xsl:otherwise>
         </xsl:choose>
-        <!-- ms:languageVariety -->
+        <!-- languageVariety -->
         <!-- modalityType -->
+        <!-- creationMode -->
+        <xsl:if test="normalize-space($el/ms:creationInfo/ms:creationMode) != ''">
+            <creationMode>
+                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:creationInfo/ms:creationMode)" />
+            </creationMode>
+        </xsl:if>
     </xsl:template>
 
     <!-- MetadataRecord  -->
@@ -659,7 +665,9 @@
                         <validation>
                             <!-- validationType -->
                             <xsl:if test="normalize-space(./ms:validationType) != ''">
-                                <validationType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationType)" /></validationType>
+                                <validationType>
+                                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationType)" />
+                                </validationType>
                             </xsl:if>
                             <!-- validationMode -->
                             <xsl:if test="normalize-space(./ms:validationMode) != ''">
