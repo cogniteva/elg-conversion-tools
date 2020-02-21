@@ -205,14 +205,18 @@
         <xsl:if test="normalize-space($el) != ''">
             <xsl:choose>
                 <xsl:when test="$el/@lang">
-                    <xsl:copy-of select="$el"/>
+                    <xsl:element name="{$elementName}">
+                        <xsl:copy-of  select="$el/@*"/>
+                        <xsl:value-of select="normalize-space($el)"/>
+                    </xsl:element>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:element name="{$elementName}">
                         <xsl:attribute name="xml:lang">
                             <xsl:value-of select="$elementLang"/>
                         </xsl:attribute>
-                        <xsl:value-of select="$el"/>
+                        <xsl:copy-of  select="$el/@*"/>
+                        <xsl:value-of select="normalize-space($el)"/>
                     </xsl:element>
                 </xsl:otherwise>
             </xsl:choose>
@@ -435,6 +439,7 @@
                     </sizePerLanguage>
                     <!-- sizePerTextFormat -->
                     <!-- ToBeDefined : QUESTION() why sizePerTextFormat is mandatory? -->
+                    <!-- QUESTION() What happen with sizePerLanguageVariety? -->
                     <sizePerTextFormat>
                         <xsl:call-template name="Size">
                             <xsl:with-param name="el" select="." />
@@ -506,9 +511,17 @@
         <!-- lingualityType  -->
         <lingualityType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:lingualityType)" /></lingualityType>
         <!-- multilingualityType -->
-        <!--  ToDo() -->
+        <xsl:if test="normalize-space($el/ms:lingualityInfo/ms:multilingualityType) != ''">
+            <multilingualityType>
+                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:multilingualityType)" />
+            </multilingualityType>
+        </xsl:if>
         <!-- multilingualityTypeDetails -->
-        <!--  ToDo() -->
+        <xsl:call-template name="ElementDefaultLang">
+            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:multilingualityTypeDetails" />
+            <xsl:with-param name="elementLang" select="'en'" />
+            <xsl:with-param name="elementName" select="'multilingualityTypeDetails'" />
+        </xsl:call-template>
         <!-- language -->
         <xsl:choose>
             <xsl:when test="count($el/ms:languageInfo) > 0">
