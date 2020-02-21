@@ -325,7 +325,7 @@
             <!-- compliesWith -->
             <compliesWith>http://w3id.org/meta-share/meta-share/ELG-SHARE</compliesWith>
             <!-- metadataCreator -->
-            <xsl:if test="$metadataCreator != ''">
+            <xsl:if test="normalize-space($metadataCreator) != ''">
                 <metadataCreator>
                     <xsl:call-template name="GenericPerson">
                         <xsl:with-param name="el" select="$metadataCreator" />
@@ -333,13 +333,13 @@
                 </metadataCreator>
             </xsl:if>
             <!--  sourceOfMetadataRecord  -->
-            <xsl:if test="$metadataInfo/ms:source != ''">
+            <xsl:if test="normalize-space($metadataInfo/ms:source) != ''">
                 <sourceOfMetadataRecord><xsl:value-of select="$metadataInfo/ms:source"/></sourceOfMetadataRecord>
             </xsl:if>
             <!-- sourceMetadataRecord  -->
             <!-- ToBeDefined -->
             <!--  revision  -->
-            <xsl:if test="$metadataInfo/ms:revision != ''">
+            <xsl:if test="normalize-space($metadataInfo/ms:revision) != ''">
                 <revision xml:lang="en"><xsl:value-of select="$metadataInfo/ms:revision"/></revision>
             </xsl:if>
             <!-- DescribedEntity -->
@@ -473,23 +473,23 @@
                     <xsl:for-each select="$validationInfo">
                         <validation>
                             <!-- validationType -->
-                            <xsl:if test="./ms:validationType != ''">
+                            <xsl:if test="normalize-space(./ms:validationType) != ''">
                                 <validationType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationType)" /></validationType>
                             </xsl:if>
                             <!-- validationMode -->
-                            <xsl:if test="./ms:validationMode != ''">
+                            <xsl:if test="normalize-space(./ms:validationMode) != ''">
                                 <validationMode><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationMode)" /></validationMode>
                             </xsl:if>
                             <!-- validationDetails -->
                             <validationDetails xml:lang="en"><xsl:value-of select="if (./ms:validated = 'true') then 'validated' else 'not validated'"/></validationDetails>
-                            <xsl:if test="./ms:validationModeDetails != ''">
+                            <xsl:if test="normalize-space(./ms:validationModeDetails) != ''">
                                 <validationDetails xml:lang="und"><xsl:value-of select="./ms:validationModeDetails"/></validationDetails>
                             </xsl:if>
-                            <xsl:if test="./ms:validationExtentDetails != ''">
+                            <xsl:if test="normalize-space(./ms:validationExtentDetails) != ''">
                                 <validationDetails xml:lang="und"><xsl:value-of select="./ms:validationExtentDetails"/></validationDetails>
                             </xsl:if>
                             <!-- validationExtent -->
-                            <xsl:if test="./ms:validationExtent != ''">
+                            <xsl:if test="normalize-space(./ms:validationExtent) != ''">
                                 <validationExtent><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationExtent)" /></validationExtent>
                             </xsl:if>
                             <!-- validator | Person -->
