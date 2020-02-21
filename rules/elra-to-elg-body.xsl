@@ -217,33 +217,43 @@
         <!-- <languageName><xsl:value-of select="$el/ms:languageName" /></languageName> -->
     </xsl:template>
 
+
+    <!-- template:Size -->
+    <xsl:template name="Size">
+        <xsl:param name="el" />
+        <amount><xsl:value-of select="$el/ms:size" /></amount>
+        <xsl:choose>
+            <xsl:when test="$el/ms:sizeUnit = 'terms'">
+              <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+            </xsl:when>
+            <xsl:when test="$el/ms:sizeUnit = 'hours'">
+              <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
+            </xsl:when>
+            <xsl:otherwise>
+              <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:Subset -->
     <xsl:template name="hasSubset">
         <xsl:param name="el" />
         <xsl:for-each select="$el/ms:sizeInfo">
-            <xsl:if test="./ms:size != 'no size available' ">
+            <xsl:if test="string(number(./ms:size)) != 'NaN'">
                 <!-- ToBeDefined -->
                 <hasSubset>
                     <!-- sizePerLanguage -->
                     <sizePerLanguage>
-                        <amount><xsl:value-of select="./ms:size" /></amount>
-                        <xsl:if test="./ms:sizeUnit = 'terms' ">
-                            <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                        </xsl:if>
-                        <xsl:if test="./ms:sizeUnit != 'terms' ">
-                            <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:sizeUnit)" /></sizeUnit>
-                        </xsl:if>
+                        <xsl:call-template name="Size">
+                            <xsl:with-param name="el" select="." />
+                        </xsl:call-template>
                     </sizePerLanguage>
                     <!-- sizePerTextFormat -->
                     <!-- ToBeDefined : QUESTION() why sizePerTextFormat is mandatory? -->
                     <sizePerTextFormat>
-                        <amount><xsl:value-of select="./ms:size" /></amount>
-                        <xsl:if test="./ms:sizeUnit = 'terms' ">
-                            <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                        </xsl:if>
-                        <xsl:if test="./ms:sizeUnit != 'terms' ">
-                            <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:sizeUnit)" /></sizeUnit>
-                        </xsl:if>
+                        <xsl:call-template name="Size">
+                            <xsl:with-param name="el" select="." />
+                        </xsl:call-template>
                     </sizePerTextFormat>
                 </hasSubset>
             </xsl:if>
