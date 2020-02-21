@@ -209,7 +209,16 @@
         <xsl:for-each select="$distributionInfo/*">
             <DatasetDistribution>
                 <!-- DatasetDistributionForm -->
-                <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:distributionAccessMedium" /></DatasetDistributionForm>
+                <xsl:choose>
+                    <xsl:when test="normalize-space(./ms:distributionAccessMedium) != ''">
+                        <xsl:for-each select="./ms:distributionAccessMedium">
+                            <DatasetDistributionForm><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" /></DatasetDistributionForm>
+                        </xsl:for-each>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/other</DatasetDistributionForm>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <!-- downloadLocation -->
                 <!-- QUESTION() what about multiple downloadLocations? -->
                 <xsl:copy-of select="(./ms:downloadLocation)[1]" />
@@ -324,6 +333,9 @@
             </xsl:when>
             <xsl:when test="$el/ms:sizeUnit = 'tokens'">
               <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
+            </xsl:when>
+            <xsl:when test="$el/ms:sizeUnit = 'words'">
+              <sizeUnit>http://w3id.org/meta-share/meta-share/word3</sizeUnit>
             </xsl:when>
             <xsl:otherwise>
               <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
