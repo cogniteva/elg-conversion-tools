@@ -401,13 +401,20 @@
         <!-- multilingualityTypeDetails -->
         <!--  ToDo() -->
         <!-- language -->
-        <xsl:for-each select="$el/ms:languageInfo">
-            <language>
-                <xsl:call-template name="Language">
-                    <xsl:with-param name="el" select="." />
-                </xsl:call-template>
-            </language>
-        </xsl:for-each>
+        <xsl:choose>
+            <xsl:when test="normalize-space($el/ms:languageInfo) != ''">
+                <xsl:for-each select="$el/ms:languageInfo">
+                    <language>
+                        <xsl:call-template name="Language">
+                            <xsl:with-param name="el" select="." />
+                        </xsl:call-template>
+                    </language>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+                <language><languageTag>und</languageTag></language>
+            </xsl:otherwise>
+        </xsl:choose>
         <!-- ms:languageVariety -->
         <!-- modalityType -->
     </xsl:template>
@@ -488,7 +495,16 @@
                     <!-- updateFrequency -->
                     <xsl:copy-of select="$versionInfo/ms:updateFrequency"/>
                     <!-- revision -->
-                    <xsl:copy-of select="$versionInfo/ms:revision"/>
+                    <xsl:if test="normalize-space($versionInfo/ms:revision) != ''">
+                        <xsl:choose>
+                            <xsl:when test="$versionInfo/ms:revision/@lang">
+                                <xsl:copy-of select="$versionInfo/ms:revision"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <revision xml:lang="en"><xsl:value-of select="$versionInfo/ms:revision"/></revision>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:if>
                     <!-- additionalInfo -->
                     <xsl:for-each select="$identificationInfo/ms:url">
                         <!-- additionalInfo/landingPage -->
