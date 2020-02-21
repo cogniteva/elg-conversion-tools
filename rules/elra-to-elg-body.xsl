@@ -229,6 +229,9 @@
             <xsl:when test="$el/ms:sizeUnit = 'hours'">
               <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
             </xsl:when>
+            <xsl:when test="$el/ms:sizeUnit = 'sentences'">
+              <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
+            </xsl:when>
             <xsl:otherwise>
               <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
             </xsl:otherwise>
