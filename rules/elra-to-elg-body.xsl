@@ -365,9 +365,18 @@
                     <!-- logo  -->
                     <!-- ToBeDefined -->
                     <!-- version  -->
-                    <xsl:copy-of select="$versionInfo/ms:version"/>
+                    <xsl:choose>
+                        <xsl:when test="normalize-space($versionInfo/ms:version) != ''">
+                          <xsl:copy-of select="$versionInfo/ms:version"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                          <version>v1.0.0 (automatically assigned)</version>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <!-- versionDate  -->
-                    <versionDate><xsl:value-of select="$versionInfo/ms:lastDateUpdated"/></versionDate>
+                    <xsl:if test="normalize-space($versionInfo/ms:lastDateUpdated) != ''">
+                        <versionDate><xsl:value-of select="$versionInfo/ms:lastDateUpdated"/></versionDate>
+                    </xsl:if>
                     <!-- updateFrequency -->
                     <xsl:copy-of select="$versionInfo/ms:updateFrequency"/>
                     <!-- revision -->
