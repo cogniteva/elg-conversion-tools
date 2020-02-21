@@ -143,6 +143,110 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:DatasetDistribution -->
+    <xsl:template name="DatasetDistribution">
+        <!-- ms:DatasetDistribution -->
+        <xsl:for-each select="$distributionInfo/*">
+            <DatasetDistribution>
+                <!-- ms:DatasetDistributionForm -->
+                <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:distributionAccessMedium" /></DatasetDistributionForm>
+                <!-- licenceTerms -->
+                <xsl:for-each select="./ms:licenceInfo">
+                    <licenceTerms>
+                        <!-- licenceTermsName -->
+                        <licenceTermsName xml:lang="en"><xsl:value-of select="./ms:licence" /></licenceTermsName>
+                        <!-- licenceTermsURL -->
+                        <licenceTermsURL>http://elda.org/ToBeDefined/<xsl:value-of select="translate(lower-case(./ms:licence),'_','-')" />#<xsl:value-of select="lower-case(./ms:restrictionsOfUse)" /></licenceTermsURL>
+                        <!-- conditionOfUse:academicUser -->
+<!--
+                        <xsl:if test="../ms:userNature = 'academic' ">
+                            <conditionOfUse>http://w3id.org/meta-share/meta-share/academicUser</conditionOfUse>
+                        </xsl:if>
+-->
+                        <!-- conditionOfUse:commercial -->
+<!--
+                        <xsl:if test="../ms:userNature = 'commercial' ">
+                            <conditionOfUse>http://w3id.org/meta-share/meta-share/commercialUser</conditionOfUse>
+                        </xsl:if>
+-->
+                    </licenceTerms>
+                </xsl:for-each>
+                <!-- cost -->
+                <cost>
+                    <!-- ms:amount -->
+                    <amount><xsl:value-of select="./ms:fee" /></amount>
+                    <!-- ms:currency -->
+                    <currency>http://w3id.org/meta-share/meta-share/euro</currency>
+                </cost>
+                <!-- membershipInstitution -->
+                <membershipInstitution>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:membershipInfo/ms:membershipInstitution" /></membershipInstitution>
+                <!-- ms:availabilityStartDate -->
+                <xsl:copy-of select="./ms:availabilityStartDate" />
+                <!-- distributionRightsHolder/Organization -->
+                <xsl:if test="name(./ms:distributionRightsHolder/*[1]) = 'organizationInfo' ">
+                    <!-- distributionRightsHolder -->
+                    <distributionRightsHolder>
+                        <!-- Organization -->
+                        <Organization>
+                            <actorType>Organization</actorType>
+                            <xsl:copy-of select="./ms:distributionRightsHolder/ms:organizationInfo/ms:organizationName" />
+                            <!-- ToBeDefined:CanBeDifferent -->
+                            <website>https://elda.org</website>
+                        </Organization>
+                    </distributionRightsHolder>
+                </xsl:if>
+            </DatasetDistribution>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:Language -->
+    <xsl:template name="Language">
+        <xsl:param name="el" />
+        <!-- languageTag -->
+        <languageTag><xsl:value-of select="$el/ms:languageId" /></languageTag>
+        <!-- languageId -->
+        <!-- <languageId><xsl:value-of select="$el/ms:languageId" /></languageId> -->
+        <!-- scriptId -->
+        <!-- <scriptId><xsl:value-of select="$el/ms:languageScript" /></scriptId> -->
+        <!-- regionId  -->
+        <!-- <regionId><xsl:value-of select="$el/ms:region" /></regionId> -->
+        <!-- variantId  -->
+        <!-- <variantId><xsl:value-of select="$el/ms:variant" /></variantId> -->
+    </xsl:template>
+
+    <!-- template:Subset -->
+    <xsl:template name="hasSubset">
+        <xsl:param name="el" />
+        <xsl:for-each select="$el/ms:sizeInfo">
+            <xsl:if test="./ms:size != 'no size available' ">
+                <!-- ToBeDefined -->
+                <hasSubset>
+                    <!-- sizePerLanguage -->
+                    <sizePerLanguage>
+                        <amount><xsl:value-of select="./ms:size" /></amount>
+                        <xsl:if test="./ms:sizeUnit = 'terms' ">
+                            <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                        </xsl:if>
+                        <xsl:if test="./ms:sizeUnit != 'terms' ">
+                            <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:sizeUnit)" /></sizeUnit>
+                        </xsl:if>
+                    </sizePerLanguage>
+                    <!-- sizePerTextFormat -->
+                    <!-- ToBeDefined -->
+                    <sizePerTextFormat>
+                        <amount><xsl:value-of select="./ms:size" /></amount>
+                        <xsl:if test="./ms:sizeUnit = 'terms' ">
+                            <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                        </xsl:if>
+                        <xsl:if test="./ms:sizeUnit != 'terms' ">
+                            <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:sizeUnit)" /></sizeUnit>
+                        </xsl:if>
+                    </sizePerTextFormat>
+                </hasSubset>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -383,7 +487,124 @@
                     <!-- NoMapAvalaible -->
                     <!-- LRSubclass -->
                     <LRSubclass>
-                        <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
+                        <!-- Corpus  -->
+                        <xsl:if test="$resourceType = 'corpus' ">
+                            <Corpus>
+                                <!-- lrType  -->
+                                <lrType>Corpus</lrType>
+                                <!-- corpusSubclass : QUESTION() how to deduce this information ? -->
+                                <corpusSubclass><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', 'rawCorpus')" /></corpusSubclass>
+                                <!-- CorpusMediaPart | CorpusTextPart -->
+                                <!-- CorpusMediaPart | CorpusAudioPart -->
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType/ms:corpusAudioInfo">
+                                    <!-- CorpusMediaPart -->
+                                    <CorpusMediaPart>
+                                        <!-- CorpusAudioPart -->
+                                        <CorpusAudioPart>
+                                            <!-- corpusMediaType  -->
+                                            <corpusMediaType>CorpusAudioPart</corpusMediaType>
+                                            <!-- mediaType  -->
+                                            <mediaType>http://w3id.org/meta-share/meta-share/audio</mediaType>
+                                            <!-- lingualityType  -->
+                                            <lingualityType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:lingualityInfo/ms:lingualityType)" /></lingualityType>
+                                            <!-- multilingualityType -->
+                                            <!--  ToDo() -->
+                                            <!-- multilingualityTypeDetails -->
+                                            <!--  ToDo() -->
+                                            <!-- language -->
+                                            <xsl:for-each select="./ms:languageInfo">
+                                                <language>
+                                                    <xsl:call-template name="Language">
+                                                        <xsl:with-param name="el" select="." />
+                                                    </xsl:call-template>
+                                                </language>
+                                            </xsl:for-each>
+                                            <!-- ms:languageVariety -->
+                                            <!--  ToDo() -->
+                                            <!-- modalityType -->
+                                            <!-- AudioGenre -->
+                                            <!-- SpeechGenre -->
+                                            <!-- speechItem -->
+                                            <!-- nonSpeechItem -->
+                                            <!-- legend -->
+                                            <!-- noiseLevel -->
+                                            <!-- naturality -->
+                                            <!-- conversationalType -->
+                                            <!-- scenarioType -->
+                                            <!-- audience -->
+                                            <!-- interactivity -->
+                                            <!-- interaction -->
+                                            <!-- recordingDeviceType -->
+                                            <!-- recordingDeviceTypeDetails -->
+                                            <!-- recordingPlatformSoftware -->
+                                            <!-- recordingEnvironment -->
+                                            <!-- sourceChannel -->
+                                            <!-- sourceChannelType -->
+                                            <!-- sourceChannelName -->
+                                            <!-- sourceChannelDetails -->
+                                            <!-- recorder -->
+                                            <!-- capturingDeviceType -->
+                                            <!-- capturingDeviceTypeDetails -->
+                                            <!-- capturingDetails -->
+                                            <!-- capturingEnvironment -->
+                                            <!-- sensorTechnology -->
+                                            <!-- sceneIllumination -->
+                                            <!-- numberOfParticipants -->
+                                            <!-- ageGroupOfParticipants -->
+                                            <!-- ageRangeStartOfParticipants -->
+                                            <!-- ageRangeEndOfParticipants -->
+                                            <!-- sexOfParticipants -->
+                                            <!-- originOfParticipants -->
+                                            <!-- dialectAccentOfParticipants -->
+                                            <!-- hearingImpairmentOfParticipants -->
+                                            <!-- speakingImpairmentOfParticipants -->
+                                            <!-- numberOfTrainedSpeakers -->
+                                            <!-- speechInfluence -->
+                                            <!-- participant -->
+                                            <!-- creationMode -->
+                                            <!-- isCreatedBy -->
+                                            <!-- hasOriginalSource -->
+                                            <!-- originalSourceDescription -->
+                                            <!-- syntheticData -->
+                                            <!-- creationDetails -->
+                                            <!-- linkToOtherMedia -->
+                                        </CorpusAudioPart>
+                                        <!-- hasSubset -->
+<!--
+                                        <xsl:call-template name="hasSubset">
+                                            <xsl:with-param name="el" select="./ms:audioSizeInfo" />
+                                        </xsl:call-template>
+-->
+                                    </CorpusMediaPart>
+                                    <!-- DatasetDistribution -->
+                                    <xsl:call-template name="DatasetDistribution"/>
+                                    <!-- personalDataIncluded -->
+                                    <!-- ToBeDefined : QUESTION() could be false by default? -->
+                                    <personalDataIncluded>false</personalDataIncluded>
+                                    <!-- personalDataDetails -->
+                                    <!-- ToBeDefined -->
+                                    <!-- sensitiveDataIncluded -->
+                                    <sensitiveDataIncluded>false</sensitiveDataIncluded>
+                                    <!-- ToBeDefined -->
+                                    <!-- sensitiveDataDetails -->
+                                    <!-- anonymized -->
+                                    <!-- anonymizationDetails -->
+                                    <!-- isAnalysedBy -->
+                                    <!-- isEditedBy -->
+                                    <!-- isElicitedBy -->
+                                    <!-- isAnnotatedVersionOf -->
+                                    <!-- isAlignedVersionOf -->
+                                    <!-- isConvertedVersionOf -->
+                                    <!-- timeCoverage -->
+                                    <!-- geographicCoverage -->
+                                    <!-- register -->
+                                    <!-- userQuery -->
+                                    <!-- annotation -->
+                                    <annotation>
+                                        <annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</annotationType>
+                                    </annotation>
+                                </xsl:for-each>
+                            </Corpus>
                         </xsl:if>
                         <!-- lexicalConceptualResource  -->
                         <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
@@ -419,84 +640,15 @@
                                 </xsl:if>
                                 </LexicalConceptualResourceMediaPart>
                                 <!-- ms:DatasetDistribution -->
-                                <xsl:for-each select="$distributionInfo/*">
-                                    <DatasetDistribution>
-                                        <!-- ms:DatasetDistributionForm -->
-                                        <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:distributionAccessMedium" /></DatasetDistributionForm>
-                                        <!-- licenceTerms -->
-                                        <xsl:for-each select="./ms:licenceInfo">
-                                            <licenceTerms>
-                                                <!-- licenceTermsName -->
-                                                <licenceTermsName xml:lang="en"><xsl:value-of select="./ms:licence" /></licenceTermsName>
-                                                <!-- licenceTermsURL -->
-                                                <licenceTermsURL>http://elda.org/ToBeDefined/<xsl:value-of select="translate(lower-case(./ms:licence),'_','-')" />#<xsl:value-of select="lower-case(./ms:restrictionsOfUse)" /></licenceTermsURL>
-                                                <!-- conditionOfUse:academicUser -->
-<!--
-                                                <xsl:if test="../ms:userNature = 'academic' ">
-                                                    <conditionOfUse>http://w3id.org/meta-share/meta-share/academicUser</conditionOfUse>
-                                                </xsl:if>
--->
-                                                <!-- conditionOfUse:commercial -->
-<!--
-                                                <xsl:if test="../ms:userNature = 'commercial' ">
-                                                    <conditionOfUse>http://w3id.org/meta-share/meta-share/commercialUser</conditionOfUse>
-                                                </xsl:if>
--->
-                                            </licenceTerms>
-                                        </xsl:for-each>
-                                        <!-- cost -->
-                                        <cost>
-                                            <!-- ms:amount -->
-                                            <amount><xsl:value-of select="./ms:fee" /></amount>
-                                            <!-- ms:currency -->
-                                            <currency>http://w3id.org/meta-share/meta-share/euro</currency>
-                                        </cost>
-                                        <!-- membershipInstitution -->
-                                        <membershipInstitution>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:membershipInfo/ms:membershipInstitution" /></membershipInstitution>
-                                        <!-- ms:availabilityStartDate -->
-                                        <xsl:copy-of select="./ms:availabilityStartDate" />
-                                        <!-- distributionRightsHolder/Organization -->
-                                        <xsl:if test="name(./ms:distributionRightsHolder/*[1]) = 'organizationInfo' ">
-                                            <!-- distributionRightsHolder -->
-                                            <distributionRightsHolder>
-                                                <!-- Organization -->
-                                                <Organization>
-                                                    <actorType>Organization</actorType>
-                                                    <xsl:copy-of select="./ms:distributionRightsHolder/ms:organizationInfo/ms:organizationName" />
-                                                    <!-- ToBeDefined:CanBeDifferent -->
-                                                    <website>https://elda.org</website>
-                                                </Organization>
-                                            </distributionRightsHolder>
-                                        </xsl:if>
-                                    </DatasetDistribution>
-                                </xsl:for-each>
+                                <xsl:call-template name="DatasetDistribution"/>
                                 <!-- ms:personalDataIncluded -->
                                 <personalDataIncluded>false</personalDataIncluded>
                                 <!-- ms:sensitiveDataIncluded -->
                                 <sensitiveDataIncluded>false</sensitiveDataIncluded>
                                 <!-- hasSubset -->
-                                <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:sizeInfo">
-                                    <xsl:if test="./ms:size != 'no size available' ">
-                                        <!-- ToBeDefined -->
-                                        <hasSubset>
-                                            <!-- sizePerLanguage -->
-                                            <sizePerLanguage>
-                                                <amount><xsl:value-of select="./ms:size" /></amount>
-                                                <xsl:if test="./ms:sizeUnit = 'terms' ">
-                                                    <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                                                </xsl:if>
-                                            </sizePerLanguage>
-                                            <!-- sizePerTextFormat -->
-                                            <!-- ToBeDefined -->
-                                            <sizePerTextFormat>
-                                                <amount><xsl:value-of select="./ms:size" /></amount>
-                                                <xsl:if test="./ms:sizeUnit = 'terms' ">
-                                                    <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                                                </xsl:if>
-                                            </sizePerTextFormat>
-                                        </hasSubset>
-                                    </xsl:if>
-                                </xsl:for-each>
+                                <xsl:call-template name="hasSubset">
+                                    <xsl:with-param name="el" select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo" />
+                                </xsl:call-template>
                             </LexicalConceptualResource>
                         </xsl:if>
                     </LRSubclass>
