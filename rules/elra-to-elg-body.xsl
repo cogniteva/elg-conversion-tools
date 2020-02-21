@@ -115,6 +115,40 @@
         </xsl:for-each>
     </xsl:function>
 
+    <!-- template:StringValuesConcat  -->
+    <!-- based on @see https://stackoverflow.com/a/4038983 -->
+    <xsl:template name='StringValuesConcat'>
+        <xsl:param name='el' />
+        <xsl:param name='separator' />
+        <xsl:for-each select='$el'>
+            <xsl:value-of select='.'/>
+            <xsl:if test='position() != last()'>
+               <xsl:value-of select='$separator'/>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:ElraLicenseIdentifierGenerator  -->
+    <xsl:template name='ElraLicenseIdentifierGenerator'>
+        <xsl:param name='el' />
+        <xsl:param name='version' />
+        <xsl:param name='separator' />
+        <!-- licence: { ELRA_VAR, ELRA_END_USER, ELRA_EVALUATION } -->
+        <xsl:value-of select="translate(upper-case(./ms:licence),'_','-')" />
+        <xsl:value-of select='$separator'/>
+        <!-- userNature: { ACADEMIC, COMMERCIAL }  -->
+        <xsl:value-of select="upper-case((../ms:userNature)[1])" />
+        <xsl:value-of select='$separator'/>
+        <!-- member: { MEMBER, NOMEMBER } -->
+        <xsl:value-of select="if (../ms:membershipInfo/ms:member = 'true') then 'MEMBER' else 'NOMEMBER'"/>
+        <xsl:value-of select='$separator'/>
+        <!-- restrictionsOfUse : { COMMERCIALUSE, NONCOMMERCIALUSE, EVALUATIONUSE } -->
+        <xsl:value-of select="upper-case((./ms:restrictionsOfUse)[1])" />
+        <!-- version -->
+        <xsl:value-of select='$separator'/>
+        <xsl:value-of select='$version'/>
+    </xsl:template>
+
     <!-- template:GenericPerson  -->
     <xsl:template name="GenericPerson">
         <xsl:param name="el" />
@@ -145,31 +179,78 @@
 
     <!-- template:DatasetDistribution -->
     <xsl:template name="DatasetDistribution">
-        <!-- ms:DatasetDistribution -->
+        <!-- DatasetDistribution -->
         <xsl:for-each select="$distributionInfo/*">
             <DatasetDistribution>
-                <!-- ms:DatasetDistributionForm -->
+                <!-- DatasetDistributionForm -->
                 <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/<xsl:value-of select="./ms:distributionAccessMedium" /></DatasetDistributionForm>
+                <!-- downloadLocation -->
+                <!-- QUESTION() what about multiple downloadLocations? -->
+                <xsl:copy-of select="(./ms:downloadLocation)[1]" />
                 <!-- licenceTerms -->
                 <xsl:for-each select="./ms:licenceInfo">
-                    <licenceTerms>
-                        <!-- licenceTermsName -->
-                        <licenceTermsName xml:lang="en"><xsl:value-of select="./ms:licence" /></licenceTermsName>
-                        <!-- licenceTermsURL -->
-                        <licenceTermsURL>http://elda.org/ToBeDefined/<xsl:value-of select="translate(lower-case(./ms:licence),'_','-')" />#<xsl:value-of select="lower-case(./ms:restrictionsOfUse)" /></licenceTermsURL>
-                        <!-- conditionOfUse:academicUser -->
-<!--
-                        <xsl:if test="../ms:userNature = 'academic' ">
-                            <conditionOfUse>http://w3id.org/meta-share/meta-share/academicUser</conditionOfUse>
-                        </xsl:if>
--->
-                        <!-- conditionOfUse:commercial -->
-<!--
-                        <xsl:if test="../ms:userNature = 'commercial' ">
-                            <conditionOfUse>http://w3id.org/meta-share/meta-share/commercialUser</conditionOfUse>
-                        </xsl:if>
--->
-                    </licenceTerms>
+                    <!-- licenceTermsName -->
+                    <xsl:variable name="licenseName">
+                      <xsl:choose>
+                        <xsl:when test="normalize-space(./ms:version) != ''"><xsl:value-of select="upper-case(concat(./ms:licence,'-', ./ms:version))" /></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="upper-case(./ms:licence)" /></xsl:otherwise>
+                      </xsl:choose>
+                    </xsl:variable>
+                    <!-- all kind of licenses excepting ELRA -->
+                    <xsl:if test="substring($licenseName,1,4) != 'ELRA'">
+                        <licenceTerms>
+                            <!-- licenceTermsName -->
+                            <licenceTermsName xml:lang="en"><xsl:value-of select="$licenseName" /></licenceTermsName>
+                            <!-- licenceTermsURL -->
+                            <xsl:variable name="restrictions">
+                                <xsl:call-template name="StringValuesConcat">
+                                    <xsl:with-param name="el" select="./ms:restrictionsOfUse" />
+                                    <xsl:with-param name="separator" select="'-'" />
+                                </xsl:call-template>
+                            </xsl:variable>
+                            <xsl:choose>
+                                <xsl:when test="substring($licenseName,1,3) = 'CC-'">
+                                    <licenceTermsURL><xsl:value-of select="concat('https://spdx.org/licenses/',$licenseName, '.html')" /></licenceTermsURL>
+                                    <ms:LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX"><xsl:value-of select="$licenseName" /></ms:LicenceIdentifier>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <licenceTermsURL>http://example.org/licenses/<xsl:value-of select="translate(upper-case($licenseName),'_','-')" />#<xsl:value-of select="lower-case($restrictions)" /></licenceTermsURL>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <!-- conditionOfUse:academicUser -->
+    <!--
+                            <xsl:if test="../ms:userNature = 'academic' ">
+                                <conditionOfUse>http://w3id.org/meta-share/meta-share/academicUser</conditionOfUse>
+                            </xsl:if>
+    -->
+                            <!-- conditionOfUse:commercial -->
+    <!--
+                            <xsl:if test="../ms:userNature = 'commercial' ">
+                                <conditionOfUse>http://w3id.org/meta-share/meta-share/commercialUser</conditionOfUse>
+                            </xsl:if>
+    -->
+                        </licenceTerms>
+                    </xsl:if>
+                    <!-- ELRA licenses -->
+                    <xsl:if test="substring($licenseName,1,4) = 'ELRA'">
+                        <!-- licenceTermsIdentifier -->
+                        <xsl:variable name="licenceTermsIdentifier">
+                            <xsl:call-template name="ElraLicenseIdentifierGenerator">
+                                <xsl:with-param name="el" select="." />
+                                <xsl:with-param name="version" select="'1.0'" />
+                                <xsl:with-param name="separator" select="'-'" />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- licenceTerms -->
+                        <licenceTerms>
+                            <!-- licenceTermsName -->
+                            <licenceTermsName xml:lang="en"><xsl:value-of select="$licenceTermsIdentifier" /></licenceTermsName>
+                            <!-- licenceTermsUrl -->
+                            <licenceTermsURL><xsl:value-of select="concat('http://www.elra.info/licenses/',$licenceTermsIdentifier, '.html')" /></licenceTermsURL>
+                            <!-- LicenceIdentifier -->
+                            <ms:LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/other"><xsl:value-of select="$licenceTermsIdentifier" /></ms:LicenceIdentifier>
+                        </licenceTerms>
+                    </xsl:if>
                 </xsl:for-each>
                 <!-- cost -->
                 <cost>
@@ -231,6 +312,12 @@
             </xsl:when>
             <xsl:when test="$el/ms:sizeUnit = 'sentences'">
               <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
+            </xsl:when>
+            <xsl:when test="$el/ms:sizeUnit = 'entries'">
+              <sizeUnit>http://w3id.org/meta-share/meta-share/entry</sizeUnit>
+            </xsl:when>
+            <xsl:when test="$el/ms:sizeUnit = 'tokens'">
+              <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
             </xsl:when>
             <xsl:otherwise>
               <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
