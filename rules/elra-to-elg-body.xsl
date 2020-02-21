@@ -327,11 +327,62 @@
         <!-- languageTag -->
         <languageTag><xsl:value-of select="$el/ms:languageId" /></languageTag>
         <!-- languageId -->
-        <!-- <languageId><xsl:value-of select="$el/ms:languageId" /></languageId> -->
+        <xsl:copy-of select="$el/ms:languageId" />
         <!-- scriptId -->
-        <!-- <scriptId><xsl:value-of select="$el/ms:languageScript" /></scriptId> -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'arabic')">
+              <scriptId>Arab</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'bengali')">
+              <scriptId>Beng</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'cyrillic')">
+              <scriptId>Cyrl</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'devanagari')">
+              <scriptId>Deva</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'ethiopic')">
+              <scriptId>Ethi</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'greek')">
+              <scriptId>Grek</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'gujarati')">
+              <scriptId>Gujr</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'gurmukhi')">
+              <scriptId>Guru</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'japanese')">
+              <scriptId>Jpan</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'kannada')">
+              <scriptId>Kana</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'latin')">
+              <scriptId>Latn</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'malayalam')">
+              <scriptId>Maya</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'orya')">
+              <scriptId>Oriya</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'sinhala')">
+              <scriptId>Sinh</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'tamil')">
+              <scriptId>Taml</scriptId>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'telugu')">
+              <scriptId>Telugu</scriptId>
+            </xsl:when>
+        </xsl:choose>
         <!-- regionId  -->
-        <!-- <regionId><xsl:value-of select="$el/ms:region" /></regionId> -->
+        <xsl:if test="normalize-space($el/ms:region) != ''">
+            <scriptId><xsl:value-of select="$el/ms:region" /></scriptId>
+        </xsl:if>
         <!-- variantId  -->
         <!-- <variantId><xsl:value-of select="$el/ms:variant" /></variantId> -->
         <!-- languageName -->
