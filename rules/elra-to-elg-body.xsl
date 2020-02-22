@@ -118,7 +118,7 @@
     <!-- function:grep-number  -->
     <xsl:function name="ms:grep-number">
         <xsl:param name="text" />
-        <xsl:analyze-string select="$text" regex="[^\d]*(\d+)[^\d]*">
+        <xsl:analyze-string select="$text" regex="^[^\d]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)[^\d]*$">
             <xsl:matching-substring>
                 <xsl:value-of select="string(number(regex-group(1)))"/>
             </xsl:matching-substring>
@@ -386,6 +386,9 @@
     </xsl:template>
 
     <!-- template:DistributionAudioFeature -->
+    <!-- NOTE() On distributionAudioFeature, both size and audioFormat are mandatory,  -->
+    <!-- NOTE() it happens that sometimes size is equal to 'no size available', thus -->
+    <!-- NOTE() there will not be a distributionAudioFeature element at output  -->
     <xsl:template name="DistributionAudioFeature">
         <xsl:param name="el" />
         <!-- size -->
