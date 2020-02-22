@@ -334,8 +334,8 @@
         </xsl:choose>
     </xsl:template>
 
-    <!-- template:distributionAudioFeature -->
-    <xsl:template name="distributionAudioFeature">
+    <!-- template:DistributionAudioFeature -->
+    <xsl:template name="DistributionAudioFeature">
         <xsl:param name="el" />
         <!-- size -->
         <xsl:for-each select="$el/ms:audioSizeInfo">
@@ -347,25 +347,49 @@
             </xsl:if>
         </xsl:for-each>
         <!-- audioFormat -->
-        <xsl:for-each select="$el/ms:audioFormatInfo">
-            <audioFormat>
-                <!-- dataFormat  -->
-                <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
-                <!-- samplingRate  -->
-                <xsl:copy-of select="./ms:samplingRate" />
-                <!-- byteOrder -->
-                <xsl:choose>
-                    <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'little')">
-                        <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'big')">
-                        <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
-                    </xsl:when>
-                </xsl:choose>
-                <!-- compressed: QUESTION() Why this is mandatory? -->
-                <compressed><xsl:value-of select="if (../ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/></compressed>
-            </audioFormat>
-        </xsl:for-each>
+        <xsl:choose>
+            <!-- if there are audioFormatInfo information -->
+            <xsl:when test="count($el/ms:audioFormatInfo) > 0">
+                <xsl:for-each select="$el/ms:audioFormatInfo">
+                    <audioFormat>
+                        <!-- dataFormat  -->
+                        <!-- map audioFormatInfo/mimeType to omtd-share vocabulary -->
+                        <xsl:choose>
+                            <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'other')">
+                                <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
+                            </xsl:when>
+                            <!-- NOTE() Add here as much mappings as needed -->
+                            <xsl:otherwise>
+                                <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
+                                <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <!-- samplingRate  -->
+                        <xsl:copy-of select="./ms:samplingRate" />
+                        <!-- byteOrder -->
+                        <xsl:choose>
+                            <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'little')">
+                                <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
+                            </xsl:when>
+                            <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'big')">
+                                <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
+                            </xsl:when>
+                        </xsl:choose>
+                        <!-- compressed: QUESTION() Why this is mandatory? -->
+                        <compressed>
+                            <xsl:value-of select="if (./ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/>
+                        </compressed>
+                    </audioFormat>
+                </xsl:for-each>
+            </xsl:when>
+            <!-- alternatively use a default element -->
+            <xsl:otherwise>
+                <audioFormat>
+                    <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
+                    <compressed>false</compressed>
+                </audioFormat>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <!-- template:DatasetDistribution -->
@@ -417,7 +441,7 @@
                     <xsl:for-each select="./ms:corpusAudioInfo">
                         <!-- build feature -->
                         <xsl:variable name="feature">
-                            <xsl:call-template name="distributionAudioFeature">
+                            <xsl:call-template name="DistributionAudioFeature">
                                 <xsl:with-param name="el" select="." />
                             </xsl:call-template>
                         </xsl:variable>
