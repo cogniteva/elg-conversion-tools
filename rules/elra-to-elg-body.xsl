@@ -908,12 +908,6 @@
             </languageVariety>
         </xsl:for-each>
         <!-- modalityType -->
-        <!-- creationMode -->
-        <xsl:if test="normalize-space($el/ms:creationInfo/ms:creationMode) != ''">
-            <creationMode>
-                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:creationInfo/ms:creationMode)" />
-            </creationMode>
-        </xsl:if>
     </xsl:template>
 
     <!-- MetadataRecord  -->
@@ -1210,6 +1204,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
                                                 </xsl:call-template>
+                                                <!-- creationMode -->
+                                                <xsl:call-template name="ElementMetaShare">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
+                                                    <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
                                             </CorpusTextPart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
@@ -1299,6 +1298,10 @@
                                                 <!-- speechInfluence -->
                                                 <!-- participant -->
                                                 <!-- creationMode -->
+                                                <xsl:call-template name="ElementMetaShare">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
+                                                    <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
                                                 <!-- isCreatedBy -->
                                                 <!-- hasOriginalSource -->
                                                 <!-- originalSourceDescription -->
@@ -1334,6 +1337,11 @@
                                                 <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
                                                     <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
                                                 </xsl:for-each>
+                                                <!-- creationMode -->
+                                                <xsl:call-template name="ElementMetaShare">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
+                                                    <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
                                             </CorpusVideoPart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
@@ -1348,6 +1356,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
                                                 </xsl:call-template>
+                                                <!-- creationMode -->
+                                                <xsl:call-template name="ElementMetaShare">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
+                                                    <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
                                             </CorpusImagePart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
@@ -1361,6 +1374,11 @@
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
+                                                </xsl:call-template>
+                                                <!-- creationMode -->
+                                                <xsl:call-template name="ElementMetaShare">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
+                                                    <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
                                             </CorpusTextNumericalPart>
                                         </CorpusMediaPart>
