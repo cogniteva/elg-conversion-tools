@@ -525,7 +525,7 @@
               <scriptId>Taml</scriptId>
             </xsl:when>
             <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'telugu')">
-              <scriptId>Telugu</scriptId>
+              <scriptId>Telu</scriptId>
             </xsl:when>
         </xsl:choose>
         <!-- regionId  -->
