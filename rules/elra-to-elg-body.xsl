@@ -244,8 +244,8 @@
         </xsl:for-each>
     </xsl:template>
 
-    <!-- template:distributionTextFeature -->
-    <xsl:template name="distributionTextFeature">
+    <!-- template:DistributionTextFeature -->
+    <xsl:template name="DistributionTextFeature">
         <xsl:param name="el" />
         <!-- size -->
         <xsl:for-each select="$el/ms:sizeInfo">
@@ -426,7 +426,7 @@
                     <xsl:for-each select="./ms:corpusTextInfo">
                         <!-- build feature -->
                         <xsl:variable name="feature">
-                            <xsl:call-template name="distributionTextFeature">
+                            <xsl:call-template name="DistributionTextFeature">
                                 <xsl:with-param name="el" select="." />
                             </xsl:call-template>
                         </xsl:variable>
