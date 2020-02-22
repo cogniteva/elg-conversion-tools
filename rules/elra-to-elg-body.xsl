@@ -1084,6 +1084,13 @@
                                                 <!-- sourceChannelType -->
                                                 <!-- sourceChannelName -->
                                                 <!-- sourceChannelDetails -->
+                                                <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelDetails">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="." />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'sourceChannelDetails'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- recorder -->
                                                 <!-- capturingDeviceType -->
                                                 <!-- capturingDeviceTypeDetails -->
