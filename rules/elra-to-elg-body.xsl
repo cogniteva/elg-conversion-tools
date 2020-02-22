@@ -261,9 +261,70 @@
                         <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/other</DatasetDistributionForm>
                     </xsl:otherwise>
                 </xsl:choose>
+                <!-- distributionLocation -->
                 <!-- downloadLocation -->
                 <!-- QUESTION() what about multiple downloadLocations? -->
                 <xsl:copy-of select="(./ms:downloadLocation)[1]" />
+                <!-- accessLocation -->
+                <!-- isAccessedBy -->
+                <!-- isDisplayedBy -->
+                <!-- isQueriedBy -->
+                <!-- samplesLocation -->
+                <!-- distribution[*]Feature -->
+                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                    <!-- distributionTextFeature | corpusTextInfo -->
+                    <xsl:for-each select="./ms:corpusTextInfo">
+                        <distributionTextFeature></distributionTextFeature>
+                    </xsl:for-each>
+                    <!-- distributionAudioFeature | corpusAudioInfo -->
+                    <xsl:for-each select="./ms:corpusAudioInfo">
+                        <distributionAudioFeature>
+                            <xsl:for-each select="./ms:audioSizeInfo">
+                                <xsl:if test="string(number(./ms:sizeInfo/ms:size)) != 'NaN'">
+                                    <!-- size -->
+                                    <xsl:call-template name="Size">
+                                        <xsl:with-param name="el" select="./ms:sizeInfo" />
+                                        <xsl:with-param name="elementName" select="'size'" />
+                                    </xsl:call-template>
+                                </xsl:if>
+                            </xsl:for-each>
+                            <xsl:for-each select="./ms:audioFormatInfo">
+                                <!-- audioFormat -->
+                                <audioFormat>
+                                    <!-- dataFormat  -->
+                                    <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
+                                    <!-- samplingRate  -->
+                                    <xsl:copy-of select="./ms:samplingRate" />
+                                    <!-- byteOrder -->
+                                    <xsl:choose>
+                                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'littleendian')">
+                                            <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
+                                        </xsl:when>
+                                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'bigendian')">
+                                            <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
+                                        </xsl:when>
+                                    </xsl:choose>
+                                    <!-- compressed: QUESTION() Why this is mandatory? -->
+                                    <compressed><xsl:value-of select="if (../ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/></compressed>
+                                </audioFormat>
+                            </xsl:for-each>
+                        </distributionAudioFeature>
+                    </xsl:for-each>
+                    <!-- distributionVideoFeature | corpusVideoInfo -->
+                    <xsl:for-each select="./ms:corpusVideoInfo">
+                        <distributionVideoFeature></distributionVideoFeature>
+                    </xsl:for-each>
+                    <!-- distributionImageFeature | corpusImageInfo -->
+                    <xsl:for-each select="./ms:corpusImageInfo">
+                        <distributionImageFeature></distributionImageFeature>
+                    </xsl:for-each>
+                    <!-- distributionTextNumericalFeature | corpusTextNumericalInfo -->
+                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
+                        <distributionTextNumericalFeature></distributionTextNumericalFeature>
+                    </xsl:for-each>
+                    <!-- distribution | corpusTextNgramInfo -->
+                    <!-- ToBeDefined -->
+                </xsl:for-each>
                 <!-- licenceTerms -->
                 <xsl:for-each select="./ms:licenceInfo">
                     <!-- licenceTermsName -->
@@ -406,34 +467,39 @@
         <!-- <languageName><xsl:value-of select="$el/ms:languageName" /></languageName> -->
     </xsl:template>
 
-
     <!-- template:Size -->
     <xsl:template name="Size">
         <xsl:param name="el" />
-        <amount><xsl:value-of select="$el/ms:size" /></amount>
-        <xsl:choose>
-            <xsl:when test="$el/ms:sizeUnit = 'terms'">
-              <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-            </xsl:when>
-            <xsl:when test="$el/ms:sizeUnit = 'hours'">
-              <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
-            </xsl:when>
-            <xsl:when test="$el/ms:sizeUnit = 'sentences'">
-              <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
-            </xsl:when>
-            <xsl:when test="$el/ms:sizeUnit = 'entries'">
-              <sizeUnit>http://w3id.org/meta-share/meta-share/entry</sizeUnit>
-            </xsl:when>
-            <xsl:when test="$el/ms:sizeUnit = 'tokens'">
-              <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
-            </xsl:when>
-            <xsl:when test="$el/ms:sizeUnit = 'words'">
-              <sizeUnit>http://w3id.org/meta-share/meta-share/word3</sizeUnit>
-            </xsl:when>
-            <xsl:otherwise>
-              <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:param name="elementName" />
+        <!-- QUESTION() is there an alternative to deal with size:'no size available'? -->
+        <xsl:if test="string(number($el/ms:size)) != 'NaN'">
+            <xsl:element name="{$elementName}">
+                <amount><xsl:value-of select="$el/ms:size" /></amount>
+                <xsl:choose>
+                    <xsl:when test="$el/ms:sizeUnit = 'terms'">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="$el/ms:sizeUnit = 'hours'">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="$el/ms:sizeUnit = 'sentences'">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="$el/ms:sizeUnit = 'entries'">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/entry</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="$el/ms:sizeUnit = 'tokens'">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="$el/ms:sizeUnit = 'words'">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/word3</sizeUnit>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:element>
+        </xsl:if>
     </xsl:template>
 
     <!-- template:hasSubset -->
@@ -444,19 +510,17 @@
                 <!-- ToBeDefined -->
                 <hasSubset>
                     <!-- sizePerLanguage -->
-                    <sizePerLanguage>
-                        <xsl:call-template name="Size">
-                            <xsl:with-param name="el" select="." />
-                        </xsl:call-template>
-                    </sizePerLanguage>
+                    <xsl:call-template name="Size">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementName" select="'sizePerLanguage'" />
+                    </xsl:call-template>
                     <!-- sizePerTextFormat -->
                     <!-- ToBeDefined : QUESTION() why sizePerTextFormat is mandatory? -->
                     <!-- QUESTION() What happen with sizePerLanguageVariety? -->
-                    <sizePerTextFormat>
-                        <xsl:call-template name="Size">
-                            <xsl:with-param name="el" select="." />
-                        </xsl:call-template>
-                    </sizePerTextFormat>
+                    <xsl:call-template name="Size">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementName" select="'sizePerTextFormat'" />
+                    </xsl:call-template>
                 </hasSubset>
             </xsl:if>
         </xsl:for-each>
@@ -862,6 +926,15 @@
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
                                                 </xsl:call-template>
                                                 <!-- AudioGenre -->
+                                                <xsl:for-each select="./ms:audioClassificationInfo">
+                                                    <AudioGenre>
+                                                        <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                            <xsl:with-param name="el" select="./ms:audioGenre" />
+                                                            <xsl:with-param name="elementLang" select="'en'" />
+                                                            <xsl:with-param name="elementName" select="'categoryLabel'" />
+                                                        </xsl:call-template>
+                                                    </AudioGenre>
+                                                </xsl:for-each>
                                                 <!-- SpeechGenre -->
                                                 <!-- speechItem -->
                                                 <!-- nonSpeechItem -->
