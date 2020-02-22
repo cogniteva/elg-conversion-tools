@@ -288,6 +288,52 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:DistributionVideoFeature -->
+    <xsl:template name="DistributionVideoFeature">
+        <xsl:param name="el" />
+        <!-- size -->
+        <xsl:for-each select="$el/ms:sizeInfo">
+            <xsl:if test="string(number(./ms:size)) != 'NaN'">
+                <xsl:call-template name="Size">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'size'" />
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:for-each>
+        <!-- videoFormat -->
+        <xsl:choose>
+            <!-- if there are videoFormatInfo information -->
+            <xsl:when test="count($el/ms:videoFormatInfo) > 0">
+                <xsl:for-each select="$el/ms:videoFormatInfo">
+                    <videoFormat>
+                        <!-- map videoFormatInfo/mimeType to omtd-share vocabulary -->
+                        <xsl:choose>
+                            <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'video')">
+                                <dataFormat>http://w3id.org/meta-share/omtd-share/mpg</dataFormat>
+                            </xsl:when>
+                            <!-- NOTE() Add here as much mappings as needed -->
+                            <xsl:otherwise>
+                                <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
+                                <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <!-- compressed: QUESTION() Why this is mandatory? -->
+                        <compressed>
+                            <xsl:value-of select="if (./ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/>
+                        </compressed>
+                    </videoFormat>
+                </xsl:for-each>
+            </xsl:when>
+            <!-- alternatively use a default element -->
+            <xsl:otherwise>
+                <videoFormat>
+                    <dataFormat>http://w3id.org/meta-share/omtd-share/mpg</dataFormat>
+                    <compressed>false</compressed>
+                </videoFormat>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:distributionAudioFeature -->
     <xsl:template name="distributionAudioFeature">
         <xsl:param name="el" />
@@ -384,7 +430,18 @@
                     </xsl:for-each>
                     <!-- distributionVideoFeature | corpusVideoInfo -->
                     <xsl:for-each select="./ms:corpusVideoInfo">
-                        <distributionVideoFeature></distributionVideoFeature>
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionVideoFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:videoFormat))">
+                            <distributionVideoFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionVideoFeature>
+                        </xsl:if>
                     </xsl:for-each>
                     <!-- distributionImageFeature | corpusImageInfo -->
                     <xsl:for-each select="./ms:corpusImageInfo">
