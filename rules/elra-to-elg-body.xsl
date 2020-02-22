@@ -470,6 +470,32 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:EncodingLevel -->
+    <xsl:template name="EncodingLevel">
+        <xsl:param name="el" />
+        <xsl:param name="default" />
+        <!-- encodingLevel -->
+        <xsl:choose>
+            <xsl:when test="count($el/ms:encodingLevel) > 0">
+                <xsl:for-each select="$el/ms:encodingLevel">
+                    <xsl:choose>
+                        <xsl:when test="contains(lower-case(normalize-space(.)), 'seman')">
+                            <encodingLevel>http://w3id.org/meta-share/meta-share/semantics</encodingLevel>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <encodingLevel>
+                                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', .)" />
+                            </encodingLevel>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+                <encodingLevel><xsl:value-of select="$default" /></encodingLevel>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:Language -->
     <xsl:template name="Language">
         <xsl:param name="el" />
@@ -1241,8 +1267,10 @@
                                 <!-- lcrSubclass  -->
                                 <lcrSubclass>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" /></lcrSubclass>
                                 <!-- ms:encodingLevel -->
-                                <!-- ToBeDefined -->
-                                <encodingLevel>http://w3id.org/meta-share/meta-share/morphology</encodingLevel>
+                                <xsl:call-template name="EncodingLevel">
+                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
+                                    <xsl:with-param name="default" select="'http://w3id.org/meta-share/meta-share/morphology'" />
+                                </xsl:call-template>
                                 <!-- LexicalConceptualResourceMediaPart  -->
                                 <LexicalConceptualResourceMediaPart>
                                 <!-- LexicalConceptualResourceTextPart  -->
