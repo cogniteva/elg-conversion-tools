@@ -244,6 +244,42 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:distributionAudioFeature -->
+    <xsl:template name="distributionAudioFeature">
+        <xsl:param name="el" />
+        <distributionAudioFeature>
+            <xsl:for-each select="$el/ms:audioSizeInfo">
+                <xsl:if test="string(number(./ms:sizeInfo/ms:size)) != 'NaN'">
+                    <!-- size -->
+                    <xsl:call-template name="Size">
+                        <xsl:with-param name="el" select="./ms:sizeInfo" />
+                        <xsl:with-param name="elementName" select="'size'" />
+                    </xsl:call-template>
+                </xsl:if>
+            </xsl:for-each>
+            <xsl:for-each select="$el/ms:audioFormatInfo">
+                <!-- audioFormat -->
+                <audioFormat>
+                    <!-- dataFormat  -->
+                    <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
+                    <!-- samplingRate  -->
+                    <xsl:copy-of select="./ms:samplingRate" />
+                    <!-- byteOrder -->
+                    <xsl:choose>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'little')">
+                            <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'big')">
+                            <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
+                        </xsl:when>
+                    </xsl:choose>
+                    <!-- compressed: QUESTION() Why this is mandatory? -->
+                    <compressed><xsl:value-of select="if (../ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/></compressed>
+                </audioFormat>
+            </xsl:for-each>
+        </distributionAudioFeature>
+    </xsl:template>
+
     <!-- template:DatasetDistribution -->
     <xsl:template name="DatasetDistribution">
         <!-- DatasetDistribution -->
@@ -276,41 +312,15 @@
                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                     <!-- distributionTextFeature | corpusTextInfo -->
                     <xsl:for-each select="./ms:corpusTextInfo">
-                        <distributionTextFeature></distributionTextFeature>
+                        <distributionTextFeature>
+                        </distributionTextFeature>
                     </xsl:for-each>
                     <!-- distributionAudioFeature | corpusAudioInfo -->
                     <xsl:for-each select="./ms:corpusAudioInfo">
-                        <distributionAudioFeature>
-                            <xsl:for-each select="./ms:audioSizeInfo">
-                                <xsl:if test="string(number(./ms:sizeInfo/ms:size)) != 'NaN'">
-                                    <!-- size -->
-                                    <xsl:call-template name="Size">
-                                        <xsl:with-param name="el" select="./ms:sizeInfo" />
-                                        <xsl:with-param name="elementName" select="'size'" />
-                                    </xsl:call-template>
-                                </xsl:if>
-                            </xsl:for-each>
-                            <xsl:for-each select="./ms:audioFormatInfo">
-                                <!-- audioFormat -->
-                                <audioFormat>
-                                    <!-- dataFormat  -->
-                                    <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
-                                    <!-- samplingRate  -->
-                                    <xsl:copy-of select="./ms:samplingRate" />
-                                    <!-- byteOrder -->
-                                    <xsl:choose>
-                                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'littleendian')">
-                                            <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
-                                        </xsl:when>
-                                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'bigendian')">
-                                            <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
-                                        </xsl:when>
-                                    </xsl:choose>
-                                    <!-- compressed: QUESTION() Why this is mandatory? -->
-                                    <compressed><xsl:value-of select="if (../ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/></compressed>
-                                </audioFormat>
-                            </xsl:for-each>
-                        </distributionAudioFeature>
+                        <!-- distributionAudioFeature  -->
+                        <xsl:call-template name="distributionAudioFeature">
+                            <xsl:with-param name="el" select="." />
+                        </xsl:call-template>
                     </xsl:for-each>
                     <!-- distributionVideoFeature | corpusVideoInfo -->
                     <xsl:for-each select="./ms:corpusVideoInfo">
