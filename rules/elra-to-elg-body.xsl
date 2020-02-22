@@ -371,6 +371,12 @@
                                 <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
                             </xsl:otherwise>
                         </xsl:choose>
+                        <!-- signalEncoding -->
+                        <xsl:for-each select="./ms:signalEncoding">
+                            <signalEncoding>
+                                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" />
+                            </signalEncoding>
+                        </xsl:for-each>
                         <!-- samplingRate  -->
                         <xsl:copy-of select="./ms:samplingRate" />
                         <!-- quantization  -->
