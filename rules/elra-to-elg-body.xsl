@@ -1117,7 +1117,13 @@
                         </validation>
                     </xsl:for-each>
                     <!-- isDocumentedBy -->
-                    <!-- NoMapAvalaible -->
+                    <xsl:for-each select="$resourceDocumentationInfo/ms:documentation/ms:documentInfo">
+                        <isDocumentedBy>
+                            <xsl:for-each select="./ms:title">
+                                <xsl:copy-of select="."/>
+                            </xsl:for-each>
+                        </isDocumentedBy>
+                    </xsl:for-each>
                     <!-- isDescribedBy -->
                     <!-- NoMapAvalaible -->
                     <!-- isCitedBy -->
