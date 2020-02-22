@@ -102,7 +102,7 @@
        <xsl:copy-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo"/>
     </xsl:variable>
 
-    <!-- function:upperFirst  -->
+    <!-- function:upper-first  -->
     <!-- based on @see https://stackoverflow.com/a/29550250/2042871 -->
     <xsl:function name="ms:upper-first">
         <xsl:param name="text" />
@@ -113,6 +113,19 @@
                 <xsl:text> </xsl:text>
             </xsl:if>
         </xsl:for-each>
+    </xsl:function>
+
+    <!-- function:grep-number  -->
+    <xsl:function name="ms:grep-number">
+        <xsl:param name="text" />
+        <xsl:analyze-string select="$text" regex="[^\d]*(\d+)[^\d]*">
+            <xsl:matching-substring>
+                <xsl:value-of select="string(number(regex-group(1)))"/>
+            </xsl:matching-substring>
+            <xsl:non-matching-substring>
+                <xsl:value-of select="string(number($text))"/>
+            </xsl:non-matching-substring>
+        </xsl:analyze-string>
     </xsl:function>
 
     <!-- template:StringValuesConcat  -->
@@ -249,12 +262,10 @@
         <xsl:param name="el" />
         <!-- size -->
         <xsl:for-each select="$el/ms:sizeInfo">
-            <xsl:if test="string(number(./ms:size)) != 'NaN'">
-                <xsl:call-template name="Size">
-                    <xsl:with-param name="el" select="." />
-                    <xsl:with-param name="elementName" select="'size'" />
-                </xsl:call-template>
-            </xsl:if>
+            <xsl:call-template name="Size">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementName" select="'size'" />
+            </xsl:call-template>
         </xsl:for-each>
         <!-- dataFormat -->
         <xsl:choose>
@@ -293,12 +304,10 @@
         <xsl:param name="el" />
         <!-- size -->
         <xsl:for-each select="$el/ms:sizeInfo">
-            <xsl:if test="string(number(./ms:size)) != 'NaN'">
-                <xsl:call-template name="Size">
-                    <xsl:with-param name="el" select="." />
-                    <xsl:with-param name="elementName" select="'size'" />
-                </xsl:call-template>
-            </xsl:if>
+            <xsl:call-template name="Size">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementName" select="'size'" />
+            </xsl:call-template>
         </xsl:for-each>
         <!-- videoFormat -->
         <xsl:choose>
@@ -339,12 +348,10 @@
         <xsl:param name="el" />
         <!-- size -->
         <xsl:for-each select="$el/ms:audioSizeInfo">
-            <xsl:if test="string(number(./ms:sizeInfo/ms:size)) != 'NaN'">
-                <xsl:call-template name="Size">
-                    <xsl:with-param name="el" select="./ms:sizeInfo" />
-                    <xsl:with-param name="elementName" select="'size'" />
-                </xsl:call-template>
-            </xsl:if>
+            <xsl:call-template name="Size">
+                <xsl:with-param name="el" select="./ms:sizeInfo" />
+                <xsl:with-param name="elementName" select="'size'" />
+            </xsl:call-template>
         </xsl:for-each>
         <!-- audioFormat -->
         <xsl:choose>
@@ -366,6 +373,8 @@
                         </xsl:choose>
                         <!-- samplingRate  -->
                         <xsl:copy-of select="./ms:samplingRate" />
+                        <!-- quantization  -->
+                        <xsl:copy-of select="./ms:quantization" />
                         <!-- byteOrder -->
                         <xsl:choose>
                             <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'little')">
@@ -651,9 +660,10 @@
         <xsl:param name="el" />
         <xsl:param name="elementName" />
         <!-- QUESTION() is there an alternative to deal with size:'no size available'? -->
-        <xsl:if test="string(number($el/ms:size)) != 'NaN'">
+        <!-- grep-number() allows to match sizes expressions like 'to 18' -->
+        <xsl:if test="ms:grep-number($el/ms:size) != 'NaN'">
             <xsl:element name="{$elementName}">
-                <amount><xsl:value-of select="$el/ms:size" /></amount>
+                <amount><xsl:value-of select="ms:grep-number($el/ms:size)" /></amount>
                 <xsl:choose>
                     <xsl:when test="$el/ms:sizeUnit = 'terms'">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
@@ -744,6 +754,8 @@
                     <xsl:with-param name="elementLang" select="'en'" />
                     <xsl:with-param name="elementName" select="'annotationModeDetails'" />
                 </xsl:call-template>
+                <!-- QUESTION() What about annotationFormat? -->
+                <!-- QUESTION() What about conformanceToStandardsBestPractices? -->
             </annotation>
         </xsl:for-each>
     </xsl:template>
@@ -1325,13 +1337,13 @@
                                     </annotation>
                                 </xsl:if>
                                 <!-- hasSubset -->
-                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                <!-- <xsl:for-each select="$corpusInfo/ms:corpusMediaType"> -->
                                     <!-- hasSubset | corpusTextInfo -->
                                     <!-- hasSubset | corpusAudioInfo -->
                                     <!-- hasSubset | corpusVideoInfo -->
                                     <!-- hasSubset | corpusImageInfo -->
                                     <!-- hasSubset | corpusTextNumericalInfo -->
-                                </xsl:for-each>
+                                <!-- </xsl:for-each> -->
                             </Corpus>
                         </xsl:if>
                         <!-- lexicalConceptualResource  -->
@@ -1378,12 +1390,12 @@
                                 <sensitiveDataIncluded>false</sensitiveDataIncluded>
                                 <!-- hasSubset -->
                                 <!--  $mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo -->
-                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                <!-- <xsl:for-each select="$corpusInfo/ms:corpusMediaType"> -->
                                     <!-- hasSubset | lexicalConceptualResourceTextInfo -->
                                     <!-- hasSubset | lexicalConceptualResourceAudioInfo -->
                                     <!-- hasSubset | lexicalConceptualResourceVideoInfo -->
                                     <!-- hasSubset | lexicalConceptualResourceImageInfo -->
-                                </xsl:for-each>
+                                <!-- </xsl:for-each> -->
                             </LexicalConceptualResource>
                         </xsl:if>
                     </LRSubclass>
