@@ -1164,6 +1164,13 @@
                                                 <!-- interaction -->
                                                 <!-- recordingDeviceType -->
                                                 <!-- recordingDeviceTypeDetails -->
+                                                <xsl:for-each select="./ms:recordingInfo/ms:recordingDeviceTypeDetails">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="." />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'recordingDeviceTypeDetails'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- recordingPlatformSoftware -->
                                                 <!-- recordingEnvironment -->
                                                 <!-- sourceChannel -->
