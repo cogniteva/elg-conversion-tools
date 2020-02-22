@@ -1359,6 +1359,13 @@
                                 <!-- isAlignedVersionOf -->
                                 <!-- isConvertedVersionOf -->
                                 <!-- timeCoverage -->
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType//ms:timeCoverageInfo">
+                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                        <xsl:with-param name="el" select="./ms:timeCoverage" />
+                                        <xsl:with-param name="elementLang" select="'en'" />
+                                        <xsl:with-param name="elementName" select="'timeCoverage'" />
+                                    </xsl:call-template>
+                                </xsl:for-each>
                                 <!-- geographicCoverage -->
                                 <!-- register -->
                                 <!-- userQuery -->
