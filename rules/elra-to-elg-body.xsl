@@ -259,8 +259,12 @@
         <!-- dataFormat -->
         <xsl:for-each select="$el/ms:textFormatInfo">
             <dataFormat>
-            <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',ms:upper-first(lower-case(./ms:mimeType)))" />
+                <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',ms:upper-first(lower-case(./ms:mimeType)))" />
             </dataFormat>
+        </xsl:for-each>
+        <!-- characterEncoding -->
+        <xsl:for-each select="$el/ms:characterEncodingInfo">
+            <xsl:copy-of select="./ms:characterEncoding" />
         </xsl:for-each>
     </xsl:template>
 
