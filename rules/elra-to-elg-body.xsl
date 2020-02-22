@@ -1006,7 +1006,21 @@
                                 <!-- lrType  -->
                                 <lrType>Corpus</lrType>
                                 <!-- corpusSubclass : QUESTION() how to deduce this information ? -->
-                                <corpusSubclass><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', 'rawCorpus')" /></corpusSubclass>
+                                <corpusSubclass>
+                                    <xsl:choose>
+                                        <xsl:when test=
+                      "((count($corpusInfo/ms:corpusMediaType/ms:corpusTextInfo/ms:annotationInfo)  != 0) or
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusAudioInfo/ms:annotationInfo) != 0) or
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusVideoInfo/ms:annotationInfo) != 0) or
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusImageInfo/ms:annotationInfo) != 0) or
+                        (count($corpusInfo/ms:corpusMediaType/ms:corpusTextNumericalInfo/ms:annotationInfo) != 0))">
+                                            <xsl:value-of select="'http://w3id.org/meta-share/meta-share/annotatedCorpus'" />
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="'http://w3id.org/meta-share/meta-share/rawCorpus'" />
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </corpusSubclass>
                                 <!-- corpusMediaType -->
                                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                                     <!-- CorpusMediaPart | CorpusTextPart -->
@@ -1218,7 +1232,7 @@
                         (count($corpusInfo/ms:corpusMediaType/ms:corpusImageInfo/ms:annotationInfo)  = 0) and
                         (count($corpusInfo/ms:corpusMediaType/ms:corpusTextNumericalInfo/ms:annotationInfo) = 0))">
                                     <annotation>
-                                        <!-- QUESTION() What could the best default value?-->
+                                        <!-- QUESTION() What could the best default value for a non-annotated LR?-->
                                         <annotationType>http://w3id.org/meta-share/omtd-share/Domain-specificAnnotation</annotationType>
                                     </annotation>
                                 </xsl:if>
