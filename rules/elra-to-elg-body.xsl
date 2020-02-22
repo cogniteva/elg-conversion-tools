@@ -257,11 +257,27 @@
             </xsl:if>
         </xsl:for-each>
         <!-- dataFormat -->
-        <xsl:for-each select="$el/ms:textFormatInfo">
-            <dataFormat>
-                <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',ms:upper-first(lower-case(./ms:mimeType)))" />
-            </dataFormat>
-        </xsl:for-each>
+        <xsl:choose>
+            <!-- if there are textFormatInfo/mimeType information -->
+            <xsl:when test="count($el/ms:textFormatInfo) > 0">
+                <xsl:for-each select="$el/ms:textFormatInfo">
+                    <!-- map textFormatInfo/mimeType to omtd-share vocabulary -->
+                    <xsl:choose>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'text')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
+                        </xsl:when>
+                        <!-- NOTE() Add here as much mappings as needed -->
+                        <xsl:otherwise>
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+            </xsl:when>
+            <!-- alternatively use a default value -->
+            <xsl:otherwise>
+                <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
+            </xsl:otherwise>
+        </xsl:choose>
         <!-- characterEncoding -->
         <xsl:for-each select="$el/ms:characterEncodingInfo">
             <xsl:copy-of select="./ms:characterEncoding" />
