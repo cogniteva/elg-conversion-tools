@@ -682,7 +682,7 @@
     </xsl:template>
 
     <!-- template:hasSubset -->
-    <xsl:template name="hasSubset">
+    <xsl:template name="HasSubset">
         <xsl:param name="el" />
         <xsl:for-each select="$el/ms:sizeInfo">
             <xsl:if test="string(number(./ms:size)) != 'NaN'">
@@ -1327,37 +1327,10 @@
                                 <!-- hasSubset -->
                                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                                     <!-- hasSubset | corpusTextInfo -->
-                                    <xsl:for-each select="./ms:corpusTextInfo">
-                                        <xsl:call-template name="hasSubset">
-                                            <xsl:with-param name="el" select="." />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
                                     <!-- hasSubset | corpusAudioInfo -->
-                                    <xsl:for-each select="./ms:corpusAudioInfo">
-                                        <xsl:call-template name="hasSubset">
-                                            <xsl:with-param name="el" select="./ms:audioSizeInfo" />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
                                     <!-- hasSubset | corpusVideoInfo -->
-                                    <xsl:for-each select="./ms:corpusVideoInfo">
-                                        <xsl:call-template name="hasSubset">
-                                            <xsl:with-param name="el" select="." />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
                                     <!-- hasSubset | corpusImageInfo -->
-                                    <xsl:for-each select="./ms:corpusImageInfo">
-                                        <xsl:call-template name="hasSubset">
-                                            <xsl:with-param name="el" select="." />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
                                     <!-- hasSubset | corpusTextNumericalInfo -->
-                                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
-                                        <xsl:call-template name="hasSubset">
-                                            <xsl:with-param name="el" select="." />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
-                                    <!-- hasSubset | corpusTextNgramInfo -->
-                                    <!-- ToBeDefined -->
                                 </xsl:for-each>
                             </Corpus>
                         </xsl:if>
