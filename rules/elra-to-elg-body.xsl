@@ -118,7 +118,7 @@
     <!-- function:grep-number  -->
     <xsl:function name="ms:grep-number">
         <xsl:param name="text" />
-        <xsl:analyze-string select="$text" regex="^[^\d]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)[^\d]*$">
+        <xsl:analyze-string select="$text" regex="^[^0-9]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?).*$">
             <xsl:matching-substring>
                 <xsl:value-of select="string(number(regex-group(1)))"/>
             </xsl:matching-substring>
@@ -611,6 +611,25 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:AnnotatedElement -->
+    <xsl:template name="AnnotatedElement">
+        <xsl:param name="el" />
+        <!-- annotatedElements -->
+        <xsl:for-each select="$el">
+            <xsl:choose>
+                <xsl:when test="contains(lower-case(normalize-space(.)), 'mispronun')">
+                    <annotatedElement>http://w3id.org/meta-share/meta-share/mispronunciation</annotatedElement>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="ElementMetaShare">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementName" select="'annotatedElement'" />
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:EncodingLevel -->
     <xsl:template name="EncodingLevel">
         <xsl:param name="el" />
@@ -711,7 +730,8 @@
         <xsl:param name="el" />
         <xsl:param name="elementName" />
         <!-- QUESTION() is there an alternative to deal with size:'no size available'? -->
-        <!-- grep-number() allows to match sizes expressions like 'to 18' -->
+        <!-- grep-number() allows to match sizes expressions like 'to 18' or 'set: 3.75' -->
+        <!-- <xsl:message><xsl:value-of select="ms:grep-number($el/ms:size)" /></xsl:message> -->
         <xsl:if test="ms:grep-number($el/ms:size) != 'NaN'">
             <xsl:element name="{$elementName}">
                 <!-- amount -->
@@ -801,6 +821,10 @@
                 <annotationType>
                     <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', $annotationType)" />
                 </annotationType>
+                <!-- annotatedElement -->
+                <xsl:call-template name="AnnotatedElement">
+                    <xsl:with-param name="el" select="./ms:annotatedElements" />
+                </xsl:call-template>
                 <!-- annotationModeDetails -->
                 <xsl:call-template name="ElementCopyWithDefaultLang">
                     <xsl:with-param name="el" select="./ms:annotationModeDetails" />
