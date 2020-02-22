@@ -1377,9 +1377,13 @@
                                 <!-- ms:sensitiveDataIncluded -->
                                 <sensitiveDataIncluded>false</sensitiveDataIncluded>
                                 <!-- hasSubset -->
-                                <xsl:call-template name="hasSubset">
-                                    <xsl:with-param name="el" select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo" />
-                                </xsl:call-template>
+                                <!--  $mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo -->
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                    <!-- hasSubset | lexicalConceptualResourceTextInfo -->
+                                    <!-- hasSubset | lexicalConceptualResourceAudioInfo -->
+                                    <!-- hasSubset | lexicalConceptualResourceVideoInfo -->
+                                    <!-- hasSubset | lexicalConceptualResourceImageInfo -->
+                                </xsl:for-each>
                             </LexicalConceptualResource>
                         </xsl:if>
                     </LRSubclass>
