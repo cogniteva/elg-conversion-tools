@@ -626,7 +626,18 @@
             <!-- <xsl:if test="not($annotationType castable as ms:AnnotationType)"> -->
             <!-- </xsl:if> -->
             <!-- annotation -->
-            <annotation><annotationType><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', $annotationType)" /></annotationType></annotation>
+            <annotation>
+                <!-- annotationType -->
+                <annotationType>
+                    <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', $annotationType)" />
+                </annotationType>
+                <!-- annotationModeDetails -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:annotationModeDetails" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'annotationModeDetails'" />
+                </xsl:call-template>
+            </annotation>
         </xsl:for-each>
     </xsl:template>
 
@@ -1181,7 +1192,7 @@
                         (count($corpusInfo/ms:corpusMediaType/ms:corpusImageInfo/ms:annotationInfo)  = 0) and
                         (count($corpusInfo/ms:corpusMediaType/ms:corpusTextNumericalInfo/ms:annotationInfo) = 0))">
                                     <annotation>
-                                        <!-- QUESTION() What's the best default value?-->
+                                        <!-- QUESTION() What could the best default value?-->
                                         <annotationType>http://w3id.org/meta-share/omtd-share/Domain-specificAnnotation</annotationType>
                                     </annotation>
                                 </xsl:if>
