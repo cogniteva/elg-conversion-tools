@@ -222,6 +222,18 @@
         </xsl:if>
     </xsl:template>
 
+    <!-- template:ElementMetaShare -->
+    <xsl:template name="ElementMetaShare">
+        <xsl:param name="el" />
+        <xsl:param name="elementName" />
+        <xsl:if test="normalize-space($el) != ''">
+            <xsl:element name="{$elementName}">
+                <xsl:copy-of  select="$el/@*"/>
+                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',normalize-space($el))" />
+            </xsl:element>
+        </xsl:if>
+    </xsl:template>
+
     <!-- template:ElementCopyWithDefaultLang  -->
     <xsl:template name="ElementCopyWithDefaultLang">
         <xsl:param name="el" />
@@ -1179,13 +1191,18 @@
                                                 </xsl:for-each>
                                                 <!-- recordingPlatformSoftware -->
                                                 <!-- recordingEnvironment -->
+                                                <xsl:for-each select="./ms:recordingInfo/ms:recordingEnvironment">
+                                                    <xsl:call-template name="ElementMetaShare">
+                                                        <xsl:with-param name="el" select="." />
+                                                        <xsl:with-param name="elementName" select="'recordingEnvironment'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- sourceChannel -->
                                                 <xsl:for-each select="./ms:recordingInfo/ms:sourceChannel">
-                                                    <xsl:if test="normalize-space(.) != ''">
-                                                        <sourceChannel>
-                                                            <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',lower-case(.))" />
-                                                        </sourceChannel>
-                                                    </xsl:if>
+                                                    <xsl:call-template name="ElementMetaShare">
+                                                        <xsl:with-param name="el" select="." />
+                                                        <xsl:with-param name="elementName" select="'sourceChannel'" />
+                                                    </xsl:call-template>
                                                 </xsl:for-each>
                                                 <!-- sourceChannelType -->
                                                 <!-- sourceChannelName -->
