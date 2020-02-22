@@ -254,7 +254,9 @@
                 <xsl:choose>
                     <xsl:when test="normalize-space(./ms:distributionAccessMedium) != ''">
                         <xsl:for-each select="./ms:distributionAccessMedium">
-                            <DatasetDistributionForm><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" /></DatasetDistributionForm>
+                            <DatasetDistributionForm>
+                                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" />
+                            </DatasetDistributionForm>
                         </xsl:for-each>
                     </xsl:when>
                     <xsl:otherwise>
@@ -951,6 +953,13 @@
                                                 <!-- recordingPlatformSoftware -->
                                                 <!-- recordingEnvironment -->
                                                 <!-- sourceChannel -->
+                                                <xsl:for-each select="./ms:recordingInfo/ms:sourceChannel">
+                                                    <xsl:if test="normalize-space(.) != ''">
+                                                        <sourceChannel>
+                                                            <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',lower-case(.))" />
+                                                        </sourceChannel>
+                                                    </xsl:if>
+                                                </xsl:for-each>
                                                 <!-- sourceChannelType -->
                                                 <!-- sourceChannelName -->
                                                 <!-- sourceChannelDetails -->
