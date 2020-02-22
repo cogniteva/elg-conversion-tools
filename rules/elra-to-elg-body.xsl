@@ -104,7 +104,7 @@
 
     <!-- function:upperFirst  -->
     <!-- based on @see https://stackoverflow.com/a/29550250/2042871 -->
-    <xsl:function name="ms:upperFirst">
+    <xsl:function name="ms:upper-first">
         <xsl:param name="text" />
         <xsl:for-each select="tokenize($text,' ')">
             <xsl:value-of select="upper-case(substring(.,1,1))" />
@@ -244,40 +244,58 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:distributionTextFeature -->
+    <xsl:template name="distributionTextFeature">
+        <xsl:param name="el" />
+        <!-- size -->
+        <xsl:for-each select="$el/ms:sizeInfo">
+            <xsl:if test="string(number(./ms:size)) != 'NaN'">
+                <xsl:call-template name="Size">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'size'" />
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:for-each>
+        <!-- dataFormat -->
+        <xsl:for-each select="$el/ms:textFormatInfo">
+            <dataFormat>
+            <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',ms:upper-first(lower-case(./ms:mimeType)))" />
+            </dataFormat>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:distributionAudioFeature -->
     <xsl:template name="distributionAudioFeature">
         <xsl:param name="el" />
-        <distributionAudioFeature>
-            <xsl:for-each select="$el/ms:audioSizeInfo">
-                <xsl:if test="string(number(./ms:sizeInfo/ms:size)) != 'NaN'">
-                    <!-- size -->
-                    <xsl:call-template name="Size">
-                        <xsl:with-param name="el" select="./ms:sizeInfo" />
-                        <xsl:with-param name="elementName" select="'size'" />
-                    </xsl:call-template>
-                </xsl:if>
-            </xsl:for-each>
-            <xsl:for-each select="$el/ms:audioFormatInfo">
-                <!-- audioFormat -->
-                <audioFormat>
-                    <!-- dataFormat  -->
-                    <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
-                    <!-- samplingRate  -->
-                    <xsl:copy-of select="./ms:samplingRate" />
-                    <!-- byteOrder -->
-                    <xsl:choose>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'little')">
-                            <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'big')">
-                            <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
-                        </xsl:when>
-                    </xsl:choose>
-                    <!-- compressed: QUESTION() Why this is mandatory? -->
-                    <compressed><xsl:value-of select="if (../ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/></compressed>
-                </audioFormat>
-            </xsl:for-each>
-        </distributionAudioFeature>
+        <!-- size -->
+        <xsl:for-each select="$el/ms:audioSizeInfo">
+            <xsl:if test="string(number(./ms:sizeInfo/ms:size)) != 'NaN'">
+                <xsl:call-template name="Size">
+                    <xsl:with-param name="el" select="./ms:sizeInfo" />
+                    <xsl:with-param name="elementName" select="'size'" />
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:for-each>
+        <!-- audioFormat -->
+        <xsl:for-each select="$el/ms:audioFormatInfo">
+            <audioFormat>
+                <!-- dataFormat  -->
+                <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
+                <!-- samplingRate  -->
+                <xsl:copy-of select="./ms:samplingRate" />
+                <!-- byteOrder -->
+                <xsl:choose>
+                    <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'little')">
+                        <byteOrder>http://w3id.org/meta-share/meta-share/littleEndian</byteOrder>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space(./ms:byteOrder)), 'big')">
+                        <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
+                    </xsl:when>
+                </xsl:choose>
+                <!-- compressed: QUESTION() Why this is mandatory? -->
+                <compressed><xsl:value-of select="if (../ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/></compressed>
+            </audioFormat>
+        </xsl:for-each>
     </xsl:template>
 
     <!-- template:DatasetDistribution -->
@@ -312,15 +330,33 @@
                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                     <!-- distributionTextFeature | corpusTextInfo -->
                     <xsl:for-each select="./ms:corpusTextInfo">
-                        <distributionTextFeature>
-                        </distributionTextFeature>
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="distributionTextFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:dataFormat))">
+                            <distributionTextFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionTextFeature>
+                        </xsl:if>
                     </xsl:for-each>
                     <!-- distributionAudioFeature | corpusAudioInfo -->
                     <xsl:for-each select="./ms:corpusAudioInfo">
-                        <!-- distributionAudioFeature  -->
-                        <xsl:call-template name="distributionAudioFeature">
-                            <xsl:with-param name="el" select="." />
-                        </xsl:call-template>
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="distributionAudioFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:audioFormat))">
+                            <distributionAudioFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionAudioFeature>
+                        </xsl:if>
                     </xsl:for-each>
                     <!-- distributionVideoFeature | corpusVideoInfo -->
                     <xsl:for-each select="./ms:corpusVideoInfo">
@@ -794,7 +830,7 @@
                                 <usedInApplication>
                                     <!-- FIXTHIS() OMTD classes are not strictly mapped with METASHARE useNLPSpecific -->
                                     <!--
-                                    <xsl:variable name="ltclass"><xsl:value-of select="ms:upperFirst(.)" /></xsl:variable>
+                                    <xsl:variable name="ltclass"><xsl:value-of select="ms:upper-first(.)" /></xsl:variable>
                                     <LTClassRecommended><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',$ltclass)" /></LTClassRecommended>
                                     -->
                                     <!-- HOTFIX() use LTClassOther -->
