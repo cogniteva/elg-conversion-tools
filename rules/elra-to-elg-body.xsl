@@ -592,12 +592,14 @@
                     </xsl:if>
                 </xsl:for-each>
                 <!-- cost -->
-                <cost>
-                    <!-- ms:amount -->
-                    <amount><xsl:value-of select="./ms:fee" /></amount>
-                    <!-- ms:currency -->
-                    <currency>http://w3id.org/meta-share/meta-share/euro</currency>
-                </cost>
+                <xsl:if test="normalize-space(./ms:fee) != ''">
+                    <cost>
+                        <!-- ms:amount -->
+                        <amount><xsl:value-of select="./ms:fee" /></amount>
+                        <!-- ms:currency -->
+                        <currency>http://w3id.org/meta-share/meta-share/euro</currency>
+                    </cost>
+                </xsl:if>
                 <!-- membershipInstitution -->
                 <membershipInstitution><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:membershipInfo/ms:membershipInstitution)" /></membershipInstitution>
                 <!-- ms:availabilityStartDate -->
