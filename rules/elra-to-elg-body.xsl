@@ -266,9 +266,13 @@
                         <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'text')">
                             <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
                         </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'plain')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
+                        </xsl:when>
                         <!-- NOTE() Add here as much mappings as needed -->
                         <xsl:otherwise>
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
+                            <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:for-each>
