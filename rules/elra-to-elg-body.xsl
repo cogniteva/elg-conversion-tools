@@ -285,7 +285,37 @@
             <xsl:when test="count($el/ms:textFormatInfo) > 0">
                 <xsl:for-each select="$el/ms:textFormatInfo">
                     <!-- map textFormatInfo/mimeType to omtd-share vocabulary -->
+                    <!-- DO NOT CHANGE ORDER DECLARATION -->
+                    <!-- dataFormat -->
+                    <!-- QUESTION() what about mimeType = 'other'? -->
                     <xsl:choose>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'tab-separated')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Tsv</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'tsv')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Tsv</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'csv')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Csv</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'sgml')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Sgml</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'xml')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/Xml</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'msaccess')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/MsAccessDatabase</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'ms-excel')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/MsExcel</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'msword')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/MsWord</dataFormat>
+                        </xsl:when>
+                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'mpeg3')">
+                            <dataFormat>http://w3id.org/meta-share/omtd-share/mpg</dataFormat>
+                        </xsl:when>
                         <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'text')">
                             <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
                         </xsl:when>
@@ -681,7 +711,9 @@
         <!-- grep-number() allows to match sizes expressions like 'to 18' -->
         <xsl:if test="ms:grep-number($el/ms:size) != 'NaN'">
             <xsl:element name="{$elementName}">
+                <!-- amount -->
                 <amount><xsl:value-of select="ms:grep-number($el/ms:size)" /></amount>
+                <!-- sizeUnit -->
                 <xsl:choose>
                     <xsl:when test="$el/ms:sizeUnit = 'terms'">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
