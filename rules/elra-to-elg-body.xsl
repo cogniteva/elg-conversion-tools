@@ -794,6 +794,23 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:LcrSubclass -->
+    <xsl:template name="LcrSubclass">
+        <xsl:param name="el" />
+        <!-- lcrSubclass -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space($el)), 'wordlist')">
+                <lcrSubclass>http://w3id.org/meta-share/meta-share/wordlist</lcrSubclass>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="elementName" select="'lcrSubclass'" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:Language -->
     <xsl:template name="Language">
         <xsl:param name="el" />
@@ -1710,7 +1727,9 @@
                                 <!-- lrType  -->
                                 <lrType>LexicalConceptualResource</lrType>
                                 <!-- lcrSubclass  -->
-                                <lcrSubclass>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" /></lcrSubclass>
+                                <xsl:call-template name="LcrSubclass">
+                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" />
+                                </xsl:call-template>
                                 <!-- ms:encodingLevel -->
                                 <xsl:call-template name="EncodingLevel">
                                     <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
