@@ -927,6 +927,9 @@
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'hours')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
                     </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'hpairs')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/T-HPair</sizeUnit>
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'minutes')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/minute</sizeUnit>
                     </xsl:when>
@@ -935,6 +938,9 @@
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'terms')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'texts')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/text1</sizeUnit>
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'tokens')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
@@ -983,9 +989,16 @@
         <xsl:for-each select="$el/ms:annotationInfo">
             <!-- var:annotationType -->
             <xsl:variable name="annotationType">
+               <!-- DO NOT CHANGER ORDER DECLARATION -->
                <xsl:choose>
                     <xsl:when test="lower-case(./ms:annotationType) = 'other'">
                         <xsl:value-of select="'Domain-specificAnnotation'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'lemma')">
+                        <xsl:value-of select="'Lemma'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'morphosyntacticannotation')">
+                        <xsl:value-of select="'MorphologicalAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'speechannotation')">
                         <xsl:value-of select="'SpeechAct'" />
@@ -993,8 +1006,8 @@
                     <xsl:when test="contains(lower-case(./ms:annotationType),'semanticannotation')">
                         <xsl:value-of select="'SemanticAnnotationType'" />
                     </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'morphosyntacticannotation')">
-                        <xsl:value-of select="'MorphologicalAnnotationType'" />
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'syntacticannotation')">
+                        <xsl:value-of select="'SyntacticAnnotationType'" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of select="./ms:annotationType" />
