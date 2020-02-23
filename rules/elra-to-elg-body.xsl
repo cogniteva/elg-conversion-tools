@@ -165,9 +165,27 @@
     <!-- template:GenericPerson  -->
     <xsl:template name="GenericPerson">
         <xsl:param name="el" />
+        <!-- actorType -->
         <actorType>Person</actorType>
-        <xsl:copy-of select="$el/ms:surname" />
-        <xsl:copy-of select="$el/ms:givenName" />
+        <!-- surname -->
+        <xsl:choose>
+            <xsl:when test="normalize-space($el/ms:surname) = ''">
+                <surname xml:lang="und"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:copy-of select="$el/ms:surname" />
+            </xsl:otherwise>
+        </xsl:choose>
+        <!-- givenName -->
+        <xsl:choose>
+            <xsl:when test="normalize-space($el/ms:givenName) = ''">
+                <givenName xml:lang="und"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:copy-of select="$el/ms:givenName" />
+            </xsl:otherwise>
+        </xsl:choose>
+        <!-- email -->
         <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
     </xsl:template>
 
