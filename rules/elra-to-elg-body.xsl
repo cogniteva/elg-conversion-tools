@@ -801,27 +801,37 @@
                 <!-- amount -->
                 <amount><xsl:value-of select="ms:grep-number($el/ms:size)" /></amount>
                 <!-- sizeUnit -->
+                <!-- DO NOT CHANGER ORDER DECLARATION -->
                 <xsl:choose>
-                    <xsl:when test="$el/ms:sizeUnit = 'terms'">
-                      <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
-                    </xsl:when>
-                    <xsl:when test="$el/ms:sizeUnit = 'hours'">
-                      <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
-                    </xsl:when>
-                    <xsl:when test="$el/ms:sizeUnit = 'sentences'">
-                      <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
-                    </xsl:when>
-                    <xsl:when test="$el/ms:sizeUnit = 'entries'">
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'entries')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/entry</sizeUnit>
                     </xsl:when>
-                    <xsl:when test="$el/ms:sizeUnit = 'tokens'">
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'expressions')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/expression</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'hours')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'minutes')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/minute</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'sentences')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'terms')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/term</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'tokens')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
                     </xsl:when>
-                    <xsl:when test="$el/ms:sizeUnit = 'words'">
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'words')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/word3</sizeUnit>
                     </xsl:when>
                     <xsl:otherwise>
-                      <sizeUnit><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:sizeUnit)" /></sizeUnit>
+                        <xsl:call-template name="ElementMetaShare">
+                            <xsl:with-param name="el" select="$el/ms:sizeUnit" />
+                            <xsl:with-param name="elementName" select="'sizeUnit'" />
+                        </xsl:call-template>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>
