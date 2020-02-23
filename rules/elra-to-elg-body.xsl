@@ -1110,13 +1110,13 @@
             <!-- compliesWith -->
             <compliesWith>http://w3id.org/meta-share/meta-share/ELG-SHARE</compliesWith>
             <!-- metadataCreator -->
-            <xsl:if test="normalize-space($metadataCreator) != ''">
+            <xsl:for-each select="($metadataInfo/ms:metadataCreator)[1]">
                 <metadataCreator>
                     <xsl:call-template name="GenericPerson">
-                        <xsl:with-param name="el" select="$metadataCreator" />
+                        <xsl:with-param name="el" select="." />
                     </xsl:call-template>
                 </metadataCreator>
-            </xsl:if>
+            </xsl:for-each>
             <!--  sourceOfMetadataRecord  -->
             <xsl:if test="normalize-space($metadataInfo/ms:source) != ''">
                 <sourceOfMetadataRecord><xsl:value-of select="$metadataInfo/ms:source"/></sourceOfMetadataRecord>
