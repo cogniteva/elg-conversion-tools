@@ -169,20 +169,24 @@
         <actorType>Person</actorType>
         <!-- surname -->
         <xsl:choose>
-            <xsl:when test="normalize-space($el/ms:surname) = ''">
+            <xsl:when test="normalize-space(($el/ms:surname)[1]) = ''">
                 <surname xml:lang="und"/>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:copy-of select="$el/ms:surname" />
+                <xsl:for-each select="$el/ms:surname">
+                    <xsl:copy-of select="." />
+                </xsl:for-each>
             </xsl:otherwise>
         </xsl:choose>
         <!-- givenName -->
         <xsl:choose>
-            <xsl:when test="normalize-space($el/ms:givenName) = ''">
+            <xsl:when test="normalize-space(($el/ms:givenName)[1]) = ''">
                 <givenName xml:lang="und"/>
             </xsl:when>
             <xsl:otherwise>
-               <xsl:copy-of select="$el/ms:givenName" />
+                <xsl:for-each select="$el/ms:givenName">
+                    <xsl:copy-of select="." />
+                </xsl:for-each>
             </xsl:otherwise>
         </xsl:choose>
         <!-- email -->
