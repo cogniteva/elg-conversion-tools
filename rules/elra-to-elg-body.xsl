@@ -1391,7 +1391,7 @@
                                                 <!-- originalSourceDescription -->
                                                 <!-- syntheticData -->
                                                 <!-- creationDetails -->
-                                                <!-- QUESTION() it's ok to map subject_topic to scenarioType? -->
+                                                <!-- QUESTION() it's ok to map subject_topic to creationDetails? -->
                                                 <xsl:for-each select="./ms:audioClassificationInfo">
                                                     <xsl:call-template name="ElementCopyWithDefaultLang">
                                                         <xsl:with-param name="el" select="./ms:subject_topic" />
