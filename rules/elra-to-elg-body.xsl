@@ -512,6 +512,54 @@
         </xsl:choose>
     </xsl:template>
 
+    <!-- template:DistributionImageFeature -->
+    <xsl:template name="DistributionImageFeature">
+        <xsl:param name="el" />
+        <!-- size -->
+        <xsl:for-each select="$el/ms:sizeInfo">
+            <xsl:call-template name="Size">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementName" select="'size'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- imageFormat -->
+        <xsl:choose>
+            <!-- if there are imageFormatInfo information -->
+            <xsl:when test="count($el/ms:imageFormatInfo) > 0">
+                <xsl:for-each select="$el/ms:imageFormatInfo">
+                    <imageFormat>
+                        <!-- map imageFormatInfo/mimeType to omtd-share vocabulary -->
+                        <xsl:choose>
+                            <xsl:when test="ms:get-meta-share-mimetype(./ms:mimeType) != ''">
+                                <dataFormat>
+                                    <xsl:value-of select="ms:get-meta-share-mimetype(./ms:mimeType)"/>
+                                </dataFormat>
+                            </xsl:when>
+                            <!-- NOTE() Add here as much mappings as needed -->
+                            <xsl:otherwise>
+                                <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
+                                <dataFormat>
+                                    <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/Unknown/',normalize-space(./ms:mimeType))"/>
+                                </dataFormat>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <!-- compressed: QUESTION() Why this is mandatory? -->
+                        <compressed>
+                            <xsl:value-of select="if (./ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/>
+                        </compressed>
+                    </imageFormat>
+                </xsl:for-each>
+            </xsl:when>
+            <!-- alternatively use a default element -->
+            <xsl:otherwise>
+                <imageFormat>
+                    <dataFormat>http://w3id.org/meta-share/omtd-share/BinaryFormat</dataFormat>
+                    <compressed>false</compressed>
+                </imageFormat>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:DistributionAudioFeature -->
     <!-- NOTE() On distributionAudioFeature, both size and audioFormat are mandatory,  -->
     <!-- NOTE() it happens that sometimes size is equal to 'no size available', thus -->
@@ -697,7 +745,18 @@
                     </xsl:for-each>
                     <!-- distributionImageFeature | corpusImageInfo -->
                     <xsl:for-each select="./ms:corpusImageInfo">
-                        <distributionImageFeature></distributionImageFeature>
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionImageFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:imageFormat))">
+                            <distributionImageFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionImageFeature>
+                        </xsl:if>
                     </xsl:for-each>
                     <!-- distributionVideoFeature | corpusVideoInfo -->
                     <xsl:for-each select="./ms:corpusVideoInfo">
@@ -1036,6 +1095,9 @@
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'hpairs')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/T-HPair</sizeUnit>
                     </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'images')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/image2</sizeUnit>
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'minutes')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/minute</sizeUnit>
                     </xsl:when>
@@ -1104,10 +1166,16 @@
                <!-- DO NOT CHANGER ORDER DECLARATION -->
                <xsl:choose>
                     <xsl:when test="lower-case(./ms:annotationType) = 'other'">
-                        <xsl:value-of select="'Domain-specificAnnotation'" />
+                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'alignment')">
-                        <xsl:value-of select="'Domain-specificAnnotation'" />
+                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'bodymovements')">
+                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'handarmgestures')">
+                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'lemma')">
                         <xsl:value-of select="'Lemma'" />
@@ -1116,7 +1184,7 @@
                         <xsl:value-of select="'MorphologicalAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'segmentation')">
-                        <xsl:value-of select="'Domain-specificAnnotation'" />
+                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'semanticannotation')">
                         <xsl:value-of select="'SemanticAnnotationType'" />
@@ -1719,6 +1787,18 @@
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
+                                                <!-- typeOfImageContent : QUESTION() what would be a default value ?  -->
+                                                <xsl:if test="not(./ms:imageContentInfo)">
+                                                    <typeOfImageContent xml:lang="en">undefined</typeOfImageContent>
+                                                </xsl:if>
+                                                <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
+                                                    <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
+                                                </xsl:for-each>
+                                                <!-- creationMode -->
+                                                <xsl:call-template name="ElementMetaShare">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
+                                                    <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
                                             </CorpusImagePart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
@@ -1826,7 +1906,7 @@
                         (count($corpusInfo/ms:corpusMediaType/ms:corpusTextNumericalInfo/ms:annotationInfo) = 0))">
                                     <annotation>
                                         <!-- QUESTION() What could the best default value for a non-annotated LR?-->
-                                        <annotationType>http://w3id.org/meta-share/omtd-share/Domain-specificAnnotation</annotationType>
+                                        <annotationType>http://w3id.org/meta-share/omtd-share/DomainSpecificAnnotationType</annotationType>
                                     </annotation>
                                 </xsl:if>
                                 <!-- hasSubset -->
