@@ -128,6 +128,60 @@
         </xsl:analyze-string>
     </xsl:function>
 
+    <!-- function:get-meta-share-mimetype -->
+    <xsl:function name="ms:get-meta-share-mimetype">
+        <xsl:param name="text" />
+        <!-- mimeType -->
+        <!-- QUESTION() what about mimeType = 'other'? -->
+        <!-- DO NOT CHANGE ORDER DECLARATION -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'tab-separated')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Tsv'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'tsv')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Tsv'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'csv')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Csv'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'sgml')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Sgml'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'xml')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Xml'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'msaccess')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/MsAccessDatabase'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'ms-excel')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/MsExcel'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'msword')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/MsWord'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'mpeg3')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/mpg'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'video')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/mpg'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'text')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Text'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'plain')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Text'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'pdf')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Pdf'"/>
+            </xsl:when>
+            <!-- NOTE() Add here as much mappings as needed -->
+            <xsl:otherwise>
+                <!-- otherwise return an empty string -->
+                <xsl:value-of select="''"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
     <!-- template:StringValuesConcat  -->
     <!-- based on @see https://stackoverflow.com/a/4038983 -->
     <xsl:template name='StringValuesConcat'>
@@ -330,6 +384,44 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:DistributionTextNumericalFeature -->
+    <xsl:template name="DistributionTextNumericalFeature">
+        <xsl:param name="el" />
+        <!-- size -->
+        <xsl:for-each select="$el/ms:sizeInfo">
+            <xsl:call-template name="Size">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementName" select="'size'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- dataFormat -->
+        <xsl:choose>
+            <!-- if there are textNumericalFormatInfo/mimeType information -->
+            <xsl:when test="count($el/ms:textNumericalFormatInfo) > 0">
+                <xsl:for-each select="$el/ms:textNumericalFormatInfo">
+                    <!-- dataFormat -->
+                    <xsl:choose>
+                        <xsl:when test="ms:get-meta-share-mimetype(./ms:mimeType) != ''">
+                            <dataFormat>
+                                <xsl:value-of select="ms:get-meta-share-mimetype(./ms:mimeType)"/>
+                            </dataFormat>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
+                            <dataFormat>
+                                <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/Unknown/',normalize-space(./ms:mimeType))"/>
+                            </dataFormat>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+            </xsl:when>
+            <!-- alternatively use a default value -->
+            <xsl:otherwise>
+                <dataFormat>http://w3id.org/meta-share/omtd-share/BinaryFormat</dataFormat>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:DistributionTextFeature -->
     <xsl:template name="DistributionTextFeature">
         <xsl:param name="el" />
@@ -345,48 +437,18 @@
             <!-- if there are textFormatInfo/mimeType information -->
             <xsl:when test="count($el/ms:textFormatInfo) > 0">
                 <xsl:for-each select="$el/ms:textFormatInfo">
-                    <!-- map textFormatInfo/mimeType to omtd-share vocabulary -->
-                    <!-- DO NOT CHANGE ORDER DECLARATION -->
                     <!-- dataFormat -->
-                    <!-- QUESTION() what about mimeType = 'other'? -->
                     <xsl:choose>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'tab-separated')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Tsv</dataFormat>
+                        <xsl:when test="ms:get-meta-share-mimetype(./ms:mimeType) != ''">
+                            <dataFormat>
+                                <xsl:value-of select="ms:get-meta-share-mimetype(./ms:mimeType)"/>
+                            </dataFormat>
                         </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'tsv')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Tsv</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'csv')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Csv</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'sgml')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Sgml</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'xml')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Xml</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'msaccess')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/MsAccessDatabase</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'ms-excel')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/MsExcel</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'msword')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/MsWord</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'mpeg3')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/mpg</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'text')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
-                        </xsl:when>
-                        <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'plain')">
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Text</dataFormat>
-                        </xsl:when>
-                        <!-- NOTE() Add here as much mappings as needed -->
                         <xsl:otherwise>
                             <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
-                            <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
+                            <dataFormat>
+                                <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/Unknown/',normalize-space(./ms:mimeType))"/>
+                            </dataFormat>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:for-each>
@@ -420,13 +482,17 @@
                     <videoFormat>
                         <!-- map videoFormatInfo/mimeType to omtd-share vocabulary -->
                         <xsl:choose>
-                            <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'video')">
-                                <dataFormat>http://w3id.org/meta-share/omtd-share/mpg</dataFormat>
+                            <xsl:when test="ms:get-meta-share-mimetype(./ms:mimeType) != ''">
+                                <dataFormat>
+                                    <xsl:value-of select="ms:get-meta-share-mimetype(./ms:mimeType)"/>
+                                </dataFormat>
                             </xsl:when>
                             <!-- NOTE() Add here as much mappings as needed -->
                             <xsl:otherwise>
                                 <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
-                                <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
+                                <dataFormat>
+                                    <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/Unknown/',normalize-space(./ms:mimeType))"/>
+                                </dataFormat>
                             </xsl:otherwise>
                         </xsl:choose>
                         <!-- compressed: QUESTION() Why this is mandatory? -->
@@ -466,15 +532,20 @@
                 <xsl:for-each select="$el/ms:audioFormatInfo">
                     <audioFormat>
                         <!-- dataFormat  -->
-                        <!-- map audioFormatInfo/mimeType to omtd-share vocabulary -->
                         <xsl:choose>
                             <xsl:when test="contains(lower-case(normalize-space(./ms:mimeType)), 'other')">
                                 <dataFormat>http://w3id.org/meta-share/omtd-share/AudioFormat</dataFormat>
                             </xsl:when>
-                            <!-- NOTE() Add here as much mappings as needed -->
+                            <xsl:when test="ms:get-meta-share-mimetype(./ms:mimeType) != ''">
+                                <dataFormat>
+                                    <xsl:value-of select="ms:get-meta-share-mimetype(./ms:mimeType)"/>
+                                </dataFormat>
+                            </xsl:when>
                             <xsl:otherwise>
                                 <!-- this is supposed to thrown an error in order to deal with unknown mappings -->
-                                <dataFormat>http://w3id.org/meta-share/omtd-share/Unknown</dataFormat>
+                                <dataFormat>
+                                    <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/Unknown/',normalize-space(./ms:mimeType))"/>
+                                </dataFormat>
                             </xsl:otherwise>
                         </xsl:choose>
                         <!-- signalEncoding -->
@@ -594,6 +665,21 @@
                             </distributionTextFeature>
                         </xsl:if>
                     </xsl:for-each>
+                    <!-- distributionTextNumericalFeature | corpusTextNumericalInfo -->
+                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionTextNumericalFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:dataFormat))">
+                            <distributionTextNumericalFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionTextNumericalFeature>
+                        </xsl:if>
+                    </xsl:for-each>
                     <!-- distributionAudioFeature | corpusAudioInfo -->
                     <xsl:for-each select="./ms:corpusAudioInfo">
                         <!-- build feature -->
@@ -609,6 +695,10 @@
                             </distributionAudioFeature>
                         </xsl:if>
                     </xsl:for-each>
+                    <!-- distributionImageFeature | corpusImageInfo -->
+                    <xsl:for-each select="./ms:corpusImageInfo">
+                        <distributionImageFeature></distributionImageFeature>
+                    </xsl:for-each>
                     <!-- distributionVideoFeature | corpusVideoInfo -->
                     <xsl:for-each select="./ms:corpusVideoInfo">
                         <!-- build feature -->
@@ -623,14 +713,6 @@
                                 <xsl:copy-of select="$feature" />
                             </distributionVideoFeature>
                         </xsl:if>
-                    </xsl:for-each>
-                    <!-- distributionImageFeature | corpusImageInfo -->
-                    <xsl:for-each select="./ms:corpusImageInfo">
-                        <distributionImageFeature></distributionImageFeature>
-                    </xsl:for-each>
-                    <!-- distributionTextNumericalFeature | corpusTextNumericalInfo -->
-                    <xsl:for-each select="./ms:corpusTextNumericalInfo">
-                        <distributionTextNumericalFeature></distributionTextNumericalFeature>
                     </xsl:for-each>
                     <!-- distribution | corpusTextNgramInfo -->
                     <!-- QUESTION() To which distribution[*]Feature should corpusTextNgramInfo be transferred? -->
@@ -942,6 +1024,9 @@
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'expressions')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/expression</sizeUnit>
                     </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'files')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/file</sizeUnit>
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'frames')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/frame1</sizeUnit>
                     </xsl:when>
@@ -1102,57 +1187,60 @@
             <mediaType>http://w3id.org/meta-share/meta-share/image</mediaType>
         </xsl:if>
         <!-- mediaType: CorpusTextNumericalPart -->
-        <xsl:if test="$corpusMediaType = 'CorpusTextNumericalPart'"> 
+        <xsl:if test="$corpusMediaType = 'CorpusTextNumericalPart'">
             <mediaType>http://w3id.org/meta-share/meta-share/textNumerical</mediaType>
         </xsl:if>
-        <!-- lingualityType  -->
-        <xsl:call-template name="ElementMetaShareDefault">
-            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:lingualityType" />
-            <xsl:with-param name="default" select="'monolingual'" />
-            <xsl:with-param name="elementName" select="'lingualityType'" />
-        </xsl:call-template>
-        <!-- multilingualityType -->
-        <xsl:if test="normalize-space($el/ms:lingualityInfo/ms:multilingualityType) != ''">
-            <multilingualityType>
-                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:multilingualityType)" />
-            </multilingualityType>
+        <!-- all elements excepting CorpusTextNumericalPart  -->
+        <xsl:if test="$corpusMediaType != 'CorpusTextNumericalPart'"> 
+            <!-- lingualityType  -->
+            <xsl:call-template name="ElementMetaShareDefault">
+                <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:lingualityType" />
+                <xsl:with-param name="default" select="'monolingual'" />
+                <xsl:with-param name="elementName" select="'lingualityType'" />
+            </xsl:call-template>
+            <!-- multilingualityType -->
+            <xsl:if test="normalize-space($el/ms:lingualityInfo/ms:multilingualityType) != ''">
+                <multilingualityType>
+                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:multilingualityType)" />
+                </multilingualityType>
+            </xsl:if>
+            <!-- multilingualityTypeDetails -->
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:multilingualityTypeDetails" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'multilingualityTypeDetails'" />
+            </xsl:call-template>
+            <!-- language -->
+            <xsl:choose>
+                <xsl:when test="count($el/ms:languageInfo) > 0">
+                    <xsl:for-each select="$el/ms:languageInfo">
+                        <language>
+                            <xsl:call-template name="Language">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </language>
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                    <language><languageTag>und</languageTag></language>
+                </xsl:otherwise>
+            </xsl:choose>
+            <!-- languageVariety -->
+            <xsl:for-each select="$el/ms:languageInfo/ms:languageVarietyInfo">
+                <languageVariety>
+                    <!-- languageVarietyType -->
+                    <languageVarietyType>
+                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:languageVarietyType)" />
+                    </languageVarietyType>
+                    <!-- languageVarietyName -->
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="./ms:languageVarietyName" />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'languageVarietyName'" />
+                    </xsl:call-template>
+                </languageVariety>
+            </xsl:for-each>
         </xsl:if>
-        <!-- multilingualityTypeDetails -->
-        <xsl:call-template name="ElementCopyWithDefaultLang">
-            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:multilingualityTypeDetails" />
-            <xsl:with-param name="elementLang" select="'en'" />
-            <xsl:with-param name="elementName" select="'multilingualityTypeDetails'" />
-        </xsl:call-template>
-        <!-- language -->
-        <xsl:choose>
-            <xsl:when test="count($el/ms:languageInfo) > 0">
-                <xsl:for-each select="$el/ms:languageInfo">
-                    <language>
-                        <xsl:call-template name="Language">
-                            <xsl:with-param name="el" select="." />
-                        </xsl:call-template>
-                    </language>
-                </xsl:for-each>
-            </xsl:when>
-            <xsl:otherwise>
-                <language><languageTag>und</languageTag></language>
-            </xsl:otherwise>
-        </xsl:choose>
-        <!-- languageVariety -->
-        <xsl:for-each select="$el/ms:languageInfo/ms:languageVarietyInfo">
-            <languageVariety>
-                <!-- languageVarietyType -->
-                <languageVarietyType>
-                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:languageVarietyType)" />
-                </languageVarietyType>
-                <!-- languageVarietyName -->
-                <xsl:call-template name="ElementCopyWithDefaultLang">
-                    <xsl:with-param name="el" select="./ms:languageVarietyName" />
-                    <xsl:with-param name="elementLang" select="'en'" />
-                    <xsl:with-param name="elementName" select="'languageVarietyName'" />
-                </xsl:call-template>
-            </languageVariety>
-        </xsl:for-each>
         <!-- modalityType -->
     </xsl:template>
 
@@ -1636,11 +1724,18 @@
                                         <CorpusMediaPart>
                                             <!-- CorpusTextNumericalPart -->
                                             <CorpusTextNumericalPart>
-                                                <!-- common corpus elements  -->
+                                                <!-- common corpus elements -->
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
                                                 </xsl:call-template>
+                                                <!-- typeOfTextNumericalContent : QUESTION() what would be a default value ?  -->
+                                                <xsl:if test="not(./ms:textNumericalContentInfo)">
+                                                    <typeOfTextNumericalContent xml:lang="en">undefined</typeOfTextNumericalContent>
+                                                </xsl:if>
+                                                <xsl:for-each select="./ms:textNumericalContentInfo/ms:typeOfTextNumericalContent">
+                                                    <typeOfTextNumericalContent xml:lang="und"><xsl:value-of select="." /></typeOfTextNumericalContent>
+                                                </xsl:for-each>
                                                 <!-- creationMode -->
                                                 <xsl:call-template name="ElementMetaShare">
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
