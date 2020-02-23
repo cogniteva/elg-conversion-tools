@@ -417,11 +417,9 @@
                             </xsl:otherwise>
                         </xsl:choose>
                         <!-- signalEncoding -->
-                        <xsl:for-each select="./ms:signalEncoding">
-                            <signalEncoding>
-                                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" />
-                            </signalEncoding>
-                        </xsl:for-each>
+                        <xsl:call-template name="SignalEncoding">
+                            <xsl:with-param name="el" select="./ms:signalEncoding" />
+                        </xsl:call-template>
                         <!-- samplingRate  -->
                         <xsl:copy-of select="./ms:samplingRate" />
                         <!-- quantization  -->
@@ -680,6 +678,25 @@
                 <encodingLevel><xsl:value-of select="$default" /></encodingLevel>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+
+    <!-- template:SignalEncoding -->
+    <xsl:template name="SignalEncoding">
+        <xsl:param name="el" />
+        <!-- signalEncoding -->
+        <xsl:for-each select="$el">
+            <xsl:choose>
+                <xsl:when test="contains(lower-case(normalize-space(.)), 'μ')">
+                    <signalEncoding>http://w3id.org/meta-share/meta-share/mu-law</signalEncoding>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="ElementMetaShare">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementName" select="'signalEncoding'" />
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
 
     <!-- template:Language -->
