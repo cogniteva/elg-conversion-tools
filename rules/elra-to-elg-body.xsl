@@ -1154,54 +1154,70 @@
                         </actualUse>
                     </xsl:for-each>
                     <!-- validated -->
-                    <!-- ToBeDefined : QUESTION() can this be equal to AND($validationInfo/ms:validated/*) ? -->
+                    <xsl:if test="normalize-space(./ms:validationInfo) != ''">
+                        <validated>
+                             <!-- QUESTION() can this be equal to and($validationInfo/ms:validated) ? -->
+                             <!-- snippet from @see https://stackoverflow.com/a/14867414/2042871 -->
+                            <xsl:value-of select="not($validationInfo/ms:validated[. = 'false'])" />
+                        </validated>
                     <!-- validation -->
-                    <xsl:for-each select="$validationInfo">
-                        <validation>
-                            <!-- validationType -->
-                            <xsl:if test="normalize-space(./ms:validationType) != ''">
-                                <validationType>
-                                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationType)" />
-                                </validationType>
-                            </xsl:if>
-                            <!-- validationMode -->
-                            <xsl:if test="normalize-space(./ms:validationMode) != ''">
-                                <validationMode><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationMode)" /></validationMode>
-                            </xsl:if>
-                            <!-- validationDetails -->
-                            <validationDetails xml:lang="en"><xsl:value-of select="if (./ms:validated = 'true') then 'validated' else 'not validated'"/></validationDetails>
-                            <xsl:if test="normalize-space(./ms:validationModeDetails) != ''">
-                                <validationDetails xml:lang="und"><xsl:value-of select="./ms:validationModeDetails"/></validationDetails>
-                            </xsl:if>
-                            <xsl:if test="normalize-space(./ms:validationExtentDetails) != ''">
-                                <validationDetails xml:lang="und"><xsl:value-of select="./ms:validationExtentDetails"/></validationDetails>
-                            </xsl:if>
-                            <!-- validationExtent -->
-                            <xsl:if test="normalize-space(./ms:validationExtent) != ''">
-                                <validationExtent><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationExtent)" /></validationExtent>
-                            </xsl:if>
-                            <!-- validator | Person -->
-                            <xsl:for-each select="./ms:validator/ms:personInfo">
-                                <validator>
-                                    <Person>
-                                        <xsl:call-template name="GenericPerson">
-                                            <xsl:with-param name="el" select="." />
-                                        </xsl:call-template>
-                                    </Person>
-                                </validator>
-                            </xsl:for-each>
-                            <!-- validator | Organization -->
-                            <xsl:for-each select="./ms:validator/ms:organizationInfo">
-                                <validator>
-                                    <Organization>
-                                        <xsl:call-template name="GenericOrganization">
-                                            <xsl:with-param name="el" select="." />
-                                        </xsl:call-template>
-                                    </Organization>
-                                </validator>
-                            </xsl:for-each>
-                        </validation>
-                    </xsl:for-each>
+                        <xsl:for-each select="$validationInfo">
+                            <validation>
+                                <!-- validationType -->
+                                <xsl:if test="normalize-space(./ms:validationType) != ''">
+                                    <validationType>
+                                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationType)" />
+                                    </validationType>
+                                </xsl:if>
+                                <!-- validationMode -->
+                                <xsl:if test="normalize-space(./ms:validationMode) != ''">
+                                    <validationMode>
+                                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationMode)" />
+                                    </validationMode>
+                                </xsl:if>
+                                <!-- validationDetails | validated -->
+                                <validationDetails xml:lang="en">
+                                    <xsl:value-of select="if (./ms:validated = 'true') then 'validated' else 'not validated'"/>
+                                </validationDetails>
+                                <!-- validationDetails | validationModeDetails -->
+                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                    <xsl:with-param name="el" select="./ms:validationModeDetails" />
+                                    <xsl:with-param name="elementLang" select="'en'" />
+                                    <xsl:with-param name="elementName" select="'validationDetails'" />
+                                </xsl:call-template>
+                                <!-- validationDetails | validationExtentDetails -->
+                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                    <xsl:with-param name="el" select="./ms:validationExtentDetails" />
+                                    <xsl:with-param name="elementLang" select="'en'" />
+                                    <xsl:with-param name="elementName" select="'validationDetails'" />
+                                </xsl:call-template>
+                                <!-- validationExtent -->
+                                <xsl:if test="normalize-space(./ms:validationExtent) != ''">
+                                    <validationExtent><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:validationExtent)" /></validationExtent>
+                                </xsl:if>
+                                <!-- validator | Person -->
+                                <xsl:for-each select="./ms:validator/ms:personInfo">
+                                    <validator>
+                                        <Person>
+                                            <xsl:call-template name="GenericPerson">
+                                                <xsl:with-param name="el" select="." />
+                                            </xsl:call-template>
+                                        </Person>
+                                    </validator>
+                                </xsl:for-each>
+                                <!-- validator | Organization -->
+                                <xsl:for-each select="./ms:validator/ms:organizationInfo">
+                                    <validator>
+                                        <Organization>
+                                            <xsl:call-template name="GenericOrganization">
+                                                <xsl:with-param name="el" select="." />
+                                            </xsl:call-template>
+                                        </Organization>
+                                    </validator>
+                                </xsl:for-each>
+                            </validation>
+                        </xsl:for-each>
+                    </xsl:if>
                     <!-- isDocumentedBy -->
                     <xsl:for-each select="$resourceDocumentationInfo/ms:documentation/ms:documentInfo">
                         <isDocumentedBy>
