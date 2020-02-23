@@ -798,9 +798,34 @@
                                 </xsl:call-template>
                             </xsl:variable>
                             <xsl:choose>
+                                <xsl:when test="((substring($licenseName,1,5) = 'OTHER') or
+                                                ((substring($licenseName,1,5) = 'PROPR')))">
+                                    <licenceTermsURL><xsl:value-of select="'https://example.org/licenses/other.html'" /></licenceTermsURL>
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"><xsl:value-of select="'other'" /></LicenceIdentifier>
+                                </xsl:when>
                                 <xsl:when test="substring($licenseName,1,3) = 'CC-'">
                                     <licenceTermsURL><xsl:value-of select="concat('https://spdx.org/licenses/',$licenseName, '.html')" /></licenceTermsURL>
                                     <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX"><xsl:value-of select="$licenseName" /></LicenceIdentifier>
+                                </xsl:when>
+                                <xsl:when test="substring($licenseName,1,3) = 'MS-'">
+                                    <xsl:choose>
+                                        <xsl:when test="contains($licenseName,'MS-NC-NORED')">
+                                            <licenceTermsURL>
+                                                <xsl:value-of select="'http://www.meta-share.org/assets/pdf/META-SHARE_NonCommercial_NoRedistribution_v2.0.pdf'" />
+                                            </licenceTermsURL>
+                                        </xsl:when>
+                                        <xsl:when test="contains($licenseName,'MS-C-NORED')">
+                                            <licenceTermsURL>
+                                                <xsl:value-of select="'http://www.meta-share.org/assets/pdf/META-SHARE_NoRedistribution_v2.0.pdf'" />
+                                            </licenceTermsURL>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <licenceTermsURL>
+                                                <xsl:value-of select="concat('http://www.meta-share.org/assets/pdf/',$licenseName, '.pdf')" />
+                                            </licenceTermsURL>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"><xsl:value-of select="normalize-space(./ms:licence)" /></LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <licenceTermsURL>http://example.org/licenses/<xsl:value-of select="translate(upper-case($licenseName),'_','-')" />#<xsl:value-of select="lower-case($restrictions)" /></licenceTermsURL>
@@ -1100,6 +1125,9 @@
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'images')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/image2</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'items')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/item</sizeUnit>
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'minutes')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/minute</sizeUnit>
