@@ -664,7 +664,26 @@
         <!-- languageTag -->
         <languageTag><xsl:value-of select="$el/ms:languageId" /></languageTag>
         <!-- languageId -->
-        <xsl:copy-of select="$el/ms:languageId" />
+        <xsl:choose>
+            <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'es-'">
+              <languageId>es</languageId>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'pt-'">
+              <languageId>pt</languageId>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'sr-'">
+              <languageId>sr</languageId>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'ur-'">
+              <languageId>ur</languageId>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'zh-'">
+              <languageId>zh</languageId>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy-of select="$el/ms:languageId" />
+            </xsl:otherwise>
+        </xsl:choose>
         <!-- scriptId -->
         <xsl:choose>
             <xsl:when test="contains(lower-case(normalize-space($el/ms:languageScript)), 'arabic')">
@@ -718,7 +737,26 @@
         </xsl:choose>
         <!-- regionId  -->
         <xsl:if test="normalize-space($el/ms:region) != ''">
-            <scriptId><xsl:value-of select="$el/ms:region" /></scriptId>
+            <xsl:choose>
+                <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'latin america')">
+                <!-- DO NOT MAP -->
+                </xsl:when>
+                <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'brazil')">
+                    <regionId>BR</regionId>
+                </xsl:when>
+                <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'china')">
+                    <regionId>CN</regionId>
+                </xsl:when>
+                <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'macedonia')">
+                    <regionId>MK</regionId>
+                </xsl:when>
+                <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'pakistan')">
+                    <regionId>PK</regionId>
+                </xsl:when>
+                <xsl:otherwise>
+                    <regionId><xsl:value-of select="$el/ms:region" /></regionId>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:if>
         <!-- variantId  -->
         <!-- <variantId><xsl:value-of select="$el/ms:variant" /></variantId> -->
