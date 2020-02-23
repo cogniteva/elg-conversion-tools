@@ -1045,7 +1045,7 @@
             <!-- metadataLastDateUpdated -->
             <metadataLastDateUpdated><xsl:value-of  select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/></metadataLastDateUpdated>
             <!-- metadataCurator -->
-            <xsl:for-each select="$contactPerson">
+            <xsl:for-each select="//ms:MetadataRecord/ms:contactPerson">
                 <metadataCurator>
                     <xsl:call-template name="GenericPerson">
                         <xsl:with-param name="el" select="." />
