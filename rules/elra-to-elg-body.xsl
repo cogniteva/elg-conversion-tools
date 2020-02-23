@@ -633,7 +633,7 @@
                         <distributionTextNumericalFeature></distributionTextNumericalFeature>
                     </xsl:for-each>
                     <!-- distribution | corpusTextNgramInfo -->
-                    <!-- ToBeDefined -->
+                    <!-- QUESTION() To which distribution[*]Feature should corpusTextNgramInfo be transferred? -->
                 </xsl:for-each>
                 <!-- licenceTerms -->
                 <xsl:for-each select="./ms:licenceInfo">
@@ -927,7 +927,7 @@
         <xsl:param name="el" />
         <xsl:param name="elementName" />
         <!-- QUESTION() is there an alternative to deal with size:'no size available'? -->
-        <!-- grep-number() allows to match sizes expressions like 'to 18' or 'set: 3.75' -->
+        <!-- grep-number() allows to match size expressions like 'to 18' or 'set: 3.75' -->
         <!-- <xsl:message><xsl:value-of select="ms:grep-number($el/ms:size)" /></xsl:message> -->
         <xsl:if test="ms:grep-number($el/ms:size) != 'NaN'">
             <xsl:element name="{$elementName}">
@@ -965,6 +965,12 @@
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'tokens')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/token</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'units')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/unit</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'utterances')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/utterance1</sizeUnit>
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'words')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/word3</sizeUnit>
@@ -1015,17 +1021,26 @@
                     <xsl:when test="lower-case(./ms:annotationType) = 'other'">
                         <xsl:value-of select="'Domain-specificAnnotation'" />
                     </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'alignment')">
+                        <xsl:value-of select="'Domain-specificAnnotation'" />
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'lemma')">
                         <xsl:value-of select="'Lemma'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'morphosyntacticannotation')">
                         <xsl:value-of select="'MorphologicalAnnotationType'" />
                     </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'speechannotation')">
-                        <xsl:value-of select="'SpeechAct'" />
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'segmentation')">
+                        <xsl:value-of select="'Domain-specificAnnotation'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'semanticannotation')">
                         <xsl:value-of select="'SemanticAnnotationType'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'speechannotation')">
+                        <xsl:value-of select="'SpeechAct'" />
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'structuralannotation')">
+                        <xsl:value-of select="'StructuralAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'syntacticannotation')">
                         <xsl:value-of select="'SyntacticAnnotationType'" />
