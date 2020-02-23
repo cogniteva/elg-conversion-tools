@@ -289,6 +289,25 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:CharacterEncoding -->
+    <xsl:template name="CharacterEncoding">
+        <xsl:param name="el" />
+        <!-- characterEncoding -->
+        <xsl:for-each select="$el">
+            <xsl:choose>
+                <xsl:when test="contains(lower-case(normalize-space(./ms:characterEncoding)), 'utf8')">
+                    <characterEncoding>http://w3id.org/meta-share/meta-share/UTF-8</characterEncoding>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="ElementMetaShare">
+                        <xsl:with-param name="el" select="./ms:characterEncoding" />
+                        <xsl:with-param name="elementName" select="'characterEncoding'" />
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:DistributionTextFeature -->
     <xsl:template name="DistributionTextFeature">
         <xsl:param name="el" />
@@ -356,9 +375,9 @@
             </xsl:otherwise>
         </xsl:choose>
         <!-- characterEncoding -->
-        <xsl:for-each select="$el/ms:characterEncodingInfo">
-            <xsl:copy-of select="./ms:characterEncoding" />
-        </xsl:for-each>
+        <xsl:call-template name="CharacterEncoding">
+            <xsl:with-param name="el" select="$el/ms:characterEncodingInfo" />
+        </xsl:call-template>
     </xsl:template>
 
     <!-- template:DistributionVideoFeature -->
