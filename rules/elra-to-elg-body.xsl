@@ -851,6 +851,9 @@
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'expressions')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/expression</sizeUnit>
                     </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'frames')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/frame1</sizeUnit>
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'hours')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/hour1</sizeUnit>
                     </xsl:when>
