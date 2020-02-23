@@ -481,17 +481,34 @@
         <xsl:for-each select="$distributionInfo/*">
             <DatasetDistribution>
                 <!-- QUESTION() What happen with distributionInfo/availability? -->
+                <!-- QUESTION() what about multiple DatasetDistributionForm ? -->
                 <!-- DatasetDistributionForm -->
                 <xsl:choose>
-                    <xsl:when test="normalize-space(./ms:distributionAccessMedium) != ''">
-                        <xsl:for-each select="./ms:distributionAccessMedium">
-                            <DatasetDistributionForm>
-                                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" />
-                            </DatasetDistributionForm>
-                        </xsl:for-each>
+                    <xsl:when test="count(./ms:distributionAccessMedium) lt 2">
+                        <xsl:choose>
+                            <xsl:when test="normalize-space(./ms:distributionAccessMedium) != ''">
+                                <xsl:for-each select="./ms:distributionAccessMedium">
+                                    <DatasetDistributionForm>
+                                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',.)" />
+                                    </DatasetDistributionForm>
+                                </xsl:for-each>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/other</DatasetDistributionForm>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/other</DatasetDistributionForm>
+                        <xsl:choose>
+                            <xsl:when test="normalize-space((./ms:downloadLocation)[1]) != ''">
+                                <DatasetDistributionForm>http://w3id.org/meta-share/meta-share/downloadable</DatasetDistributionForm>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <DatasetDistributionForm>
+                                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',normalize-space((./ms:distributionAccessMedium)[1]))" />
+                                </DatasetDistributionForm>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:otherwise>
                 </xsl:choose>
                 <!-- distributionLocation -->
