@@ -966,6 +966,9 @@
             <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'es-'">
               <languageId>es</languageId>
             </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'lsf'">
+              <languageId>sgn</languageId>
+            </xsl:when>
             <xsl:when test="substring(lower-case(normalize-space($el/ms:languageId)),1,3) = 'pt-'">
               <languageId>pt</languageId>
             </xsl:when>
