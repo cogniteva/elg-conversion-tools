@@ -234,6 +234,26 @@
         </xsl:if>
     </xsl:template>
 
+    <!-- template:ElementMetaShareDefault -->
+    <xsl:template name="ElementMetaShareDefault">
+        <xsl:param name="el" />
+        <xsl:param name="default" />
+        <xsl:param name="elementName" />
+        <xsl:choose>
+            <xsl:when test="normalize-space($el) = ''">
+                <xsl:element name="{$elementName}">
+                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',$default)" />
+                </xsl:element>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="elementName" select="$elementName" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:ElementCopyWithDefaultLang  -->
     <xsl:template name="ElementCopyWithDefaultLang">
         <xsl:param name="el" />
@@ -964,7 +984,11 @@
             <mediaType>http://w3id.org/meta-share/meta-share/textNumerical</mediaType>
         </xsl:if>
         <!-- lingualityType  -->
-        <lingualityType><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:lingualityType)" /></lingualityType>
+        <xsl:call-template name="ElementMetaShareDefault">
+            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:lingualityType" />
+            <xsl:with-param name="default" select="'monolingual'" />
+            <xsl:with-param name="elementName" select="'lingualityType'" />
+        </xsl:call-template>
         <!-- multilingualityType -->
         <xsl:if test="normalize-space($el/ms:lingualityInfo/ms:multilingualityType) != ''">
             <multilingualityType>
@@ -1616,7 +1640,11 @@
                                         <!-- mediaType  -->
                                         <mediaType>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:mediaType" /></mediaType>
                                         <!-- lingualityType  -->
-                                        <lingualityType>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:lingualityInfo/ms:lingualityType" /></lingualityType>
+                                        <xsl:call-template name="ElementMetaShareDefault">
+                                            <xsl:with-param name="el" select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:lingualityInfo/ms:lingualityType" />
+                                            <xsl:with-param name="default" select="'monolingual'" />
+                                            <xsl:with-param name="elementName" select="'lingualityType'" />
+                                        </xsl:call-template>
                                         <!-- language -->
                                         <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
                                             <language>
