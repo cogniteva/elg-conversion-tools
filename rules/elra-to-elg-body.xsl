@@ -1065,9 +1065,13 @@
                     <!-- description  -->
                     <xsl:copy-of select="$identificationInfo/ms:description"/>
                     <!--  LRIdentifier islrn: -->
-                    <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/islrn"><xsl:value-of select="$identificationInfo/ms:ISLRN" /></LRIdentifier>
-                    <!--  LRIdentifier elra: -->
-                    <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other"><xsl:value-of select="$identificationInfo/ms:identifier" /></LRIdentifier>
+                    <xsl:if test="normalize-space($identificationInfo/ms:ISLRN) != ''">
+                        <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/islrn"><xsl:value-of select="$identificationInfo/ms:ISLRN" /></LRIdentifier>
+                    </xsl:if>
+                    <!--  LRIdentifier other: -->
+                    <xsl:for-each select="$identificationInfo/ms:identifier">
+                        <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other"><xsl:value-of select="." /></LRIdentifier>
+                    </xsl:for-each>
                     <!-- logo  -->
                     <!-- ToBeDefined -->
                     <!-- version  -->
