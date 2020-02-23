@@ -1322,7 +1322,11 @@
                         <versionDate><xsl:value-of select="$versionInfo/ms:lastDateUpdated"/></versionDate>
                     </xsl:if>
                     <!-- updateFrequency -->
-                    <xsl:copy-of select="$versionInfo/ms:updateFrequency"/>
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="$versionInfo/ms:updateFrequency" />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'updateFrequency'" />
+                    </xsl:call-template>
                     <!-- revision -->
                     <xsl:if test="normalize-space($versionInfo/ms:revision) != ''">
                         <xsl:choose>
