@@ -435,6 +435,11 @@
                                 <byteOrder>http://w3id.org/meta-share/meta-share/bigEndian</byteOrder>
                             </xsl:when>
                         </xsl:choose>
+                        <!-- signConvention -->
+                        <xsl:call-template name="ElementMetaShare">
+                            <xsl:with-param name="el" select="./ms:signConvention" />
+                            <xsl:with-param name="elementName" select="'signConvention'" />
+                        </xsl:call-template>
                         <!-- compressed: QUESTION() Why this is mandatory? -->
                         <compressed>
                             <xsl:value-of select="if (./ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/>
@@ -610,6 +615,25 @@
                     <xsl:with-param name="actorElement" select="'distributionRightsHolder'" />
                 </xsl:call-template>
             </DatasetDistribution>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:SegmentationLevel -->
+    <xsl:template name="SegmentationLevel">
+        <xsl:param name="el" />
+        <!-- segmentationLevel -->
+        <xsl:for-each select="$el">
+            <xsl:choose>
+                <xsl:when test="contains(lower-case(normalize-space(.)), 'word')">
+                    <segmentationLevel>http://w3id.org/meta-share/meta-share/word1</segmentationLevel>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="ElementMetaShare">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementName" select="'segmentationLevel'" />
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:for-each>
     </xsl:template>
 
@@ -864,6 +888,10 @@
                 <!-- annotatedElement -->
                 <xsl:call-template name="AnnotatedElement">
                     <xsl:with-param name="el" select="./ms:annotatedElements" />
+                </xsl:call-template>
+                <!-- segmentationLevel -->
+                <xsl:call-template name="SegmentationLevel">
+                    <xsl:with-param name="el" select="./ms:segmentationLevel" />
                 </xsl:call-template>
                 <!-- annotationModeDetails -->
                 <xsl:call-template name="ElementCopyWithDefaultLang">
