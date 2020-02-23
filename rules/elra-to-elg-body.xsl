@@ -604,7 +604,12 @@
                     </cost>
                 </xsl:if>
                 <!-- membershipInstitution -->
-                <membershipInstitution><xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',./ms:membershipInfo/ms:membershipInstitution)" /></membershipInstitution>
+                <xsl:for-each select="./ms:membershipInfo">
+                    <xsl:call-template name="ElementMetaShare">
+                        <xsl:with-param name="el" select="./ms:membershipInstitution" />
+                        <xsl:with-param name="elementName" select="'membershipInstitution'" />
+                    </xsl:call-template>
+                </xsl:for-each>
                 <!-- ms:availabilityStartDate -->
                 <xsl:copy-of select="./ms:availabilityStartDate" />
                 <!-- ms:distributionRightsHolder -->
