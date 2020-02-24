@@ -1809,6 +1809,14 @@
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
+                                                <!-- originalSourceDescription -->
+                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
@@ -1909,6 +1917,13 @@
                                                 <!-- isCreatedBy -->
                                                 <!-- hasOriginalSource -->
                                                 <!-- originalSourceDescription -->
+                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- syntheticData -->
                                                 <!-- creationDetails -->
                                                 <!-- QUESTION() it's ok to map subject_topic to creationDetails? -->
@@ -1949,6 +1964,14 @@
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
+                                                <!-- originalSourceDescription -->
+                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
@@ -1967,11 +1990,6 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
                                                 </xsl:call-template>
-                                                <!-- creationMode -->
-                                                <xsl:call-template name="ElementMetaShare">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
-                                                    <xsl:with-param name="elementName" select="'creationMode'" />
-                                                </xsl:call-template>
                                                 <!-- typeOfImageContent : QUESTION() what would be a default value ?  -->
                                                 <xsl:if test="not(./ms:imageContentInfo)">
                                                     <typeOfImageContent xml:lang="en">undefined</typeOfImageContent>
@@ -1979,11 +1997,19 @@
                                                 <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
                                                     <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
                                                 </xsl:for-each>
-                                                <!-- creationMode -->
+                                               <!-- creationMode -->
                                                 <xsl:call-template name="ElementMetaShare">
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
+                                                <!-- originalSourceDescription -->
+                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
@@ -2014,6 +2040,14 @@
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
+                                                <!-- originalSourceDescription -->
+                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
+                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                                                        <xsl:with-param name="elementLang" select="'en'" />
+                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
