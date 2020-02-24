@@ -1366,7 +1366,7 @@
     </xsl:template>
 
     <!-- template:CorpusPart -->
-    <xsl:template name="CorpusPart">
+    <xsl:template name="CorpusPartStart">
         <xsl:param name="el" />
         <xsl:param name="corpusMediaType" />
         <!-- corpusMediaType  -->
@@ -1833,7 +1833,7 @@
                                             <!-- CorpusTextPart -->
                                             <CorpusTextPart>
                                                 <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPart">
+                                                <xsl:call-template name="CorpusPartStart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
                                                 </xsl:call-template>
@@ -1852,7 +1852,7 @@
                                             <!-- CorpusAudioPart -->
                                             <CorpusAudioPart>
                                                 <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPart">
+                                                <xsl:call-template name="CorpusPartStart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
                                                 </xsl:call-template>
@@ -1945,7 +1945,7 @@
                                             <!-- CorpusVideoPart -->
                                             <CorpusVideoPart>
                                                 <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPart">
+                                                <xsl:call-template name="CorpusPartStart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
                                                 </xsl:call-template>
@@ -1971,7 +1971,7 @@
                                             <!-- CorpusImagePart -->
                                             <CorpusImagePart>
                                                 <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPart">
+                                                <xsl:call-template name="CorpusPartStart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
                                                 </xsl:call-template>
@@ -1997,7 +1997,7 @@
                                             <!-- CorpusTextNumericalPart -->
                                             <CorpusTextNumericalPart>
                                                 <!-- common corpus start elements -->
-                                                <xsl:call-template name="CorpusPart">
+                                                <xsl:call-template name="CorpusPartStart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
                                                 </xsl:call-template>
