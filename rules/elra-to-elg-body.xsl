@@ -1003,7 +1003,7 @@
     </xsl:template>
 
     <!-- template:AnnotatedElement -->
-    <xsl:template name="AnnotatedElement">
+    <xsl:template name="AnnotatedElements">
         <xsl:param name="el" />
         <!-- annotatedElements -->
         <xsl:for-each select="$el">
@@ -1348,13 +1348,38 @@
                 <annotationType>
                     <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', $annotationType)" />
                 </annotationType>
-                <!-- annotatedElement -->
-                <xsl:call-template name="AnnotatedElement">
+                <!-- annotatedElements -->
+                <xsl:call-template name="AnnotatedElements">
                     <xsl:with-param name="el" select="./ms:annotatedElements" />
                 </xsl:call-template>
                 <!-- segmentationLevel -->
                 <xsl:call-template name="SegmentationLevel">
                     <xsl:with-param name="el" select="./ms:segmentationLevel" />
+                </xsl:call-template>
+                <!-- annotationStandoff -->
+                <xsl:copy-of select="./ms:annotationStandoff"/>
+                <!-- guidelines -->
+                <!-- ToBeMapped with annotationManual -->
+                <!-- tagset -->
+                <xsl:if test="normalize-space(./ms:tagset) != ''">
+                    <tagset>
+                        <xsl:call-template name="ElementCopyWithDefaultLang">
+                            <xsl:with-param name="el" select="./ms:tagset" />
+                            <xsl:with-param name="elementLang" select="'en'" />
+                            <xsl:with-param name="elementName" select="'resourceName'" />
+                        </xsl:call-template>
+                    </tagset>
+                </xsl:if>
+                <!-- theoreticModel -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:theoreticModel" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'theoreticModel'" />
+                </xsl:call-template>
+                <!-- annotationMode -->
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="./ms:annotationMode" />
+                    <xsl:with-param name="elementName" select="'annotationMode'" />
                 </xsl:call-template>
                 <!-- annotationModeDetails -->
                 <xsl:call-template name="ElementCopyWithDefaultLang">
@@ -1362,6 +1387,38 @@
                     <xsl:with-param name="elementLang" select="'en'" />
                     <xsl:with-param name="elementName" select="'annotationModeDetails'" />
                 </xsl:call-template>
+                <!-- isAnnotatedBy -->
+                <xsl:for-each select="./ms:annotationTool">
+                    <isAnnotatedBy>
+                        <xsl:call-template name="ElementCopyWithDefaultLang">
+                            <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                            <xsl:with-param name="elementLang" select="'en'" />
+                            <xsl:with-param name="elementName" select="'resourceName'" />
+                        </xsl:call-template>
+                    </isAnnotatedBy>
+                </xsl:for-each>
+                <!-- annotator -->
+                <xsl:call-template name="Actor">
+                    <xsl:with-param name="el" select="./ms:annotator" />
+                    <xsl:with-param name="actorElement" select="'annotator'" />
+                </xsl:call-template>
+                <!-- annotationStartDate -->
+                <xsl:copy-of select="./ms:annotationStartDate"/>
+                <!-- annotationEndDate -->
+                <xsl:copy-of select="./ms:annotationEndDate"/>
+                <!-- interannotatorAgreement -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:interannotatorAgreement" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'interannotatorAgreement'" />
+                </xsl:call-template>
+                <!-- intraannotatorAgreement -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:intraannotatorAgreement" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'intraannotatorAgreement'" />
+                </xsl:call-template>
+                <!-- annotationReport -->
                 <!-- QUESTION() What about annotationFormat? -->
                 <!-- QUESTION() What about conformanceToStandardsBestPractices? -->
             </annotation>
