@@ -366,6 +366,18 @@
         </xsl:if>
     </xsl:template>
 
+    <!-- template:ElementOmtdShare -->
+    <xsl:template name="ElementOmtdShare">
+        <xsl:param name="el" />
+        <xsl:param name="elementName" />
+        <xsl:if test="normalize-space($el) != ''">
+            <xsl:element name="{$elementName}">
+                <xsl:copy-of  select="$el/@*"/>
+                <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',normalize-space($el))" />
+            </xsl:element>
+        </xsl:if>
+    </xsl:template>
+
     <!-- template:ElementMetaShareDefault -->
     <xsl:template name="ElementMetaShareDefault">
         <xsl:param name="el" />
@@ -1079,6 +1091,22 @@
                     <xsl:with-param name="el" select="$el" />
                     <xsl:with-param name="elementName" select="'lcrSubclass'" />
                 </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- template:LTClass -->
+    <xsl:template name="LTClass">
+        <xsl:param name="el" />
+        <!-- LTClassRecommended -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space($el)), 'textualentailment')">
+                <LTClassRecommended>http://w3id.org/meta-share/omtd-share/AnnotationOfTextualEntailment</LTClassRecommended>
+            </xsl:when>
+            <xsl:otherwise>
+                <LTClassOther>
+                    <xsl:value-of select="normalize-space($el)"/>
+                </LTClassOther>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -1876,20 +1904,24 @@
                         </fundingProject>
                     </xsl:for-each>
                     <!-- intendedApplication -->
-                    <!-- ToBeDefined -->
+                    <xsl:for-each select="$usageInfo/ms:foreseenUseInfo">
+                        <xsl:for-each select="./ms:useNLPSpecific">
+                            <intendedApplication>
+                                <xsl:call-template name="LTClass">
+                                    <xsl:with-param name="el" select="." />
+                                </xsl:call-template>
+                            </intendedApplication>
+                        </xsl:for-each>
+                    </xsl:for-each>
                     <!-- actualUse  -->
                     <xsl:for-each select="$usageInfo/ms:actualUseInfo">
                         <actualUse>
                             <!-- usedInApplication -->
                             <xsl:for-each select="./ms:useNLPSpecific">
                                 <usedInApplication>
-                                    <!-- FIXTHIS() OMTD classes are not strictly mapped with METASHARE useNLPSpecific -->
-                                    <!--
-                                    <xsl:variable name="ltclass"><xsl:value-of select="ms:upper-first(.)" /></xsl:variable>
-                                    <LTClassRecommended><xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',$ltclass)" /></LTClassRecommended>
-                                    -->
-                                    <!-- HOTFIX() use LTClassOther -->
-                                    <LTClassOther><xsl:value-of select="." /></LTClassOther>
+                                        <xsl:call-template name="LTClass">
+                                            <xsl:with-param name="el" select="." />
+                                        </xsl:call-template>
                                 </usedInApplication>
                             </xsl:for-each>
                             <!-- usageProject -->
