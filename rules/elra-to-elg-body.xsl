@@ -365,6 +365,36 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:LinkToOtherMedia -->
+    <xsl:template name="LinkToOtherMedia">
+        <xsl:param name="el" />
+        <xsl:for-each select="$el">
+            <linkToOtherMedia>
+                <!-- otherMedia -->
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="./ms:otherMedia" />
+                    <xsl:with-param name="elementName" select="'otherMedia'" />
+                </xsl:call-template>
+                <!-- mediaTypeDetails -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:mediaTypeDetails" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'mediaTypeDetails'" />
+                </xsl:call-template>
+                <!-- synchronizedWithText -->
+                <xsl:copy-of select="./ms:synchronizedWithText" />
+                <!-- synchronizedWithAudio -->
+                <xsl:copy-of select="./ms:synchronizedWithAudio" />
+                <!-- synchronizedWithVideo -->
+                <xsl:copy-of select="./ms:synchronizedWithVideo" />
+                <!-- synchronizedWithImage -->
+                <xsl:copy-of select="./ms:synchronizedWithImage" />
+                <!-- synchronizedWithTextNumerical -->
+                <xsl:copy-of select="./ms:synchronizedWithTextNumerical" />
+            </linkToOtherMedia>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:CharacterEncoding -->
     <xsl:template name="CharacterEncoding">
         <xsl:param name="el" />
@@ -1627,25 +1657,27 @@
                     <!-- NoMapAvalaible -->
                     <!-- relation -->
                     <xsl:for-each select="$relationInfo">
-                        <relation>
-                            <!-- relationType -->
-                            <xsl:for-each select="./ms:relationType">
-                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                    <xsl:with-param name="el" select="." />
-                                    <xsl:with-param name="elementLang" select="'en'" />
-                                    <xsl:with-param name="elementName" select="'relationType'" />
-                                </xsl:call-template>
-                            </xsl:for-each>
-                            <!-- relatedLR -->
-                            <relatedLR>
-                                <!-- resourceName -->
-                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                    <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
-                                    <xsl:with-param name="elementLang" select="'en'" />
-                                    <xsl:with-param name="elementName" select="'resourceName'" />
-                                </xsl:call-template>
-                            </relatedLR>
-                        </relation>
+                        <xsl:if test="normalize-space(./ms:relatedResource/ms:targetResourceNameURI) != ''">
+                            <relation>
+                                <!-- relationType -->
+                                <xsl:for-each select="./ms:relationType">
+                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                        <xsl:with-param name="el" select="." />
+                                        <xsl:with-param name="elementLang" select="'en'" />
+                                        <xsl:with-param name="elementName" select="'relationType'" />
+                                    </xsl:call-template>
+                                </xsl:for-each>
+                                <!-- relatedLR -->
+                                <relatedLR>
+                                    <!-- resourceName -->
+                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                        <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
+                                        <xsl:with-param name="elementLang" select="'en'" />
+                                        <xsl:with-param name="elementName" select="'resourceName'" />
+                                    </xsl:call-template>
+                                </relatedLR>
+                            </relation>
+                        </xsl:if>
                     </xsl:for-each>
                     <!-- LRSubclass -->
                     <LRSubclass>
@@ -1687,6 +1719,10 @@
                                                 <xsl:call-template name="ElementMetaShare">
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
+                                                <!-- linkToOtherMedia -->
+                                                <xsl:call-template name="LinkToOtherMedia">
+                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
                                                 </xsl:call-template>
                                             </CorpusTextPart>
                                         </CorpusMediaPart>
@@ -1795,6 +1831,9 @@
                                                     </xsl:call-template>
                                                 </xsl:for-each>
                                                 <!-- linkToOtherMedia -->
+                                                <xsl:call-template name="LinkToOtherMedia">
+                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                </xsl:call-template>
                                             </CorpusAudioPart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
@@ -1820,6 +1859,10 @@
                                                 <xsl:call-template name="ElementMetaShare">
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
+                                                <!-- linkToOtherMedia -->
+                                                <xsl:call-template name="LinkToOtherMedia">
+                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
                                                 </xsl:call-template>
                                             </CorpusVideoPart>
                                         </CorpusMediaPart>
@@ -1852,6 +1895,10 @@
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
                                                 </xsl:call-template>
+                                                <!-- linkToOtherMedia -->
+                                                <xsl:call-template name="LinkToOtherMedia">
+                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                </xsl:call-template>
                                             </CorpusImagePart>
                                         </CorpusMediaPart>
                                     </xsl:for-each>
@@ -1877,6 +1924,10 @@
                                                 <xsl:call-template name="ElementMetaShare">
                                                     <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
                                                     <xsl:with-param name="elementName" select="'creationMode'" />
+                                                </xsl:call-template>
+                                                <!-- linkToOtherMedia -->
+                                                <xsl:call-template name="LinkToOtherMedia">
+                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
                                                 </xsl:call-template>
                                             </CorpusTextNumericalPart>
                                         </CorpusMediaPart>
