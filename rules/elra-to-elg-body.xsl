@@ -57,7 +57,7 @@
     <xsl:output encoding='UTF-8' indent='yes' method='xml'/>
 
     <!-- format:cost  -->
-    <xsl:decimal-format name="cost" decimal-separator="," grouping-separator="."/>
+    <xsl:decimal-format name="cost"   decimal-separator="," grouping-separator="."/>
 
     <!-- format:number  -->
     <xsl:decimal-format name="number" decimal-separator="," grouping-separator="."/>
@@ -170,7 +170,7 @@
         <xsl:param name="text" />
         <xsl:analyze-string select="$text" regex="^[^0-9]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?).*$">
             <xsl:matching-substring>
-                <xsl:value-of select="format-number(number(regex-group(1)), '#', 'number')"/>
+                <xsl:value-of select="number(regex-group(1))"/>
             </xsl:matching-substring>
             <xsl:non-matching-substring>
                 <xsl:value-of select="format-number(number($text), '#', 'number')"/>
@@ -958,7 +958,7 @@
                 <xsl:if test="normalize-space(./ms:fee) != ''">
                     <cost>
                         <!-- ms:amount -->
-                        <amount><xsl:value-of select="format-number(./ms:fee, '#.###,00', 'cost')" /></amount>
+                        <amount><xsl:value-of select="normalize-space(./ms:fee)" /></amount>
                         <!-- ms:currency -->
                         <currency>http://w3id.org/meta-share/meta-share/euro</currency>
                     </cost>
@@ -1365,7 +1365,7 @@
         </xsl:for-each>
     </xsl:template>
 
-    <!-- template:CorpusPart -->
+    <!-- template:CorpusPartStart -->
     <xsl:template name="CorpusPartStart">
         <xsl:param name="el" />
         <xsl:param name="corpusMediaType" />
@@ -1452,6 +1452,154 @@
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:CorpusPartMid -->
+    <xsl:template name="CorpusPartMid">
+        <xsl:param name="el" />
+        <xsl:param name="corpusMediaType" />
+        <!-- CorpusTextPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusTextPart'">
+            <!-- "ms:textType" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "ms:TextGenre" minOccurs="0" maxOccurs="unbounded" -->
+        </xsl:if>
+        <!-- CorpusImagePart -->
+        <xsl:if test="$corpusMediaType = 'CorpusImagePart'">
+            <!-- "ImageGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "typeOfImageContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:imageContentInfo)">
+                <typeOfImageContent xml:lang="en">undefined</typeOfImageContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
+                <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
+            </xsl:for-each>
+            <!-- "textIncludedInImage" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "staticElement" minOccurs="0" maxOccurs="unbounded" -->
+        </xsl:if>
+        <!-- CorpusAudioPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusAudioPart'">
+            <!-- "AudioGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:audioClassificationInfo">
+                <AudioGenre>
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="./ms:audioGenre" />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'categoryLabel'" />
+                    </xsl:call-template>
+                </AudioGenre>
+            </xsl:for-each>
+            <!-- "SpeechGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "speechItem" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "nonSpeechItem" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "legend" minOccurs="0" -->
+            <!-- "noiseLevel" minOccurs="0" -->
+        </xsl:if>
+        <!-- CorpusVideoPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusVideoPart'">
+            <!-- "VideoGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "typeOfVideoContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:videoContentInfo)">
+                <typeOfVideoContent xml:lang="en">undefined</typeOfVideoContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
+                <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
+            </xsl:for-each>
+            <!-- "textIncludedInVideo" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "dynamicElement" minOccurs="0" maxOccurs="unbounded" -->
+        </xsl:if>
+        <!-- CorpusAudioPart | CorpusVideoPart -->
+        <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
+                       ($corpusMediaType = 'CorpusVideoPart'))">
+            <!-- "naturality" minOccurs="0" -->
+            <!-- "conversationalType" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "scenarioType" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "audience" minOccurs="0" -->
+            <!-- "interactivity" minOccurs="0" -->
+            <!-- "interaction" minOccurs="0" maxOccurs="unbounded" -->
+        </xsl:if>
+        <!-- CorpusTextNumericalPart -->
+        <xsl:if test="$corpusMediaType = 'CorpusTextNumericalPart'">
+            <!-- "typeOfTextNumericalContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:textNumericalContentInfo)">
+                <typeOfTextNumericalContent xml:lang="en">undefined</typeOfTextNumericalContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:textNumericalContentInfo/ms:typeOfTextNumericalContent">
+                <typeOfTextNumericalContent xml:lang="und"><xsl:value-of select="." /></typeOfTextNumericalContent>
+            </xsl:for-each>
+        </xsl:if>
+        <!-- CorpusAudioPart | CorpusVideoPart | CorpusTextNumericalPart -->
+        <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
+                       ($corpusMediaType = 'CorpusVideoPart') or
+                       ($corpusMediaType = 'CorpusTextNumericalPart'))">
+            <!-- "recordingDeviceType" minOccurs="0" -->
+            <!-- "recordingDeviceTypeDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:recordingInfo/ms:recordingDeviceTypeDetails">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'recordingDeviceTypeDetails'" />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "recordingPlatformSoftware" minOccurs="0" -->
+            <!-- "recordingEnvironment" minOccurs="0" -->
+            <xsl:for-each select="./ms:recordingInfo/ms:recordingEnvironment">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'recordingEnvironment'" />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "sourceChannel" minOccurs="0" -->
+            <xsl:for-each select="./ms:recordingInfo/ms:sourceChannel">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'sourceChannel'" />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "sourceChannelType" minOccurs="0" -->
+            <!-- "sourceChannelName" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "sourceChannelDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelDetails">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'sourceChannelDetails'" />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "recorder" minOccurs="0" maxOccurs="unbounded" -->
+        </xsl:if>
+        <!-- CorpusAudioPart | CorpusVideoPart | CorpusTextNumericalPart | CorpusImagePart -->
+        <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
+                       ($corpusMediaType = 'CorpusVideoPart') or
+                       ($corpusMediaType = 'CorpusTextNumericalPart') or
+                       ($corpusMediaType = 'CorpusImagePart'))">
+            <!-- "capturingDeviceType" minOccurs="0" -->
+            <!-- "capturingDeviceTypeDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "capturingDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "capturingEnvironment" minOccurs="0" -->
+            <!-- "sensorTechnology" minOccurs="0" -->
+            <!-- "sceneIllumination" minOccurs="0" -->
+        </xsl:if>
+        <!-- CorpusAudioPart | CorpusVideoPart | CorpusTextNumericalPart -->
+        <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
+                       ($corpusMediaType = 'CorpusVideoPart') or
+                       ($corpusMediaType = 'CorpusTextNumericalPart'))">
+            <!-- "numberOfParticipants" minOccurs="0" -->
+            <!-- "ageGroupOfParticipants" minOccurs="0" -->
+            <!-- "ageRangeStartOfParticipants" minOccurs="0" -->
+            <!-- "ageRangeEndOfParticipants" minOccurs="0" -->
+            <!-- "sexOfParticipants" minOccurs="0" -->
+            <!-- "originOfParticipants" minOccurs="0" -->
+            <!-- "dialectAccentOfParticipants" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "geographicDistributionOfParticipants" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "hearingImpairmentOfParticipants" minOccurs="0" -->
+            <!-- "speakingImpairmentOfParticipants" minOccurs="0" -->
+            <!-- "numberOfTrainedSpeakers" minOccurs="0" -->
+            <!-- "speechInfluence" minOccurs="0" -->
+            <!-- "participant" minOccurs="0" maxOccurs="unbounded" -->
+        </xsl:if>
     </xsl:template>
 
     <!-- template:CorpusPartEnd -->
@@ -1837,6 +1985,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
                                                 </xsl:call-template>
+                                                <!-- common corpus middle elements  -->
+                                                <xsl:call-template name="CorpusPartMid">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
+                                                </xsl:call-template>
                                                 <!-- common corpus end elements  -->
                                                 <xsl:call-template name="CorpusPartEnd">
                                                     <xsl:with-param name="el" select="." />
@@ -1856,80 +2009,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
                                                 </xsl:call-template>
-                                                <!-- AudioGenre -->
-                                                <xsl:for-each select="./ms:audioClassificationInfo">
-                                                    <AudioGenre>
-                                                        <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                            <xsl:with-param name="el" select="./ms:audioGenre" />
-                                                            <xsl:with-param name="elementLang" select="'en'" />
-                                                            <xsl:with-param name="elementName" select="'categoryLabel'" />
-                                                        </xsl:call-template>
-                                                    </AudioGenre>
-                                                </xsl:for-each>
-                                                <!-- SpeechGenre -->
-                                                <!-- speechItem -->
-                                                <!-- nonSpeechItem -->
-                                                <!-- legend -->
-                                                <!-- noiseLevel -->
-                                                <!-- naturality -->
-                                                <!-- conversationalType -->
-                                                <!-- scenarioType -->
-                                                <!-- audience -->
-                                                <!-- interactivity -->
-                                                <!-- interaction -->
-                                                <!-- recordingDeviceType -->
-                                                <!-- recordingDeviceTypeDetails -->
-                                                <xsl:for-each select="./ms:recordingInfo/ms:recordingDeviceTypeDetails">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="." />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'recordingDeviceTypeDetails'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- recordingPlatformSoftware -->
-                                                <!-- recordingEnvironment -->
-                                                <xsl:for-each select="./ms:recordingInfo/ms:recordingEnvironment">
-                                                    <xsl:call-template name="ElementMetaShare">
-                                                        <xsl:with-param name="el" select="." />
-                                                        <xsl:with-param name="elementName" select="'recordingEnvironment'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- sourceChannel -->
-                                                <xsl:for-each select="./ms:recordingInfo/ms:sourceChannel">
-                                                    <xsl:call-template name="ElementMetaShare">
-                                                        <xsl:with-param name="el" select="." />
-                                                        <xsl:with-param name="elementName" select="'sourceChannel'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- sourceChannelType -->
-                                                <!-- sourceChannelName -->
-                                                <!-- sourceChannelDetails -->
-                                                <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelDetails">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="." />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'sourceChannelDetails'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- recorder -->
-                                                <!-- capturingDeviceType -->
-                                                <!-- capturingDeviceTypeDetails -->
-                                                <!-- capturingDetails -->
-                                                <!-- capturingEnvironment -->
-                                                <!-- sensorTechnology -->
-                                                <!-- sceneIllumination -->
-                                                <!-- numberOfParticipants -->
-                                                <!-- ageGroupOfParticipants -->
-                                                <!-- ageRangeStartOfParticipants -->
-                                                <!-- ageRangeEndOfParticipants -->
-                                                <!-- sexOfParticipants -->
-                                                <!-- originOfParticipants -->
-                                                <!-- dialectAccentOfParticipants -->
-                                                <!-- hearingImpairmentOfParticipants -->
-                                                <!-- speakingImpairmentOfParticipants -->
-                                                <!-- numberOfTrainedSpeakers -->
-                                                <!-- speechInfluence -->
-                                                <!-- participant -->
+                                                <!-- common corpus middle elements  -->
+                                                <xsl:call-template name="CorpusPartMid">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
+                                                </xsl:call-template>
                                                 <!-- common corpus end elements  -->
                                                 <xsl:call-template name="CorpusPartEnd">
                                                     <xsl:with-param name="el" select="." />
@@ -1949,13 +2033,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
                                                 </xsl:call-template>
-                                                <!-- typeOfVideoContent : QUESTION() what would be a default value ?  -->
-                                                <xsl:if test="not(./ms:videoContentInfo)">
-                                                    <typeOfVideoContent xml:lang="en">undefined</typeOfVideoContent>
-                                                </xsl:if>
-                                                <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
-                                                    <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
-                                                </xsl:for-each>
+                                                <!-- common corpus middle elements  -->
+                                                <xsl:call-template name="CorpusPartMid">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
+                                                </xsl:call-template>
                                                 <!-- common corpus end elements  -->
                                                 <xsl:call-template name="CorpusPartEnd">
                                                     <xsl:with-param name="el" select="." />
@@ -1975,13 +2057,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
                                                 </xsl:call-template>
-                                                <!-- typeOfImageContent : QUESTION() what would be a default value ?  -->
-                                                <xsl:if test="not(./ms:imageContentInfo)">
-                                                    <typeOfImageContent xml:lang="en">undefined</typeOfImageContent>
-                                                </xsl:if>
-                                                <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
-                                                    <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
-                                                </xsl:for-each>
+                                                <!-- common corpus mid elements  -->
+                                                <xsl:call-template name="CorpusPartMid">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
+                                                </xsl:call-template>
                                                 <!-- common corpus end elements  -->
                                                 <xsl:call-template name="CorpusPartEnd">
                                                     <xsl:with-param name="el" select="." />
@@ -2001,13 +2081,11 @@
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
                                                 </xsl:call-template>
-                                                <!-- typeOfTextNumericalContent : QUESTION() what would be a default value ?  -->
-                                                <xsl:if test="not(./ms:textNumericalContentInfo)">
-                                                    <typeOfTextNumericalContent xml:lang="en">undefined</typeOfTextNumericalContent>
-                                                </xsl:if>
-                                                <xsl:for-each select="./ms:textNumericalContentInfo/ms:typeOfTextNumericalContent">
-                                                    <typeOfTextNumericalContent xml:lang="und"><xsl:value-of select="." /></typeOfTextNumericalContent>
-                                                </xsl:for-each>
+                                                <!-- common corpus mid elements -->
+                                                <xsl:call-template name="CorpusPartMid">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
+                                                </xsl:call-template>
                                                 <!-- common corpus end elements -->
                                                 <xsl:call-template name="CorpusPartEnd">
                                                     <xsl:with-param name="el" select="." />
