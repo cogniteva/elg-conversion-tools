@@ -946,6 +946,8 @@
                 </xsl:for-each>
                 <!-- ms:availabilityStartDate -->
                 <xsl:copy-of select="./ms:availabilityStartDate" />
+                <!-- ms:availabilityEndDate -->
+                <xsl:copy-of select="./ms:availabilityEndDate" />
                 <!-- ms:distributionRightsHolder -->
                 <xsl:call-template name="Actor">
                     <xsl:with-param name="el" select="./ms:distributionRightsHolder" />
