@@ -863,7 +863,21 @@
                     <xsl:if test="substring($licenseName,1,4) != 'ELRA'">
                         <licenceTerms>
                             <!-- licenceTermsName -->
-                            <licenceTermsName xml:lang="en"><xsl:value-of select="$licenseName" /></licenceTermsName>
+                            <xsl:choose>
+                                <xsl:when test="((substring($licenseName,1,2) != 'MS')    and
+                                                 (substring($licenseName,1,5) != 'OTHER') and
+                                                 (substring($licenseName,1,5) != 'PROPR')
+                                                 )">
+                                    <licenceTermsName xml:lang="en">
+                                        <xsl:value-of select="$licenseName" />
+                                    </licenceTermsName>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <licenceTermsName xml:lang="en">
+                                        <xsl:value-of select="normalize-space(./ms:licence)" />
+                                    </licenceTermsName>
+                                </xsl:otherwise>
+                            </xsl:choose>
                             <!-- licenceTermsURL -->
                             <xsl:variable name="restrictions">
                                 <xsl:call-template name="StringValuesConcat">
