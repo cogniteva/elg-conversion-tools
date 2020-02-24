@@ -1,4 +1,4 @@
-<!-- rules to transform ELRA XML files into ELG XML files -->
+<!-- rules to transform META-SHARE 3.1 XML files into ELG-SHARE 1.0 XML files -->
 <!-- Copyright (c) 2020 Cogniteva -->
 <xsl:stylesheet
     version="2.0"
@@ -1394,7 +1394,9 @@
                         <resourceName xml:lang="{./@xml:lang}" ><xsl:value-of select="." /></resourceName>
                     </xsl:for-each>
                     <!-- resourceShortName  -->
-                    <xsl:copy-of select="$identificationInfo/ms:resourceShortName"/>
+                    <xsl:for-each select="$identificationInfo/ms:resourceShortName">
+                        <resourceShortName xml:lang="{./@xml:lang}" ><xsl:value-of select="." /></resourceShortName>
+                    </xsl:for-each>
                     <!-- description  -->
                     <xsl:copy-of select="$identificationInfo/ms:description"/>
                     <!--  LRIdentifier islrn: -->
