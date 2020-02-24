@@ -56,6 +56,12 @@
     > 
     <xsl:output encoding='UTF-8' indent='yes' method='xml'/>
 
+    <!-- format:cost  -->
+    <xsl:decimal-format name="cost" decimal-separator="," grouping-separator="."/>
+
+    <!-- format:number  -->
+    <xsl:decimal-format name="number" decimal-separator="," grouping-separator="."/>
+
     <!-- var:identificationInfo  -->
     <xsl:variable name="identificationInfo">
        <xsl:copy-of select="//ms:MetadataRecord/ms:identificationInfo/*"/>
@@ -164,10 +170,10 @@
         <xsl:param name="text" />
         <xsl:analyze-string select="$text" regex="^[^0-9]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?).*$">
             <xsl:matching-substring>
-                <xsl:value-of select="string(number(regex-group(1)))"/>
+                <xsl:value-of select="format-number(number(regex-group(1)), '#', 'number')"/>
             </xsl:matching-substring>
             <xsl:non-matching-substring>
-                <xsl:value-of select="string(number($text))"/>
+                <xsl:value-of select="format-number(number($text), '#', 'number')"/>
             </xsl:non-matching-substring>
         </xsl:analyze-string>
     </xsl:function>
@@ -946,7 +952,7 @@
                 <xsl:if test="normalize-space(./ms:fee) != ''">
                     <cost>
                         <!-- ms:amount -->
-                        <amount><xsl:value-of select="./ms:fee" /></amount>
+                        <amount><xsl:value-of select="format-number(./ms:fee, '#.###,00', 'cost')" /></amount>
                         <!-- ms:currency -->
                         <currency>http://w3id.org/meta-share/meta-share/euro</currency>
                     </cost>
