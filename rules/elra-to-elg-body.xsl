@@ -1626,7 +1626,27 @@
                     <!-- isVersionOf -->
                     <!-- NoMapAvalaible -->
                     <!-- relation -->
-                    <!-- NoMapAvalaible -->
+                    <xsl:for-each select="$relationInfo">
+                        <relation>
+                            <!-- relationType -->
+                            <xsl:for-each select="./ms:relationType">
+                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                    <xsl:with-param name="el" select="." />
+                                    <xsl:with-param name="elementLang" select="'en'" />
+                                    <xsl:with-param name="elementName" select="'relationType'" />
+                                </xsl:call-template>
+                            </xsl:for-each>
+                            <!-- relatedLR -->
+                            <relatedLR>
+                                <!-- resourceName -->
+                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                    <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
+                                    <xsl:with-param name="elementLang" select="'en'" />
+                                    <xsl:with-param name="elementName" select="'resourceName'" />
+                                </xsl:call-template>
+                            </relatedLR>
+                        </relation>
+                    </xsl:for-each>
                     <!-- LRSubclass -->
                     <LRSubclass>
                         <!-- Corpus  -->
