@@ -1454,6 +1454,39 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:CorpusPartEnd -->
+    <!-- common elements at the end of each CorpusPart -->
+    <xsl:template name="CorpusPartEnd">
+        <xsl:param name="el" />
+        <xsl:param name="corpusMediaType" />
+        <!-- "creationMode" minOccurs="0" -->
+        <xsl:call-template name="ElementMetaShare">
+            <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationMode" />
+            <xsl:with-param name="elementName" select="'creationMode'" />
+        </xsl:call-template>
+        <!-- "isCreatedBy" minOccurs="0" maxOccurs="unbounded" -->
+        <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded" -->
+        <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- "syntheticData" minOccurs="0" -->
+        <!-- "creationDetails" minOccurs="0" maxOccurs="unbounded" -->
+        <xsl:call-template name="ElementCopyWithDefaultLang">
+            <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationModeDetails" />
+            <xsl:with-param name="elementLang" select="'en'" />
+            <xsl:with-param name="elementName" select="'creationDetails'" />
+        </xsl:call-template>
+        <!-- "linkToOtherMedia" minOccurs="0" maxOccurs="unbounded" -->
+        <xsl:call-template name="LinkToOtherMedia">
+            <xsl:with-param name="el" select="$el/ms:linkToOtherMediaInfo" />
+        </xsl:call-template>
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -1799,33 +1832,15 @@
                                         <CorpusMediaPart>
                                             <!-- CorpusTextPart -->
                                             <CorpusTextPart>
-                                                <!-- common corpus elements  -->
+                                                <!-- common corpus start elements  -->
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
                                                 </xsl:call-template>
-                                                <!-- creationMode -->
-                                                <xsl:call-template name="ElementMetaShare">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
-                                                    <xsl:with-param name="elementName" select="'creationMode'" />
-                                                </xsl:call-template>
-                                                <!-- originalSourceDescription -->
-                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- creationDetails -->
-                                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
-                                                    <xsl:with-param name="elementLang" select="'en'" />
-                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
-                                                </xsl:call-template>
-                                                <!-- linkToOtherMedia -->
-                                                <xsl:call-template name="LinkToOtherMedia">
-                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                <!-- common corpus end elements  -->
+                                                <xsl:call-template name="CorpusPartEnd">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
                                                 </xsl:call-template>
                                             </CorpusTextPart>
                                         </CorpusMediaPart>
@@ -1836,7 +1851,7 @@
                                         <CorpusMediaPart>
                                             <!-- CorpusAudioPart -->
                                             <CorpusAudioPart>
-                                                <!-- common corpus elements  -->
+                                                <!-- common corpus start elements  -->
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
@@ -1915,39 +1930,10 @@
                                                 <!-- numberOfTrainedSpeakers -->
                                                 <!-- speechInfluence -->
                                                 <!-- participant -->
-                                                <!-- creationMode -->
-                                                <xsl:call-template name="ElementMetaShare">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
-                                                    <xsl:with-param name="elementName" select="'creationMode'" />
-                                                </xsl:call-template>
-                                                <!-- isCreatedBy -->
-                                                <!-- hasOriginalSource -->
-                                                <!-- originalSourceDescription -->
-                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- syntheticData -->
-                                                <!-- creationDetails -->
-                                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
-                                                    <xsl:with-param name="elementLang" select="'en'" />
-                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
-                                                </xsl:call-template>
-                                                <!-- QUESTION() it's ok to also map subject_topic to creationDetails? -->
-                                                <xsl:for-each select="./ms:audioClassificationInfo">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="./ms:subject_topic" />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'creationDetails'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- linkToOtherMedia -->
-                                                <xsl:call-template name="LinkToOtherMedia">
-                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                <!-- common corpus end elements  -->
+                                                <xsl:call-template name="CorpusPartEnd">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
                                                 </xsl:call-template>
                                             </CorpusAudioPart>
                                         </CorpusMediaPart>
@@ -1958,7 +1944,7 @@
                                         <CorpusMediaPart>
                                             <!-- CorpusVideoPart -->
                                             <CorpusVideoPart>
-                                                <!-- common corpus elements  -->
+                                                <!-- common corpus start elements  -->
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
@@ -1970,28 +1956,10 @@
                                                 <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
                                                     <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
                                                 </xsl:for-each>
-                                                <!-- creationMode -->
-                                                <xsl:call-template name="ElementMetaShare">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
-                                                    <xsl:with-param name="elementName" select="'creationMode'" />
-                                                </xsl:call-template>
-                                                <!-- originalSourceDescription -->
-                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- creationDetails -->
-                                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
-                                                    <xsl:with-param name="elementLang" select="'en'" />
-                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
-                                                </xsl:call-template>
-                                                <!-- linkToOtherMedia -->
-                                                <xsl:call-template name="LinkToOtherMedia">
-                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                <!-- common corpus end elements  -->
+                                                <xsl:call-template name="CorpusPartEnd">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
                                                 </xsl:call-template>
                                             </CorpusVideoPart>
                                         </CorpusMediaPart>
@@ -2002,7 +1970,7 @@
                                         <CorpusMediaPart>
                                             <!-- CorpusImagePart -->
                                             <CorpusImagePart>
-                                                <!-- common corpus elements  -->
+                                                <!-- common corpus start elements  -->
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
@@ -2014,28 +1982,10 @@
                                                 <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
                                                     <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
                                                 </xsl:for-each>
-                                               <!-- creationMode -->
-                                                <xsl:call-template name="ElementMetaShare">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
-                                                    <xsl:with-param name="elementName" select="'creationMode'" />
-                                                </xsl:call-template>
-                                                <!-- originalSourceDescription -->
-                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- creationDetails -->
-                                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
-                                                    <xsl:with-param name="elementLang" select="'en'" />
-                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
-                                                </xsl:call-template>
-                                                <!-- linkToOtherMedia -->
-                                                <xsl:call-template name="LinkToOtherMedia">
-                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                <!-- common corpus end elements  -->
+                                                <xsl:call-template name="CorpusPartEnd">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
                                                 </xsl:call-template>
                                             </CorpusImagePart>
                                         </CorpusMediaPart>
@@ -2046,7 +1996,7 @@
                                         <CorpusMediaPart>
                                             <!-- CorpusTextNumericalPart -->
                                             <CorpusTextNumericalPart>
-                                                <!-- common corpus elements -->
+                                                <!-- common corpus start elements -->
                                                 <xsl:call-template name="CorpusPart">
                                                     <xsl:with-param name="el" select="." />
                                                     <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
@@ -2058,28 +2008,10 @@
                                                 <xsl:for-each select="./ms:textNumericalContentInfo/ms:typeOfTextNumericalContent">
                                                     <typeOfTextNumericalContent xml:lang="und"><xsl:value-of select="." /></typeOfTextNumericalContent>
                                                 </xsl:for-each>
-                                                <!-- creationMode -->
-                                                <xsl:call-template name="ElementMetaShare">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationMode" />
-                                                    <xsl:with-param name="elementName" select="'creationMode'" />
-                                                </xsl:call-template>
-                                                <!-- originalSourceDescription -->
-                                                <xsl:for-each select="./ms:creationInfo/ms:originalSource">
-                                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                        <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                                                        <xsl:with-param name="elementLang" select="'en'" />
-                                                        <xsl:with-param name="elementName" select="'originalSourceDescription'" />
-                                                    </xsl:call-template>
-                                                </xsl:for-each>
-                                                <!-- creationDetails -->
-                                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
-                                                    <xsl:with-param name="elementLang" select="'en'" />
-                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
-                                                </xsl:call-template>
-                                                <!-- linkToOtherMedia -->
-                                                <xsl:call-template name="LinkToOtherMedia">
-                                                    <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
+                                                <!-- common corpus end elements -->
+                                                <xsl:call-template name="CorpusPartEnd">
+                                                    <xsl:with-param name="el" select="." />
+                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
                                                 </xsl:call-template>
                                             </CorpusTextNumericalPart>
                                         </CorpusMediaPart>
