@@ -1313,11 +1313,14 @@
                     <xsl:when test="contains(lower-case(./ms:annotationType),'lemma')">
                         <xsl:value-of select="'Lemma'" />
                     </xsl:when>
+                    <xsl:when test="contains(lower-case(./ms:annotationType),'postag')">
+                        <xsl:value-of select="'PartOfSpeech'" />
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'morphosyntacticannotation')">
                         <xsl:value-of select="'MorphologicalAnnotationType'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'segmentation')">
-                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
+                        <xsl:value-of select="'Sentence'" />
                     </xsl:when>
                     <xsl:when test="contains(lower-case(./ms:annotationType),'semanticannotation')">
                         <xsl:value-of select="'SemanticAnnotationType'" />
