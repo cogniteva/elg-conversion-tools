@@ -1371,6 +1371,15 @@
             </xsl:for-each>
         </xsl:if>
         <!-- modalityType -->
+        <xsl:for-each select="$el/ms:modalityInfo">
+            <xsl:for-each select="./ms:modalityType">
+                <xsl:call-template name="ElementMetaShareDefault">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="default" select="'other'" />
+                    <xsl:with-param name="elementName" select="'modalityType'" />
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:for-each>
     </xsl:template>
 
     <!-- MetadataRecord  -->
