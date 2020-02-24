@@ -1635,6 +1635,33 @@
         </xsl:call-template>
     </xsl:template>
 
+    <!-- template:CorpusMediaPart -->
+    <xsl:template name="CorpusMediaPart">
+        <xsl:param name="el" />
+        <xsl:param name="corpusMediaType" />
+        <!-- CorpusMediaPart -->
+        <CorpusMediaPart>
+            <!-- corpusMediaType -->
+            <xsl:element name="{$corpusMediaType}">
+                <!-- common corpus start elements  -->
+                <xsl:call-template name="CorpusPartStart">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="corpusMediaType" select="$corpusMediaType" />
+                </xsl:call-template>
+                <!-- common corpus middle elements  -->
+                <xsl:call-template name="CorpusPartMid">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="corpusMediaType" select="$corpusMediaType" />
+                </xsl:call-template>
+                <!-- common corpus end elements  -->
+                <xsl:call-template name="CorpusPartEnd">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="corpusMediaType" select="$corpusMediaType" />
+                </xsl:call-template>
+            </xsl:element>
+        </CorpusMediaPart>
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -1976,123 +2003,38 @@
                                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                                     <!-- CorpusMediaPart | CorpusTextPart -->
                                     <xsl:for-each select="./ms:corpusTextInfo">
-                                        <!-- CorpusMediaPart -->
-                                        <CorpusMediaPart>
-                                            <!-- CorpusTextPart -->
-                                            <CorpusTextPart>
-                                                <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPartStart">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus middle elements  -->
-                                                <xsl:call-template name="CorpusPartMid">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus end elements  -->
-                                                <xsl:call-template name="CorpusPartEnd">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
-                                                </xsl:call-template>
-                                            </CorpusTextPart>
-                                        </CorpusMediaPart>
+                                        <xsl:call-template name="CorpusMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="corpusMediaType" select="'CorpusTextPart'" />
+                                        </xsl:call-template>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | CorpusAudioPart -->
                                     <xsl:for-each select="./ms:corpusAudioInfo">
-                                        <!-- CorpusMediaPart -->
-                                        <CorpusMediaPart>
-                                            <!-- CorpusAudioPart -->
-                                            <CorpusAudioPart>
-                                                <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPartStart">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus middle elements  -->
-                                                <xsl:call-template name="CorpusPartMid">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus end elements  -->
-                                                <xsl:call-template name="CorpusPartEnd">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
-                                                </xsl:call-template>
-                                            </CorpusAudioPart>
-                                        </CorpusMediaPart>
+                                        <xsl:call-template name="CorpusMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="corpusMediaType" select="'CorpusAudioPart'" />
+                                        </xsl:call-template>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | CorpusVideoPart -->
                                     <xsl:for-each select="./ms:corpusVideoInfo">
-                                        <!-- CorpusMediaPart -->
-                                        <CorpusMediaPart>
-                                            <!-- CorpusVideoPart -->
-                                            <CorpusVideoPart>
-                                                <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPartStart">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus middle elements  -->
-                                                <xsl:call-template name="CorpusPartMid">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus end elements  -->
-                                                <xsl:call-template name="CorpusPartEnd">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
-                                                </xsl:call-template>
-                                            </CorpusVideoPart>
-                                        </CorpusMediaPart>
+                                        <xsl:call-template name="CorpusMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="corpusMediaType" select="'CorpusVideoPart'" />
+                                        </xsl:call-template>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | CorpusImagePart -->
                                     <xsl:for-each select="./ms:corpusImageInfo">
-                                        <!-- CorpusMediaPart -->
-                                        <CorpusMediaPart>
-                                            <!-- CorpusImagePart -->
-                                            <CorpusImagePart>
-                                                <!-- common corpus start elements  -->
-                                                <xsl:call-template name="CorpusPartStart">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus mid elements  -->
-                                                <xsl:call-template name="CorpusPartMid">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus end elements  -->
-                                                <xsl:call-template name="CorpusPartEnd">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
-                                                </xsl:call-template>
-                                            </CorpusImagePart>
-                                        </CorpusMediaPart>
+                                        <xsl:call-template name="CorpusMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="corpusMediaType" select="'CorpusImagePart'" />
+                                        </xsl:call-template>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | CorpusTextNumericalPart -->
                                     <xsl:for-each select="./ms:corpusTextNumericalInfo">
-                                        <!-- CorpusMediaPart -->
-                                        <CorpusMediaPart>
-                                            <!-- CorpusTextNumericalPart -->
-                                            <CorpusTextNumericalPart>
-                                                <!-- common corpus start elements -->
-                                                <xsl:call-template name="CorpusPartStart">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus mid elements -->
-                                                <xsl:call-template name="CorpusPartMid">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
-                                                </xsl:call-template>
-                                                <!-- common corpus end elements -->
-                                                <xsl:call-template name="CorpusPartEnd">
-                                                    <xsl:with-param name="el" select="." />
-                                                    <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
-                                                </xsl:call-template>
-                                            </CorpusTextNumericalPart>
-                                        </CorpusMediaPart>
+                                        <xsl:call-template name="CorpusMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="corpusMediaType" select="'CorpusTextNumericalPart'" />
+                                        </xsl:call-template>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | corpusTextNgramInfo -->
                                     <!-- QUESTION() Where to map corpusTextNgramInfo? -->
