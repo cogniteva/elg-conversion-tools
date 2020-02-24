@@ -1817,6 +1817,12 @@
                                                         <xsl:with-param name="elementName" select="'originalSourceDescription'" />
                                                     </xsl:call-template>
                                                 </xsl:for-each>
+                                                <!-- creationDetails -->
+                                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
+                                                    <xsl:with-param name="elementLang" select="'en'" />
+                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
+                                                </xsl:call-template>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
@@ -1926,7 +1932,12 @@
                                                 </xsl:for-each>
                                                 <!-- syntheticData -->
                                                 <!-- creationDetails -->
-                                                <!-- QUESTION() it's ok to map subject_topic to creationDetails? -->
+                                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
+                                                    <xsl:with-param name="elementLang" select="'en'" />
+                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
+                                                </xsl:call-template>
+                                                <!-- QUESTION() it's ok to also map subject_topic to creationDetails? -->
                                                 <xsl:for-each select="./ms:audioClassificationInfo">
                                                     <xsl:call-template name="ElementCopyWithDefaultLang">
                                                         <xsl:with-param name="el" select="./ms:subject_topic" />
@@ -1972,6 +1983,12 @@
                                                         <xsl:with-param name="elementName" select="'originalSourceDescription'" />
                                                     </xsl:call-template>
                                                 </xsl:for-each>
+                                                <!-- creationDetails -->
+                                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
+                                                    <xsl:with-param name="elementLang" select="'en'" />
+                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
+                                                </xsl:call-template>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
@@ -2010,6 +2027,12 @@
                                                         <xsl:with-param name="elementName" select="'originalSourceDescription'" />
                                                     </xsl:call-template>
                                                 </xsl:for-each>
+                                                <!-- creationDetails -->
+                                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
+                                                    <xsl:with-param name="elementLang" select="'en'" />
+                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
+                                                </xsl:call-template>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
@@ -2048,6 +2071,12 @@
                                                         <xsl:with-param name="elementName" select="'originalSourceDescription'" />
                                                     </xsl:call-template>
                                                 </xsl:for-each>
+                                                <!-- creationDetails -->
+                                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                    <xsl:with-param name="el" select="./ms:creationInfo/ms:creationModeDetails" />
+                                                    <xsl:with-param name="elementLang" select="'en'" />
+                                                    <xsl:with-param name="elementName" select="'creationDetails'" />
+                                                </xsl:call-template>
                                                 <!-- linkToOtherMedia -->
                                                 <xsl:call-template name="LinkToOtherMedia">
                                                     <xsl:with-param name="el" select="./ms:linkToOtherMediaInfo" />
