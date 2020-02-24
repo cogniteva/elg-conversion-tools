@@ -185,6 +185,12 @@
         <!-- QUESTION() what about mimeType = 'other'? -->
         <!-- DO NOT CHANGE ORDER DECLARATION -->
         <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'xcesilsp')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/XcesIlspVariant'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'xces')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Xces'"/>
+            </xsl:when>
             <xsl:when test="contains(lower-case(normalize-space($text)), 'tab-separated')">
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Tsv'"/>
             </xsl:when>
@@ -1569,7 +1575,15 @@
                     <!-- keyword -->
                     <keyword xml:lang="en"><xsl:value-of select="lower-case($resourceType)" /></keyword>
                     <!-- domain -->
-                    <!-- ToBeDefined : corpusAudioInfo.domainInfo.domain | .lexicalConceptualResourceAudioInfo.domainInfo.domain -->
+                    <xsl:for-each select="//ms:domainInfo">
+                        <domain>
+                            <xsl:call-template name="ElementCopyWithDefaultLang">
+                                <xsl:with-param name="el" select="./ms:domain" />
+                                <xsl:with-param name="elementLang" select="'en'" />
+                                <xsl:with-param name="elementName" select="'categoryLabel'" />
+                            </xsl:call-template>
+                        </domain>
+                    </xsl:for-each>
                     <!-- subject -->
                     <!-- ToBeDefined : audioClassificationInfo.subject_topic -->
                     <!-- resourceProvider -->
