@@ -307,10 +307,31 @@
     <xsl:template name="GenericOrganization">
         <xsl:param name="el" />
         <actorType>Organization</actorType>
-        <xsl:copy-of select="$el/ms:organizationName" />
-        <!-- <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"> -->
-        <!--    <xsl:value-of select="$el/ms:organizationName" /> -->
-        <!-- </OrganizationIdentifier> -->
+        <!-- organizationName -->
+        <xsl:for-each select="$el/ms:organizationName">
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'organizationName'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- organizationName -->
+        <xsl:for-each select=" $el/ms:organizationShortName">
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'organizationName'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- OrganizationIdentifier -->
+        <xsl:if test="($el/ms:organizationShortName)">
+            <xsl:for-each select=" $el/ms:organizationShortName">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
+                    <xsl:value-of select="normalize-space(.)" />
+                </OrganizationIdentifier>
+            </xsl:for-each>
+        </xsl:if>
+        <!-- website -->
         <xsl:for-each select="$el/ms:communicationInfo/ms:url">
             <website><xsl:value-of select="." /></website>
         </xsl:for-each>
