@@ -84,7 +84,10 @@
 
    <!-- replace schemaLocation -->
    <xsl:template match="@xsi:schemaLocation">
-        <xsl:attribute name="xsi:schemaLocation">http://w3id.org/meta-share/meta-share/ http://gitlab.com/european-language-grid/platform/ELG-SHARE-schema/Schema/ELG-SHARE.xsd</xsl:attribute>
+        <xsl:attribute name="xsi:schemaLocation">
+            <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',
+            ' ', 'http://gitlab.com/european-language-grid/platform/ELG-SHARE-schema/Schema/ELG-SHARE.xsd')" />
+        </xsl:attribute>
    </xsl:template>
 
     <!-- lang to xml:lang -->
