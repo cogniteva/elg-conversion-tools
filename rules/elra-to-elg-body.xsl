@@ -1944,6 +1944,16 @@
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "sourceChannelType" minOccurs="0" -->
+            <xsl:variable name="sourceChannelTypeMaps">
+               <entry><source>3G</source><target>GSM</target></entry>
+            </xsl:variable>
+            <xsl:for-each select="(./ms:recordingInfo/ms:sourceChannelType)[1]">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="mappings" select="$sourceChannelTypeMaps" />
+                    <xsl:with-param name="elementName" select="'sourceChannelType'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "sourceChannelName" minOccurs="0" maxOccurs="unbounded" -->
             <!-- "sourceChannelDetails" minOccurs="0" maxOccurs="unbounded" -->
             <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelDetails">
