@@ -1945,7 +1945,7 @@
             </xsl:for-each>
             <!-- "sourceChannelType" minOccurs="0" -->
             <xsl:variable name="sourceChannelTypeMaps">
-               <entry><source>3G</source><target>GSM</target></entry>
+               <entry><source>3G</source><target>ThreeG</target></entry>
             </xsl:variable>
             <xsl:for-each select="(./ms:recordingInfo/ms:sourceChannelType)[1]">
                 <xsl:call-template name="ElementMetaShare">
