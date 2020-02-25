@@ -1869,13 +1869,11 @@
             <xsl:variable name="audienceMaps">
                <entry><source>no</source><target>none3</target></entry>
             </xsl:variable>
-            <xsl:for-each select="./ms:settingInfo/ms:audience">
-                <xsl:call-template name="ElementMetaShare">
-                    <xsl:with-param name="el" select="." />
-                    <xsl:with-param name="mappings" select="$audienceMaps" />
-                    <xsl:with-param name="elementName" select="'audience'" />
-                </xsl:call-template>
-            </xsl:for-each>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:settingInfo/ms:audience" />
+                <xsl:with-param name="mappings" select="$audienceMaps" />
+                <xsl:with-param name="elementName" select="'audience'" />
+            </xsl:call-template>
             <!-- "interactivity" minOccurs="0" -->
             <xsl:variable name="interactivityMaps">
                <entry><source>interactive</source><target>interactive1</target></entry>
