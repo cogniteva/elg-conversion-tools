@@ -178,6 +178,33 @@
         </xsl:analyze-string>
     </xsl:function>
 
+    <!-- function:map-with  -->
+    <!-- if source on mappings then function returns target else returns source -->
+    <!-- <entry><source>foo</source><target>bar</target></entry>  -->
+    <xsl:function name="ms:map-with">
+        <xsl:param name="source" />
+        <xsl:param name="mappings" />
+        <xsl:if test="normalize-space($source) != ''">
+            <!-- process mappings -->
+            <!-- create a node-set from the mappings param -->
+            <xsl:variable name="mappingsSet"><xsl:copy-of select="$mappings" /></xsl:variable>
+            <!-- lock for an entry where source = $source -->
+            <!-- and set mappedTarget as empty or target value  -->
+            <xsl:variable name="mappedTarget">
+                <xsl:value-of select="$mappingsSet/ms:entry/ms:source[text() = $source]/../ms:target" />
+            </xsl:variable>
+            <!-- if mappedTarget is empty returns $source  -->
+            <xsl:choose>
+                <xsl:when test="normalize-space($mappedTarget) != ''">
+                    <xsl:value-of select="normalize-space($mappedTarget)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="normalize-space($source)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:if>
+    </xsl:function>
+
     <!-- function:get-meta-share-mimetype -->
     <xsl:function name="ms:get-meta-share-mimetype">
         <xsl:param name="text" />
@@ -452,10 +479,11 @@
     <xsl:template name="ElementMetaShare">
         <xsl:param name="el" />
         <xsl:param name="elementName" />
+        <xsl:param name="mappings" />
         <xsl:if test="normalize-space($el) != ''">
             <xsl:element name="{$elementName}">
                 <xsl:copy-of  select="$el/@*"/>
-                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',normalize-space($el))" />
+                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',ms:map-with($el,$mappings))" />
             </xsl:element>
         </xsl:if>
     </xsl:template>
@@ -1116,6 +1144,69 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:CapturingDeviceType -->
+    <xsl:template name="CapturingDeviceType">
+        <xsl:param name="el" />
+        <!-- capturingDeviceType -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'microphone')">
+                <capturingDeviceType>http://w3id.org/meta-share/meta-share/microphone1</capturingDeviceType>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'capturingDeviceType'" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- template:TextIncludedInImage -->
+    <xsl:template name="TextIncludedInImage">
+        <xsl:param name="el" />
+        <!-- textIncludedInImage -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'caption')">
+                <textIncludedInImage>http://w3id.org/meta-share/meta-share/caption</textIncludedInImage>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'none')">
+                <textIncludedInImage>http://w3id.org/meta-share/meta-share/none2</textIncludedInImage>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'subtitles')">
+                <textIncludedInImage>http://w3id.org/meta-share/meta-share/subtitle2</textIncludedInImage>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'textIncludedInImage'" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- template:TextIncludedInVideo -->
+    <xsl:template name="TextIncludedInVideo">
+        <xsl:param name="el" />
+        <!-- textIncludedInVideo -->
+        <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'caption')">
+                <textIncludedInVideo>http://w3id.org/meta-share/meta-share/caption1</textIncludedInVideo>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'none')">
+                <textIncludedInVideo>http://w3id.org/meta-share/meta-share/none1</textIncludedInVideo>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space(.)), 'subtitles')">
+                <textIncludedInVideo>http://w3id.org/meta-share/meta-share/subtitle1</textIncludedInVideo>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'textIncludedInVideo'" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:AnnotatedElement -->
     <xsl:template name="AnnotatedElements">
         <xsl:param name="el" />
@@ -1651,11 +1742,38 @@
         <!-- CorpusTextPart -->
         <xsl:if test="$corpusMediaType = 'CorpusTextPart'">
             <!-- "ms:textType" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:textClassificationInfo/ms:textType">
+                <textType>
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'categoryLabel'" />
+                    </xsl:call-template>
+                </textType>
+            </xsl:for-each>
             <!-- "ms:TextGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:textClassificationInfo/ms:textGenre">
+                <TextGenre>
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'categoryLabel'" />
+                    </xsl:call-template>
+                </TextGenre>
+            </xsl:for-each>
         </xsl:if>
         <!-- CorpusImagePart -->
         <xsl:if test="$corpusMediaType = 'CorpusImagePart'">
             <!-- "ImageGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:textClassificationInfo/ms:imageGenre">
+                <ImageGenre>
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'categoryLabel'" />
+                    </xsl:call-template>
+                </ImageGenre>
+            </xsl:for-each>
             <!-- "typeOfImageContent" maxOccurs="unbounded" -->
             <!-- QUESTION() what would be a default value ?  -->
             <xsl:if test="not(./ms:imageContentInfo)">
@@ -1665,7 +1783,13 @@
                 <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
             </xsl:for-each>
             <!-- "textIncludedInImage" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:imageContentInfo/ms:textIncludedInImage">
+                <xsl:call-template name="TextIncludedInImage">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "staticElement" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with staticElementInfo -->
         </xsl:if>
         <!-- CorpusAudioPart -->
         <xsl:if test="$corpusMediaType = 'CorpusAudioPart'">
@@ -1680,14 +1804,28 @@
                 </AudioGenre>
             </xsl:for-each>
             <!-- "SpeechGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /audioClassificationInfoType/speechGenre[0:] -->
             <!-- "speechItem" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /audioContentInfoType/speechItems[0:unbounded] -->
             <!-- "nonSpeechItem" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /audioContentInfoType/nonSpeechItems[0:unbounded] -->
             <!-- "legend" minOccurs="0" -->
+            <!-- ToBeMapped with /audioContentInfoType/textualDescription[0:] -->
             <!-- "noiseLevel" minOccurs="0" -->
+            <!-- ToBeMapped with /audioContentInfoType/noiseLevel[0:] -->
         </xsl:if>
         <!-- CorpusVideoPart -->
         <xsl:if test="$corpusMediaType = 'CorpusVideoPart'">
             <!-- "VideoGenre" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:videoClassificationInfo">
+                <VideoGenre>
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="./ms:videoGenre" />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'categoryLabel'" />
+                    </xsl:call-template>
+                </VideoGenre>
+            </xsl:for-each>
             <!-- "typeOfVideoContent" maxOccurs="unbounded" -->
             <!-- QUESTION() what would be a default value ?  -->
             <xsl:if test="not(./ms:videoContentInfo)">
@@ -1697,15 +1835,47 @@
                 <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
             </xsl:for-each>
             <!-- "textIncludedInVideo" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:videoContentInfo/ms:textIncludedInVideo">
+                <xsl:call-template name="TextIncludedInVideo">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "dynamicElement" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /videoContentInfoType/dynamicElementInfo[0:] -->
         </xsl:if>
         <!-- CorpusAudioPart | CorpusVideoPart -->
         <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
                        ($corpusMediaType = 'CorpusVideoPart'))">
             <!-- "naturality" minOccurs="0" -->
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:settingInfo/ms:naturality" />
+                <xsl:with-param name="elementName" select="'naturality'" />
+            </xsl:call-template>
             <!-- "conversationalType" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:settingInfo/ms:conversationalType">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'conversationalType'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "scenarioType" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:settingInfo/ms:scenarioType">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'scenarioType'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "audience" minOccurs="0" -->
+            <xsl:variable name="audienceMaps">
+               <entry><source>no</source><target>none3</target></entry>
+            </xsl:variable>
+            <xsl:for-each select="./ms:settingInfo/ms:audience">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="mappings" select="$audienceMaps" />
+                    <xsl:with-param name="elementName" select="'audience'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "interactivity" minOccurs="0" -->
             <!-- "interaction" minOccurs="0" maxOccurs="unbounded" -->
         </xsl:if>
@@ -1735,14 +1905,14 @@
             </xsl:for-each>
             <!-- "recordingPlatformSoftware" minOccurs="0" -->
             <!-- "recordingEnvironment" minOccurs="0" -->
-            <xsl:for-each select="./ms:recordingInfo/ms:recordingEnvironment">
+            <xsl:for-each select="(./ms:recordingInfo/ms:recordingEnvironment)[1]">
                 <xsl:call-template name="ElementMetaShare">
                     <xsl:with-param name="el" select="." />
                     <xsl:with-param name="elementName" select="'recordingEnvironment'" />
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "sourceChannel" minOccurs="0" -->
-            <xsl:for-each select="./ms:recordingInfo/ms:sourceChannel">
+            <xsl:for-each select="(./ms:recordingInfo/ms:sourceChannel)[1]">
                 <xsl:call-template name="ElementMetaShare">
                     <xsl:with-param name="el" select="." />
                     <xsl:with-param name="elementName" select="'sourceChannel'" />
@@ -1766,11 +1936,36 @@
                        ($corpusMediaType = 'CorpusTextNumericalPart') or
                        ($corpusMediaType = 'CorpusImagePart'))">
             <!-- "capturingDeviceType" minOccurs="0" -->
+            <xsl:for-each select="(./ms:captureInfo/ms:capturingDeviceType)[1]">
+                <xsl:call-template name="CapturingDeviceType">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "capturingDeviceTypeDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:captureInfo/ms:capturingDeviceTypeDetails">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'capturingDeviceTypeDetails'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "capturingDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:captureInfo/ms:capturingDetails">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'capturingDetails'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "capturingEnvironment" minOccurs="0" -->
+            <!-- ToBeMapped -->
             <!-- "sensorTechnology" minOccurs="0" -->
+            <!-- ToBeMapped -->
             <!-- "sceneIllumination" minOccurs="0" -->
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="$el/ms:captureInfo/ms:sceneIllumination" />
+                <xsl:with-param name="elementName" select="'sceneIllumination'" />
+            </xsl:call-template>
         </xsl:if>
         <!-- CorpusAudioPart | CorpusVideoPart | CorpusTextNumericalPart -->
         <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
