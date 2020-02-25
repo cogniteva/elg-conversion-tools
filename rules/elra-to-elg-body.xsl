@@ -1917,14 +1917,12 @@
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "recordingDeviceTypeDetails" minOccurs="0" maxOccurs="unbounded" -->
-            <!-- /recordingInfoType/recordingDeviceTypeDetails[0:1] -->
             <xsl:call-template name="ElementCopyWithDefaultLang">
                 <xsl:with-param name="el" select="./ms:recordingInfo/ms:recordingDeviceTypeDetails" />
                 <xsl:with-param name="elementLang" select="'en'" />
                 <xsl:with-param name="elementName" select="'recordingDeviceTypeDetails'" />
             </xsl:call-template>
             <!-- "recordingPlatformSoftware" minOccurs="0" -->
-            <!-- /recordingInfoType/recordingPlatformSoftware[0:unbounded] -->
             <xsl:for-each select="(./ms:recordingInfo/ms:recordingPlatformSoftware)[1]">
                 <xsl:call-template name="ElementMetaShare">
                     <xsl:with-param name="el" select="." />
