@@ -1800,6 +1800,7 @@
             <!-- compliesWith -->
             <compliesWith>http://w3id.org/meta-share/meta-share/ELG-SHARE</compliesWith>
             <!-- metadataCreator -->
+            <!-- QUESTION() Max Occurs bounded to 1? -->
             <xsl:for-each select="($metadataInfo/ms:metadataCreator)[1]">
                 <metadataCreator>
                     <xsl:call-template name="GenericPerson">
@@ -1886,7 +1887,15 @@
                         <additionalInfo><email><xsl:value-of select="." /></email></additionalInfo>
                     </xsl:for-each>
                     <!-- contact -->
-                    <!-- ToBeDefined -->
+                    <xsl:for-each select="//ms:MetadataRecord/ms:contactPerson">
+                        <contact>
+                            <Person>
+                                <xsl:call-template name="GenericPerson">
+                                    <xsl:with-param name="el" select="." />
+                                </xsl:call-template>
+                            </Person>
+                        </contact>
+                    </xsl:for-each>
                     <!-- mailingListName -->
                     <!-- NoMapAvalaible -->
                     <!-- discussionURL -->
