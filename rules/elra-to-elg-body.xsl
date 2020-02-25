@@ -1906,6 +1906,16 @@
                        ($corpusMediaType = 'CorpusVideoPart') or
                        ($corpusMediaType = 'CorpusTextNumericalPart'))">
             <!-- "recordingDeviceType" minOccurs="0" -->
+            <xsl:variable name="recordingDeviceTypeMaps">
+               <entry><source>hardDisk</source><target>hardDisk1</target></entry>
+            </xsl:variable>
+            <xsl:for-each select="(./ms:recordingInfo/ms:recordingDeviceType)[1]">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="mappings" select="$recordingDeviceTypeMaps" />
+                    <xsl:with-param name="elementName" select="'recordingDeviceType'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "recordingDeviceTypeDetails" minOccurs="0" maxOccurs="unbounded" -->
             <xsl:for-each select="./ms:recordingInfo/ms:recordingDeviceTypeDetails">
                 <xsl:call-template name="ElementCopyWithDefaultLang">
