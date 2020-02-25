@@ -337,6 +337,34 @@
         <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
     </xsl:template>
 
+    <!-- template:OrganizationIdentifier -->
+    <xsl:template name="OrganizationIdentifier">
+        <xsl:param name="el" />
+        <xsl:param name="asDefault" />
+        <xsl:choose>
+            <!-- ATTENTION DO NOT PUT A BUNCH OF ORGANIZATIONS HERE -->
+            <!-- THIS IS JUST TO TRANSFORM CERTAIN WELL-KNOWN VALUES -->
+            <!-- a more efficient approach would be to use a WRL model -->
+            <xsl:when test="(contains(lower-case(normalize-space($el)), 'ilsp') or
+                            (contains(lower-case(normalize-space($el)), 'institute for language and speech processing')))">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
+                    <xsl:value-of select="'ILSP'" />
+                </OrganizationIdentifier>
+            </xsl:when>
+            <xsl:when test="(contains(lower-case(normalize-space($el)), 'elra') or
+                            (contains(lower-case(normalize-space($el)), 'european language resources association')))">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
+                    <xsl:value-of select="'ELRA'" />
+                </OrganizationIdentifier>
+            </xsl:when>
+            <xsl:when test="$asDefault = 'true'">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
+                    <xsl:value-of select="normalize-space($el)" />
+                </OrganizationIdentifier>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:GenericOrganization -->
     <xsl:template name="GenericOrganization">
         <xsl:param name="el" />
@@ -358,13 +386,24 @@
             </xsl:call-template>
         </xsl:for-each>
         <!-- OrganizationIdentifier -->
-        <xsl:if test="($el/ms:organizationShortName)">
-            <xsl:for-each select=" $el/ms:organizationShortName">
-                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
-                    <xsl:value-of select="normalize-space(.)" />
-                </OrganizationIdentifier>
-            </xsl:for-each>
-        </xsl:if>
+        <xsl:choose>
+            <!-- DO NOT CHANGE DECLARATION ORDER -->
+            <xsl:when test="($el/ms:organizationShortName)">
+                <xsl:for-each select="$el/ms:organizationShortName">
+                    <xsl:call-template name="OrganizationIdentifier">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="asDefault" select="'true'" />
+                    </xsl:call-template>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:when test="($el/ms:organizationName)">
+                <xsl:for-each select="$el/ms:organizationName">
+                    <xsl:call-template name="OrganizationIdentifier">
+                        <xsl:with-param name="el" select="." />
+                    </xsl:call-template>
+                </xsl:for-each>
+            </xsl:when>
+        </xsl:choose>
         <!-- website -->
         <xsl:for-each select="$el/ms:communicationInfo/ms:url">
             <website><xsl:value-of select="." /></website>
