@@ -36,14 +36,14 @@
     To view a full copy of the license, see the LICENSE file or visit
     http://creativecommons.org/licenses/by-nc-nd/4.0/.
 -->
-<!-- ********************************************************************************************************* -->
-<!-- File:        metashare31-to-elg.xsl                                                                       -->
-<!-- Description: This stylesheet works with the META-SHARE 3.1 schema, performing the analysis and transform  -->
-<!--              to ELG-SHARE 1.0.2 XML files.                                                                -->
-<!--                                                                                                           -->
-<!-- Changes:                                                                                                  -->
-<!--   2020-02-XX - First release.                                                                             -->
-<!-- ********************************************************************************************************* -->
+<!-- *********************************************************************** -->
+<!-- File:        metashare31-to-elg.xsl                                     -->
+<!-- Description: This stylesheet works with the META-SHARE 3.1 schema,      -->
+<!--              performing the analysis and transform to ELG-SHARE 1.0.2   -->
+<!--                                                                         -->
+<!-- Changes:                                                                -->
+<!--   2020-02-XX - First release.                                           -->
+<!-- *********************************************************************** -->
 <xsl:stylesheet
     version="2.0"
     xmlns="http://w3id.org/meta-share/meta-share/"
