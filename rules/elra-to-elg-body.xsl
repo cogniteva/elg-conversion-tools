@@ -272,6 +272,40 @@
         <xsl:value-of select='$version'/>
     </xsl:template>
 
+    <!-- template:GenericDocument  -->
+    <xsl:template name="GenericDocument">
+        <xsl:param name="el" />
+        <!-- tile -->
+        <xsl:for-each select="$el/ms:title">
+            <xsl:copy-of select="."/>
+        </xsl:for-each>
+        <!-- DocumentIdentifier -->
+        <xsl:for-each select="$el/*">
+            <xsl:choose>
+                <xsl:when test="lower-case(local-name(.)) = 'doi'">
+                    <DocumentIdentifier ms:DocumentIdentifierScheme="http://purl.org/spar/datacite/doi">
+                        <xsl:value-of select="normalize-space(.)" />
+                    </DocumentIdentifier>
+                </xsl:when>
+                <xsl:when test="lower-case(local-name(.)) = 'url'">
+                    <DocumentIdentifier ms:DocumentIdentifierScheme="http://purl.org/spar/datacite/url">
+                        <xsl:value-of select="normalize-space(.)" />
+                    </DocumentIdentifier>
+                </xsl:when>
+                <xsl:when test="lower-case(local-name(.)) = 'isbn'">
+                    <DocumentIdentifier ms:DocumentIdentifierScheme="http://purl.org/spar/datacite/isbn">
+                        <xsl:value-of select="normalize-space(.)" />
+                    </DocumentIdentifier>
+                </xsl:when>
+                <xsl:when test="lower-case(local-name(.)) = 'issn'">
+                    <DocumentIdentifier ms:DocumentIdentifierScheme="http://purl.org/spar/datacite/issn">
+                        <xsl:value-of select="normalize-space(.)" />
+                    </DocumentIdentifier>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:GenericPerson  -->
     <xsl:template name="GenericPerson">
         <xsl:param name="el" />
@@ -1790,6 +1824,7 @@
             <!-- metadataLastDateUpdated -->
             <metadataLastDateUpdated><xsl:value-of  select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/></metadataLastDateUpdated>
             <!-- metadataCurator -->
+            <!-- QUESTION() What about tools that automatically perform some data curation tasks ? -->
             <xsl:for-each select="//ms:MetadataRecord/ms:contactPerson">
                 <metadataCurator>
                     <xsl:call-template name="GenericPerson">
@@ -1973,7 +2008,9 @@
                             <!-- usageReport -->
                             <xsl:for-each select="./ms:usageReport/ms:documentInfo">
                                 <usageReport>
-                                    <xsl:copy-of select="./ms:title" />
+                                    <xsl:call-template name="GenericDocument">
+                                        <xsl:with-param name="el" select="." />
+                                    </xsl:call-template>
                                 </usageReport>
                             </xsl:for-each>
                             <!-- actualUseDetails -->
@@ -2053,9 +2090,9 @@
                     <!-- isDocumentedBy -->
                     <xsl:for-each select="$resourceDocumentationInfo/ms:documentation/ms:documentInfo">
                         <isDocumentedBy>
-                            <xsl:for-each select="./ms:title">
-                                <xsl:copy-of select="."/>
-                            </xsl:for-each>
+                            <xsl:call-template name="GenericDocument">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
                         </isDocumentedBy>
                     </xsl:for-each>
                     <!-- isDescribedBy -->
