@@ -1955,6 +1955,13 @@
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "sourceChannelName" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelName">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'sourceChannelName'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "sourceChannelDetails" minOccurs="0" maxOccurs="unbounded" -->
             <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelDetails">
                 <xsl:call-template name="ElementCopyWithDefaultLang">
