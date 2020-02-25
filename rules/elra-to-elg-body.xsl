@@ -1880,13 +1880,11 @@
             <xsl:variable name="interactivityMaps">
                <entry><source>interactive</source><target>interactive1</target></entry>
             </xsl:variable>
-            <xsl:for-each select="./ms:settingInfo/ms:interactivity">
-                <xsl:call-template name="ElementMetaShare">
-                    <xsl:with-param name="el" select="." />
-                    <xsl:with-param name="mappings" select="$interactivityMaps" />
-                    <xsl:with-param name="elementName" select="'interactivity'" />
-                </xsl:call-template>
-            </xsl:for-each>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:settingInfo/ms:interactivity" />
+                <xsl:with-param name="mappings" select="$interactivityMaps" />
+                <xsl:with-param name="elementName" select="'interactivity'" />
+            </xsl:call-template>
             <!-- "interaction" minOccurs="0" maxOccurs="unbounded" -->
         </xsl:if>
         <!-- CorpusTextNumericalPart -->
