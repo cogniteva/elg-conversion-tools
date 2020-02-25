@@ -2356,5 +2356,8 @@
                 </LanguageResource>
             </DescribedEntity>
         </xsl:copy>
+        <!-- append a newline -->
+        <xsl:variable name="newline" select="'&#10;'"/>
+        <xsl:value-of select="$newline" disable-output-escaping="no"/>
     </xsl:template>
 </xsl:stylesheet>
