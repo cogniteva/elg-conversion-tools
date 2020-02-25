@@ -1884,6 +1884,11 @@
                 <xsl:with-param name="elementName" select="'interactivity'" />
             </xsl:call-template>
             <!-- "interaction" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="./ms:settingInfo/ms:interaction" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'interaction'" />
+            </xsl:call-template>
         </xsl:if>
         <!-- CorpusTextNumericalPart -->
         <xsl:if test="$corpusMediaType = 'CorpusTextNumericalPart'">
