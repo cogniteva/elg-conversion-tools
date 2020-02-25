@@ -987,6 +987,14 @@
                         </licenceTerms>
                     </xsl:if>
                 </xsl:for-each>
+                <!-- attributionText -->
+                <xsl:for-each select="./ms:attributionText">
+                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                        <xsl:with-param name="el" select="." />
+                        <xsl:with-param name="elementLang" select="'en'" />
+                        <xsl:with-param name="elementName" select="'attributionText'" />
+                    </xsl:call-template>
+                </xsl:for-each>
                 <!-- cost -->
                 <xsl:if test="normalize-space(./ms:fee) != ''">
                     <cost>
