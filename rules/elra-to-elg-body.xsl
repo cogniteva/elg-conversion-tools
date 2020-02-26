@@ -2015,7 +2015,7 @@
             <!-- ToBeMapped -->
             <!-- "sceneIllumination" minOccurs="0" -->
             <xsl:call-template name="ElementMetaShare">
-                <xsl:with-param name="el" select="$el/ms:captureInfo/ms:sceneIllumination" />
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:sceneIllumination" />
                 <xsl:with-param name="elementName" select="'sceneIllumination'" />
             </xsl:call-template>
         </xsl:if>
@@ -2023,16 +2023,62 @@
         <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
                        ($corpusMediaType = 'CorpusVideoPart') or
                        ($corpusMediaType = 'CorpusTextNumericalPart'))">
-            <!-- "numberOfParticipants" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "numberOfParticipants" minOccurs="0" maxOccurs="1"                                           -->
+            <!-- name:      meta[numberOfPersons]                    elg[numberOfParticipants]                -->
+            <!-- ******************************************************************************************** -->
             <xsl:call-template name="ElementCopy">
-                <xsl:with-param name="el" select="$el/ms:captureInfo/ms:personSourceSetInfo/ms:numberOfPersons" />
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:numberOfPersons" />
                 <xsl:with-param name="elementName" select="'numberOfParticipants'" />
             </xsl:call-template>
-            <!-- "ageGroupOfParticipants" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "ageGroupOfParticipants" minOccurs="0" maxOccurs="1"                                         -->
+            <!-- name:      meta[ageOfPersons]                       elg[ageGroupOfParticipants]              -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- occurs:    meta[0:unbounded]                        elg[0:1]                                 -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- ******************************************************************************************** -->
+            <xsl:for-each select="(./ms:captureInfo/ms:personSourceSetInfo/ms:ageOfPersons)[1]">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'ageGroupOfParticipants'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "ageRangeStartOfParticipants" minOccurs="0" -->
             <!-- "ageRangeEndOfParticipants" minOccurs="0" -->
-            <!-- "sexOfParticipants" minOccurs="0" -->
-            <!-- "originOfParticipants" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "sexOfParticipants" minOccurs="0" maxOccurs="1"                                             -->
+            <!-- name:      meta[sexOfPersons]                       elg[sexOfParticipants]                   -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- restrict:  meta[unknown]                            elg[unknown1]                            -->
+            <!-- restrict:  meta[mixed]                              elg[]                                    -->
+            <!-- ******************************************************************************************** -->
+            <xsl:variable name="sexOfParticipantsMaps">
+                <entry><source>mixed</source><target>unknown1</target></entry>
+                <entry><source>unknown</source><target>unknown1</target></entry>
+            </xsl:variable>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:sexOfPersons" />
+                <xsl:with-param name="mappings" select="$sexOfParticipantsMaps" />
+                <xsl:with-param name="elementName" select="'sexOfParticipants'" />
+            </xsl:call-template>
+            <!-- ******************************************************************************************** -->
+            <!-- "originOfParticipants" minOccurs="0" maxOccurs="1"                                           -->
+            <!-- name:      meta[originOfPersons]                    elg[originOfParticipants]                -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- restrict:  meta[mixed]                              elg[]                                    -->
+            <!-- ******************************************************************************************** -->
+            <!-- QUESTION What to do with mixed? -->
+            <xsl:variable name="originOfParticipantsMaps">
+                <entry><source>mixed</source><target>unknown</target></entry>
+            </xsl:variable>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:originOfPersons" />
+                <xsl:with-param name="mappings" select="$originOfParticipantsMaps" />
+                <xsl:with-param name="elementName" select="'originOfParticipants'" />
+            </xsl:call-template>
             <!-- "dialectAccentOfParticipants" minOccurs="0" maxOccurs="unbounded" -->
             <!-- "geographicDistributionOfParticipants" minOccurs="0" maxOccurs="unbounded" -->
             <!-- "hearingImpairmentOfParticipants" minOccurs="0" -->
