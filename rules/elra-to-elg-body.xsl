@@ -53,7 +53,7 @@
     xmlns:omtd="http://w3id.org/meta-share/omtd-share/"
     xmlns:dcat="http://www.w3.org/ns/dcat#"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    > 
+    >
     <xsl:output encoding='UTF-8' indent='yes' method='xml'/>
 
     <!-- format:cost  -->
@@ -141,7 +141,7 @@
     <xsl:variable name="mediaType">
        <xsl:copy-of select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType"/>
     </xsl:variable>
-    
+
     <!-- var:mediaTypeName  -->
     <xsl:variable name="mediaTypeName">
        <xsl:copy-of select="name($lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType/*[1])"/>
@@ -631,7 +631,13 @@
     <!-- template:CharacterEncoding -->
     <xsl:template name="CharacterEncoding">
         <xsl:param name="el" />
-        <!-- characterEncoding -->
+        <!-- ******************************************************************************************** -->
+        <!-- "characterEncoding" minOccurs="0" maxOccurs="unbounded"                                      -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[100]                                elg[restrict]                            -->
+        <!-- restrict:  meta[ISO-8859-1]                         elg[?]                                   -->
+        <!-- restrict:  meta[ISO-8859-13]                        elg[?]                                   -->
+        <!-- ******************************************************************************************** -->
         <xsl:for-each select="$el">
             <xsl:choose>
                 <xsl:when test="contains(lower-case(normalize-space(./ms:characterEncoding)), 'utf8')">
@@ -919,7 +925,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
-            <!-- > 1 distributionAccessMedium -->
+            <!-- 2 or more distributionAccessMedium -->
             <xsl:otherwise>
                 <xsl:choose>
                     <!-- there is at least 1 downloadLocation -->
@@ -1295,26 +1301,45 @@
     <!-- template:SegmentationLevel -->
     <xsl:template name="SegmentationLevel">
         <xsl:param name="el" />
-        <!-- segmentationLevel -->
+        <!-- ******************************************************************************************** -->
+        <!-- "segmentationLevel" minOccurs="0" maxOccurs="unbounded"                                      -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[50]                                 elg[restrict]                            -->
+        <!-- restrict:  meta[phoneme]                            elg[phoneme1]                            -->
+        <!-- restrict:  meta[prosodicBoundaries]                 elg[prosodicBoundary]                    -->
+        <!-- restrict:  meta[syllable]                           elg[syllable1]                           -->
+        <!-- restrict:  meta[token]                              elg[token1]                              -->
+        <!-- restrict:  meta[topic]                              elg[?]                                   -->
+        <!-- restrict:  meta[word]                               elg[word1]                               -->
+        <!-- ******************************************************************************************** -->
+        <xsl:variable name="segmentationLevelMaps">
+            <entry><source>phoneme</source><target>phoneme1</target></entry>
+            <entry><source>prosodicBoundaries</source><target>prosodicBoundary</target></entry>
+            <entry><source>syllable</source><target>syllable1</target></entry>
+            <entry><source>token</source><target>token1</target></entry>
+            <entry><source>topic</source><target>other</target></entry>
+            <entry><source>word</source><target>word1</target></entry>
+        </xsl:variable>
         <xsl:for-each select="$el">
-            <xsl:choose>
-                <xsl:when test="contains(lower-case(normalize-space(.)), 'word')">
-                    <segmentationLevel>http://w3id.org/meta-share/meta-share/word1</segmentationLevel>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:call-template name="ElementMetaShare">
-                        <xsl:with-param name="el" select="." />
-                        <xsl:with-param name="elementName" select="'segmentationLevel'" />
-                    </xsl:call-template>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="mappings" select="$segmentationLevelMaps" />
+                <xsl:with-param name="elementName" select="'segmentationLevel'" />
+            </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
 
     <!-- template:TextIncludedInImage -->
     <xsl:template name="TextIncludedInImage">
         <xsl:param name="el" />
-        <!-- textIncludedInImage -->
+        <!-- ******************************************************************************************** -->
+        <!-- "TextIncludedInImage" minOccurs="0" maxOccurs="unbounded"                                    -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- occurs:    meta[1:1]                                elg[0:unbounded]                         -->
+        <!-- restrict:  meta[captions]                           elg[caption]                             -->
+        <!-- restrict:  meta[none]                               elg[none2]                               -->
+        <!-- restrict:  meta[subtitles]                          elg[subtitle2]                           -->
+        <!-- ******************************************************************************************** -->
         <xsl:choose>
             <xsl:when test="contains(lower-case(normalize-space(.)), 'caption')">
                 <textIncludedInImage>http://w3id.org/meta-share/meta-share/caption</textIncludedInImage>
@@ -1337,7 +1362,14 @@
     <!-- template:TextIncludedInVideo -->
     <xsl:template name="TextIncludedInVideo">
         <xsl:param name="el" />
-        <!-- textIncludedInVideo -->
+        <!-- ******************************************************************************************** -->
+        <!-- "TextIncludedInVideo" minOccurs="0" maxOccurs="unbounded"                                    -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- occurs:    meta[1:1]                                elg[0:unbounded]                         -->
+        <!-- restrict:  meta[captions]                           elg[caption1]                            -->
+        <!-- restrict:  meta[none]                               elg[none1]                               -->
+        <!-- restrict:  meta[subtitles]                          elg[subtitle1]                           -->
+        <!-- ******************************************************************************************** -->
         <xsl:choose>
             <xsl:when test="contains(lower-case(normalize-space(.)), 'caption')">
                 <textIncludedInVideo>http://w3id.org/meta-share/meta-share/caption1</textIncludedInVideo>
@@ -1360,19 +1392,26 @@
     <!-- template:AnnotatedElement -->
     <xsl:template name="AnnotatedElements">
         <xsl:param name="el" />
-        <!-- annotatedElements -->
+        <!-- ******************************************************************************************** -->
+        <!-- "annotatedElement" minOccurs="0" maxOccurs="unbounded"                                       -->
+        <!-- name:      meta[annotatedElements]                  elg[annotatedElement]                    -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+        <!-- restrict:  meta[backgroundNoise]                    elg[backgroundNoise1]                    -->
+        <!-- restrict:  meta[discourseMarkers]                   elg[discourseMarker]                     -->
+        <!-- restrict:  meta[mispronunciations]                  elg[mispronunciation]                    -->
+        <!-- ******************************************************************************************** -->
+        <xsl:variable name="annotatedElementMaps">
+            <entry><source>backgroundNoise</source><target>backgroundNoise1</target></entry>
+            <entry><source>discourseMarkers</source><target>discourseMarker</target></entry>
+            <entry><source>mispronunciations</source><target>mispronunciation</target></entry>
+        </xsl:variable>
         <xsl:for-each select="$el">
-            <xsl:choose>
-                <xsl:when test="contains(lower-case(normalize-space(.)), 'mispronun')">
-                    <annotatedElement>http://w3id.org/meta-share/meta-share/mispronunciation</annotatedElement>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:call-template name="ElementMetaShare">
-                        <xsl:with-param name="el" select="." />
-                        <xsl:with-param name="elementName" select="'annotatedElement'" />
-                    </xsl:call-template>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="mappings" select="$annotatedElementMaps" />
+                <xsl:with-param name="elementName" select="'annotatedElement'" />
+            </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
 
@@ -1409,7 +1448,12 @@
     <!-- template:SignalEncoding -->
     <xsl:template name="SignalEncoding">
         <xsl:param name="el" />
-        <!-- signalEncoding -->
+        <!-- ******************************************************************************************** -->
+        <!-- "SignalEncoding" minOccurs="0" maxOccurs="unbounded"                                         -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+        <!-- restrict:  meta[μ-law]                              elg[mu-law]                              -->
+        <!-- ******************************************************************************************** -->
         <xsl:for-each select="$el">
             <xsl:choose>
                 <xsl:when test="contains(lower-case(normalize-space(.)), 'μ')">
@@ -1429,17 +1473,25 @@
     <xsl:template name="LcrSubclass">
         <xsl:param name="el" />
         <!-- lcrSubclass -->
-        <xsl:choose>
-            <xsl:when test="contains(lower-case(normalize-space($el)), 'wordlist')">
-                <lcrSubclass>http://w3id.org/meta-share/meta-share/wordlist</lcrSubclass>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="ElementMetaShare">
-                    <xsl:with-param name="el" select="$el" />
-                    <xsl:with-param name="elementName" select="'lcrSubclass'" />
-                </xsl:call-template>
-            </xsl:otherwise>
-        </xsl:choose>
+        <!-- ******************************************************************************************** -->
+        <!-- "LcrSubclass" minOccurs="0" maxOccurs="1"                                                    -->
+        <!-- name:      meta[lexicalConceptualResourceType]      elg[LcrSubclass]                         -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- occurs:    meta[1:1]                                elg[0:1]                                 -->
+        <!-- restrict:  meta[framenet]                           elg[frameNet]                            -->
+        <!-- restrict:  meta[wordList]                           elg[wordlist]                            -->
+        <!-- restrict:  meta[wordnet]                            elg[wordNet]                             -->
+        <!-- ******************************************************************************************** -->
+        <xsl:variable name="LcrSubclassMaps">
+            <entry><source>framenet</source><target>frameNet</target></entry>
+            <entry><source>wordList</source><target>wordlist</target></entry>
+            <entry><source>wordnet</source><target>wordNet</target></entry>
+        </xsl:variable>
+        <xsl:call-template name="ElementMetaShare">
+            <xsl:with-param name="el" select="$el" />
+            <xsl:with-param name="mappings" select="$LcrSubclassMaps" />
+            <xsl:with-param name="elementName" select="'lcrSubclass'" />
+        </xsl:call-template>
     </xsl:template>
 
     <!-- template:LTClass -->
@@ -1842,19 +1894,19 @@
         <!-- corpusMediaType  -->
         <corpusMediaType><xsl:value-of select="$corpusMediaType" /></corpusMediaType>
         <!-- mediaType: CorpusTextPart -->
-        <xsl:if test="$corpusMediaType = 'CorpusTextPart'"> 
+        <xsl:if test="$corpusMediaType = 'CorpusTextPart'">
             <mediaType>http://w3id.org/meta-share/meta-share/text</mediaType>
         </xsl:if>
         <!-- mediaType: CorpusAudioPart -->
-        <xsl:if test="$corpusMediaType = 'CorpusAudioPart'"> 
+        <xsl:if test="$corpusMediaType = 'CorpusAudioPart'">
             <mediaType>http://w3id.org/meta-share/meta-share/audio</mediaType>
         </xsl:if>
         <!-- mediaType: CorpusVideoPart -->
-        <xsl:if test="$corpusMediaType = 'CorpusVideoPart'"> 
+        <xsl:if test="$corpusMediaType = 'CorpusVideoPart'">
             <mediaType>http://w3id.org/meta-share/meta-share/video</mediaType>
         </xsl:if>
         <!-- mediaType: CorpusImagePart -->
-        <xsl:if test="$corpusMediaType = 'CorpusImagePart'"> 
+        <xsl:if test="$corpusMediaType = 'CorpusImagePart'">
             <mediaType>http://w3id.org/meta-share/meta-share/image</mediaType>
         </xsl:if>
         <!-- mediaType: CorpusTextNumericalPart -->
@@ -1862,7 +1914,7 @@
             <mediaType>http://w3id.org/meta-share/meta-share/textNumerical</mediaType>
         </xsl:if>
         <!-- all elements excepting CorpusTextNumericalPart  -->
-        <xsl:if test="$corpusMediaType != 'CorpusTextNumericalPart'"> 
+        <xsl:if test="$corpusMediaType != 'CorpusTextNumericalPart'">
             <!-- lingualityType  -->
             <xsl:call-template name="ElementMetaShareDefault">
                 <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:lingualityType" />
