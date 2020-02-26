@@ -560,7 +560,11 @@
         <xsl:param name="el" />
         <xsl:for-each select="$el">
             <linkToOtherMedia>
-                <!-- otherMedia -->
+                <!-- ******************************************************************************************** -->
+                <!-- "otherMedia" minOccurs="1" maxOccurs="unbounded"                                             -->
+                <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+                <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+                <!-- ******************************************************************************************** -->
                 <xsl:call-template name="ElementMetaShare">
                     <xsl:with-param name="el" select="./ms:otherMedia" />
                     <xsl:with-param name="elementName" select="'otherMedia'" />
@@ -2079,14 +2083,87 @@
                 <xsl:with-param name="mappings" select="$originOfParticipantsMaps" />
                 <xsl:with-param name="elementName" select="'originOfParticipants'" />
             </xsl:call-template>
-            <!-- "dialectAccentOfParticipants" minOccurs="0" maxOccurs="unbounded" -->
-            <!-- "geographicDistributionOfParticipants" minOccurs="0" maxOccurs="unbounded" -->
-            <!-- "hearingImpairmentOfParticipants" minOccurs="0" -->
-            <!-- "speakingImpairmentOfParticipants" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "dialectAccentOfParticipants" minOccurs="0" maxOccurs="unbounded"                            -->
+            <!-- name:      meta[dialectAccentOfPersons]             elg[dialectAccentOfParticipants]         -->
+            <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+            <!-- maxlength: meta[500]                                elg[150]                                 -->
+            <!-- ******************************************************************************************** -->
+            <xsl:for-each select="./ms:captureInfo/ms:personSourceSetInfo/ms:dialectAccentOfPersons">
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="substring(., 1, 150)" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'dialectAccentOfParticipants'" />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- ******************************************************************************************** -->
+            <!-- "geographicDistributionOfParticipants" minOccurs="0" maxOccurs="unbounded"                   -->
+            <!-- name:      meta[geographicDistributionOfPersons]    elg[geographicDistributionOfParticipants]-->
+            <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+            <!-- occurs:    meta[0:1]                                elg[0:unbounded]                         -->
+            <!-- ******************************************************************************************** -->
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:geographicDistributionOfPersons" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'geographicDistributionOfParticipants'" />
+            </xsl:call-template>
+            <!-- ******************************************************************************************** -->
+            <!-- "hearingImpairmentOfParticipants" minOccurs="0" maxOccurs="1"                                -->
+            <!-- name:      meta[hearingImpairmentOfPersons]         elg[hearingImpairmentOfParticipants]     -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- restrict:  meta[mixed]                              elg[mixedH]                              -->
+            <!-- restrict:  meta[no]                                 elg[noH]                                 -->
+            <!-- restrict:  meta[yes]                                elg[yesH]                                -->
+            <!-- ******************************************************************************************** -->
+            <xsl:variable name="hearingImpairmentOfParticipantsMaps">
+                <entry><source>mixed</source><target>mixedH</target></entry>
+                <entry><source>no</source><target>noH</target></entry>
+                <entry><source>yes</source><target>yesH</target></entry>
+            </xsl:variable>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:hearingImpairmentOfPersons" />
+                <xsl:with-param name="mappings" select="$hearingImpairmentOfParticipantsMaps" />
+                <xsl:with-param name="elementName" select="'hearingImpairmentOfParticipants'" />
+            </xsl:call-template>
+            <!-- ******************************************************************************************** -->
+            <!-- "speakingImpairmentOfParticipants" minOccurs="0" maxOccurs="1"                               -->
+            <!-- name:      meta[speakingImpairmentOfPersons]        elg[speakingImpairmentOfParticipants]    -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- restrict:  meta[mixed]                              elg[mixedS]                              -->
+            <!-- ******************************************************************************************** -->
+            <xsl:variable name="speakingImpairmentOfParticipantsMaps">
+                <entry><source>mixed</source><target>mixedS</target></entry>
+            </xsl:variable>
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:speakingImpairmentOfPersons" />
+                <xsl:with-param name="mappings" select="$speakingImpairmentOfParticipantsMaps" />
+                <xsl:with-param name="elementName" select="'speakingImpairmentOfParticipants'" />
+            </xsl:call-template>
             <!-- "numberOfTrainedSpeakers" minOccurs="0" -->
-            <xsl:copy-of select="$el/ms:captureInfo/ms:personSourceSetInfo/ms:numberOfTrainedSpeakers"/>
-            <!-- "speechInfluence" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "numberOfTrainedSpeakers" minOccurs="0" maxOccurs="1"                                        -->
+            <!-- ******************************************************************************************** -->
+            <xsl:call-template name="ElementCopy">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:personSourceSetInfo/ms:numberOfTrainedSpeakers" />
+                <xsl:with-param name="elementName" select="'numberOfTrainedSpeakers'" />
+            </xsl:call-template>
+            <!-- ******************************************************************************************** -->
+            <!-- "speechInfluence" minOccurs="0" maxOccurs="1"                                                -->
+            <!-- name:      meta[speechInfluences]                   elg[speechInfluence]                     -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- occurs:    meta[0:unbounded]                        elg[0:1]                                 -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- ******************************************************************************************** -->
+            <xsl:for-each select="(./ms:captureInfo/ms:personSourceSetInfo/ms:speechInfluences)[1]">
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="elementName" select="'speechInfluence'" />
+                </xsl:call-template>
+            </xsl:for-each>
             <!-- "participant" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /ms:participantInfoType -->
         </xsl:if>
     </xsl:template>
 
@@ -2102,9 +2179,15 @@
         </xsl:call-template>
         <!-- "isCreatedBy" minOccurs="0" maxOccurs="unbounded" -->
         <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
-        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded" -->
+        <!-- ******************************************************************************************** -->
+        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
+        <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
+        <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+        <!-- maxlength: meta[4500]                               elg[500]                                 -->
+        <!-- ******************************************************************************************** -->
         <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
             <xsl:call-template name="ElementCopyWithDefaultLang">
+                <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
                 <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
                 <xsl:with-param name="elementLang" select="'en'" />
                 <xsl:with-param name="elementName" select="'originalSourceDescription'" />
