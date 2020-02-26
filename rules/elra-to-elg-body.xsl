@@ -1347,7 +1347,11 @@
     <xsl:template name="EncodingLevel">
         <xsl:param name="el" />
         <xsl:param name="default" />
-        <!-- encodingLevel -->
+        <!-- ******************************************************************************************** -->
+        <!-- "EncodingLevel" minOccurs="1" maxOccurs="unbounded"                                          -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+        <!-- ******************************************************************************************** -->
         <xsl:choose>
             <xsl:when test="count($el/ms:encodingLevel) > 0">
                 <xsl:for-each select="$el/ms:encodingLevel">
@@ -2394,6 +2398,202 @@
         </CorpusMediaPart>
     </xsl:template>
 
+    <!-- template:LexicalConceptualResourcePartStart -->
+    <xsl:template name="LexicalConceptualResourcePartStart">
+        <xsl:param name="el" />
+        <xsl:param name="lexicalConceptualResourceMediaType" />
+        <!-- lexicalConceptualResourceMediaType  -->
+        <lcrMediaType><xsl:value-of select="$lexicalConceptualResourceMediaType" /></lcrMediaType>
+        <!-- mediaType: LexicalConceptualResourceTextPart -->
+        <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceTextPart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/text</mediaType>
+        </xsl:if>
+        <!-- mediaType: LexicalConceptualResourceAudioPart -->
+        <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceAudioPart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/audio</mediaType>
+        </xsl:if>
+        <!-- mediaType: LexicalConceptualResourceVideoPart -->
+        <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceVideoPart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/video</mediaType>
+        </xsl:if>
+        <!-- mediaType: LexicalConceptualResourceImagePart -->
+        <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceImagePart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/image</mediaType>
+        </xsl:if>
+        <!-- lingualityType  -->
+        <xsl:call-template name="ElementMetaShareDefault">
+            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:lingualityType" />
+            <xsl:with-param name="default" select="'monolingual'" />
+            <xsl:with-param name="elementName" select="'lingualityType'" />
+        </xsl:call-template>
+        <!-- multilingualityType -->
+        <xsl:if test="normalize-space($el/ms:lingualityInfo/ms:multilingualityType) != ''">
+            <multilingualityType>
+                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:multilingualityType)" />
+            </multilingualityType>
+        </xsl:if>
+        <!-- multilingualityTypeDetails -->
+        <xsl:call-template name="ElementCopyWithDefaultLang">
+            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:multilingualityTypeDetails" />
+            <xsl:with-param name="elementLang" select="'en'" />
+            <xsl:with-param name="elementName" select="'multilingualityTypeDetails'" />
+        </xsl:call-template>
+        <!-- language -->
+        <xsl:choose>
+            <xsl:when test="count($el/ms:languageInfo) > 0">
+                <xsl:for-each select="$el/ms:languageInfo">
+                    <language>
+                        <xsl:call-template name="Language">
+                            <xsl:with-param name="el" select="." />
+                        </xsl:call-template>
+                    </language>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+                <language><languageTag>und</languageTag></language>
+            </xsl:otherwise>
+        </xsl:choose>
+        <!-- languageVariety -->
+        <xsl:for-each select="$el/ms:languageInfo/ms:languageVarietyInfo">
+            <languageVariety>
+                <!-- languageVarietyType -->
+                <languageVarietyType>
+                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:languageVarietyType)" />
+                </languageVarietyType>
+                <!-- languageVarietyName -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:languageVarietyName" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'languageVarietyName'" />
+                </xsl:call-template>
+            </languageVariety>
+        </xsl:for-each>
+        <!-- metalanguage -->
+        <metalanguage><languageTag>und</languageTag></metalanguage>
+        <!-- modalityType -->
+        <xsl:for-each select="$el/ms:modalityInfo">
+            <xsl:for-each select="./ms:modalityType">
+                <xsl:call-template name="ElementMetaShareDefault">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="default" select="'other'" />
+                    <xsl:with-param name="elementName" select="'modalityType'" />
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:LexicalConceptualResourcePartMid -->
+    <xsl:template name="LexicalConceptualResourcePartMid">
+        <xsl:param name="el" />
+        <xsl:param name="lexicalConceptualResourceMediaType" />
+        <!-- LexicalConceptualResourceImagePart -->
+        <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceImagePart'">
+            <!-- "typeOfImageContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:imageContentInfo)">
+                <typeOfImageContent xml:lang="en">undefined</typeOfImageContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
+                <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
+            </xsl:for-each>
+            <!-- "textIncludedInImage" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:imageContentInfo/ms:textIncludedInImage">
+                <xsl:call-template name="TextIncludedInImage">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "staticElement" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with staticElementInfo -->
+        </xsl:if>
+        <!-- LexicalConceptualResourceAudioPart -->
+        <!-- <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceAudioPart'">  -->
+            <!-- "speechItem" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /audioContentInfoType/speechItems[0:unbounded] -->
+            <!-- "nonSpeechItem" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /audioContentInfoType/nonSpeechItems[0:unbounded] -->
+            <!-- "legend" minOccurs="0" -->
+            <!-- ToBeMapped with /audioContentInfoType/textualDescription[0:] -->
+            <!-- "noiseLevel" minOccurs="0" -->
+            <!-- ToBeMapped with /audioContentInfoType/noiseLevel[0:] -->
+        <!-- </xsl:if>  -->
+        <!-- LexicalConceptualResourceVideoPart -->
+        <xsl:if test="$lexicalConceptualResourceMediaType = 'LexicalConceptualResourceVideoPart'">
+            <!-- "typeOfVideoContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:videoContentInfo)">
+                <typeOfVideoContent xml:lang="en">undefined</typeOfVideoContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
+                <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
+            </xsl:for-each>
+            <!-- "textIncludedInVideo" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:videoContentInfo/ms:textIncludedInVideo">
+                <xsl:call-template name="TextIncludedInVideo">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "dynamicElement" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /videoContentInfoType/dynamicElementInfo[0:] -->
+        </xsl:if>
+    </xsl:template>
+
+    <!-- template:LexicalConceptualResourceEnd -->
+    <!-- common elements at the end of each LexicalConceptualResourceEnd -->
+    <xsl:template name="LexicalConceptualResourceEnd">
+        <xsl:param name="el" />
+        <xsl:param name="lexicalConceptualResourceMediaType" />
+        <!-- "creationMode" minOccurs="0" -->
+        <xsl:call-template name="ElementMetaShare">
+            <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationMode" />
+            <xsl:with-param name="elementName" select="'creationMode'" />
+        </xsl:call-template>
+        <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+        <!-- ******************************************************************************************** -->
+        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
+        <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
+        <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+        <!-- maxlength: meta[4500]                               elg[500]                                 -->
+        <!-- ******************************************************************************************** -->
+        <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
+                <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- "creationDetails" minOccurs="0" maxOccurs="unbounded" -->
+        <xsl:call-template name="ElementCopyWithDefaultLang">
+            <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationModeDetails" />
+            <xsl:with-param name="elementLang" select="'en'" />
+            <xsl:with-param name="elementName" select="'creationDetails'" />
+        </xsl:call-template>
+    </xsl:template>
+
+    <!-- template:LexicalConceptualResourceMediaPart -->
+    <xsl:template name="LexicalConceptualResourceMediaPart">
+        <xsl:param name="el" />
+        <xsl:param name="lexicalConceptualResourceMediaType" />
+        <!-- LexicalConceptualResourceMediaPart -->
+        <LexicalConceptualResourceMediaPart>
+            <!-- lexicalConceptualResourceMediaType -->
+            <xsl:element name="{$lexicalConceptualResourceMediaType}">
+                <!-- common lexicalConceptualResource start elements  -->
+                <xsl:call-template name="LexicalConceptualResourcePartStart">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="lexicalConceptualResourceMediaType" select="$lexicalConceptualResourceMediaType" />
+                </xsl:call-template>
+                <!-- common lexicalConceptualResource middle elements  -->
+                <xsl:call-template name="LexicalConceptualResourcePartMid">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="lexicalConceptualResourceMediaType" select="$lexicalConceptualResourceMediaType" />
+                </xsl:call-template>
+                <!-- common lexicalConceptualResource end elements  -->
+                <!-- NOTHING HERE -->
+            </xsl:element>
+        </LexicalConceptualResourceMediaPart>
+    </xsl:template>
+
     <!-- template:LanguageDescriptionPartStart -->
     <xsl:template name="LanguageDescriptionPartStart">
         <xsl:param name="el" />
@@ -3088,6 +3288,119 @@
                                 <!-- </xsl:for-each> -->
                             </Corpus>
                         </xsl:if>
+                        <!-- LexicalConceptualResource  -->
+                        <xsl:if test="($resourceType = 'lexicalConceptualResource')">
+                            <LexicalConceptualResource>
+                                <!-- lrType  -->
+                                <lrType>LexicalConceptualResource</lrType>
+                                <!-- lcrSubclass  -->
+                                <xsl:call-template name="LcrSubclass">
+                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" />
+                                </xsl:call-template>
+                                <!-- encodingLevel -->
+                                <xsl:call-template name="EncodingLevel">
+                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
+                                    <xsl:with-param name="default" select="'http://w3id.org/meta-share/meta-share/morphology'" />
+                                </xsl:call-template>
+                                <!-- ContentType -->
+                                <!-- lexicalConceptualResourceMediaPart -->
+                                <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType">
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceTextPart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceTextInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceTextPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceAudioPart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceAudioInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceAudioPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceVideoPart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceVideoInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceVideoPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceImagePart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceImageInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceImagePart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                </xsl:for-each>
+                                <!-- DatasetDistribution -->
+                                <xsl:call-template name="DatasetDistribution"/>
+                                <!-- personalDataIncluded -->
+                                <!-- ToBeDefined : QUESTION() could be false by default? -->
+                                <personalDataIncluded>false</personalDataIncluded>
+                                <!-- personalDataDetails -->
+                                <!-- ToBeDefined -->
+                                <!-- sensitiveDataIncluded -->
+                                <!-- ToBeDefined : QUESTION() could be false by default? -->
+                                <sensitiveDataIncluded>false</sensitiveDataIncluded>
+                                <!-- ToBeDefined -->
+                                <!-- sensitiveDataDetails -->
+                                <!-- anonymized -->
+                                <!-- anonymizationDetails -->
+                                <!-- isAnalysedBy -->
+                                <!-- isEditedBy -->
+                                <!-- isElicitedBy -->
+                                <!-- isConvertedVersionOf -->
+                                <!-- timeCoverage -->
+                                <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType//ms:timeCoverageInfo">
+                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                        <xsl:with-param name="el" select="./ms:timeCoverage" />
+                                        <xsl:with-param name="elementLang" select="'en'" />
+                                        <xsl:with-param name="elementName" select="'timeCoverage'" />
+                                    </xsl:call-template>
+                                </xsl:for-each>
+                                <!-- geographicCoverage -->
+                                <!-- creationMode, creationDetails, hasOriginalSource, hasOriginalSourceDescription, isCreatedBy -->
+                                <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType">
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceTextPart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceTextInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceEnd">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceTextPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceAudioPart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceAudioInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceEnd">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceAudioPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceVideoPart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceVideoInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceEnd">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceVideoPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceImagePart -->
+                                    <xsl:for-each select="./ms:lexicalConceptualResourceImageInfo">
+                                        <xsl:call-template name="LexicalConceptualResourceEnd">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceImagePart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                </xsl:for-each>
+                                <!-- hasSubset -->
+                                <!-- <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType"> -->
+                                    <!-- hasSubset | lexicalConceptualResourceTextInfo -->
+                                    <!-- hasSubset | lexicalConceptualResourceAudioInfo -->
+                                    <!-- hasSubset | lexicalConceptualResourceVideoInfo -->
+                                    <!-- hasSubset | lexicalConceptualResourceImageInfo -->
+                                <!-- </xsl:for-each> -->
+                            </LexicalConceptualResource>
+                        </xsl:if>
                         <!-- LanguageDescription  -->
                         <xsl:if test="$resourceType = 'languageDescription' or
                                      ($corpusInfo/ms:corpusMediaType/ms:corpusTextNgramInfo)">
@@ -3182,64 +3495,6 @@
                                     <!-- hasSubset | languageDescriptionImageInfo -->
                                 <!-- </xsl:for-each> -->
                             </LanguageDescription>
-                        </xsl:if>
-                        <!-- lexicalConceptualResource  -->
-                        <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
-                            <LexicalConceptualResource>
-                                <!-- lrType  -->
-                                <lrType>LexicalConceptualResource</lrType>
-                                <!-- lcrSubclass  -->
-                                <xsl:call-template name="LcrSubclass">
-                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceType" />
-                                </xsl:call-template>
-                                <!-- ms:encodingLevel -->
-                                <xsl:call-template name="EncodingLevel">
-                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
-                                    <xsl:with-param name="default" select="'http://w3id.org/meta-share/meta-share/morphology'" />
-                                </xsl:call-template>
-                                <!-- LexicalConceptualResourceMediaPart  -->
-                                <LexicalConceptualResourceMediaPart>
-                                <!-- LexicalConceptualResourceTextPart  -->
-                                <xsl:if test="$mediaTypeName = 'lexicalConceptualResourceTextInfo' ">
-                                    <LexicalConceptualResourceTextPart>
-                                        <!-- lcrMediaType  -->
-                                        <lcrMediaType>LexicalConceptualResourceTextPart</lcrMediaType>
-                                        <!-- mediaType  -->
-                                        <mediaType>http://w3id.org/meta-share/meta-share/<xsl:value-of select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:mediaType" /></mediaType>
-                                        <!-- lingualityType  -->
-                                        <xsl:call-template name="ElementMetaShareDefault">
-                                            <xsl:with-param name="el" select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:lingualityInfo/ms:lingualityType" />
-                                            <xsl:with-param name="default" select="'monolingual'" />
-                                            <xsl:with-param name="elementName" select="'lingualityType'" />
-                                        </xsl:call-template>
-                                        <!-- language -->
-                                        <xsl:for-each select="$mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo/ms:languageInfo">
-                                            <language>
-                                                <xsl:call-template name="Language">
-                                                    <xsl:with-param name="el" select="." />
-                                                </xsl:call-template>
-                                            </language>
-                                        </xsl:for-each>
-                                        <!-- metalanguage -->
-                                        <metalanguage><languageTag>und</languageTag></metalanguage>
-                                    </LexicalConceptualResourceTextPart>
-                                </xsl:if>
-                                </LexicalConceptualResourceMediaPart>
-                                <!-- ms:DatasetDistribution -->
-                                <xsl:call-template name="DatasetDistribution"/>
-                                <!-- ms:personalDataIncluded -->
-                                <personalDataIncluded>false</personalDataIncluded>
-                                <!-- ms:sensitiveDataIncluded -->
-                                <sensitiveDataIncluded>false</sensitiveDataIncluded>
-                                <!-- hasSubset -->
-                                <!--  $mediaType/ms:lexicalConceptualResourceMediaType/ms:lexicalConceptualResourceTextInfo -->
-                                <!-- <xsl:for-each select="$corpusInfo/ms:corpusMediaType"> -->
-                                    <!-- hasSubset | lexicalConceptualResourceTextInfo -->
-                                    <!-- hasSubset | lexicalConceptualResourceAudioInfo -->
-                                    <!-- hasSubset | lexicalConceptualResourceVideoInfo -->
-                                    <!-- hasSubset | lexicalConceptualResourceImageInfo -->
-                                <!-- </xsl:for-each> -->
-                            </LexicalConceptualResource>
                         </xsl:if>
                     </LRSubclass>
                 </LanguageResource>
