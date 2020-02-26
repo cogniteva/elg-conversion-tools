@@ -926,10 +926,25 @@
                 <!-- isDisplayedBy -->
                 <!-- isQueriedBy -->
                 <!-- samplesLocation -->
-                <!-- distribution[*]Feature -->
+                <!-- Corpus distribution[*]Feature -->
                 <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
                     <!-- distributionTextFeature | corpusTextInfo -->
                     <xsl:for-each select="./ms:corpusTextInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionTextFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:dataFormat))">
+                            <distributionTextFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionTextFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <!-- distributionTextFeature | corpusTextNgramInfo -->
+                    <xsl:for-each select="./ms:corpusTextNgramInfo">
                         <!-- build feature -->
                         <xsl:variable name="feature">
                             <xsl:call-template name="DistributionTextFeature">
@@ -1003,8 +1018,117 @@
                             </distributionVideoFeature>
                         </xsl:if>
                     </xsl:for-each>
-                    <!-- distribution | corpusTextNgramInfo -->
-                    <!-- QUESTION() To which distribution[*]Feature should corpusTextNgramInfo be transferred? -->
+                </xsl:for-each>
+                <!-- LexicalConceptualResource distribution[*]Feature -->
+                <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType">
+                    <!-- distributionTextFeature | lexicalConceptualResourceTextInfo -->
+                    <xsl:for-each select="./ms:lexicalConceptualResourceTextInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionTextFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:dataFormat))">
+                            <distributionTextFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionTextFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <!-- distributionAudioFeature | lexicalConceptualResourceAudioInfo -->
+                    <xsl:for-each select="./ms:lexicalConceptualResourceAudioInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionAudioFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:audioFormat))">
+                            <distributionAudioFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionAudioFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <!-- distributionVideoFeature | lexicalConceptualResourceVideoInfo -->
+                    <xsl:for-each select="./ms:lexicalConceptualResourceVideoInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionVideoFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:videoFormat))">
+                            <distributionVideoFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionVideoFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <!-- distributionImageFeature | lexicalConceptualResourceImageInfo -->
+                    <xsl:for-each select="./ms:lexicalConceptualResourceImageInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionImageFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:imageFormat))">
+                            <distributionImageFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionImageFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                </xsl:for-each>
+                <!-- LanguageDescription distribution[*]Feature -->
+                <xsl:for-each select="$languageDescriptionInfo/ms:languageDescriptionMediaType">
+                    <!-- distributionTextFeature | languageDescriptionTextInfo -->
+                    <xsl:for-each select="./ms:languageDescriptionTextInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionTextFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:dataFormat))">
+                            <distributionTextFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionTextFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <!-- distributionVideoFeature | languageDescriptionVideoInfo -->
+                    <xsl:for-each select="./ms:languageDescriptionVideoInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionVideoFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:videoFormat))">
+                            <distributionVideoFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionVideoFeature>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <!-- distributionImageFeature | languageDescriptionImageInfo -->
+                    <xsl:for-each select="./ms:languageDescriptionImageInfo">
+                        <!-- build feature -->
+                        <xsl:variable name="feature">
+                            <xsl:call-template name="DistributionImageFeature">
+                                <xsl:with-param name="el" select="." />
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <!-- test if mandatory elements were created -->
+                        <xsl:if test="(($feature/ms:size) and ($feature/ms:imageFormat))">
+                            <distributionImageFeature>
+                                <xsl:copy-of select="$feature" />
+                            </distributionImageFeature>
+                        </xsl:if>
+                    </xsl:for-each>
                 </xsl:for-each>
                 <!-- licenceTerms -->
                 <xsl:for-each select="./ms:licenceInfo">
@@ -1421,6 +1545,24 @@
                 <!-- sizeUnit -->
                 <!-- DO NOT CHANGER ORDER DECLARATION -->
                 <xsl:choose>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), '4-grams')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/four-gram</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), '5-grams')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/five-gram</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'articles')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/article</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'bigrams')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/bigram</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'bytes')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/byte</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'classes')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/class</sizeUnit>
+                    </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'entries')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/entry</sizeUnit>
                     </xsl:when>
@@ -1462,6 +1604,18 @@
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'units')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/unit</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'trigrams')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/trigram</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'units')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/unit</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'units')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/unit</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'unigrams')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/unigram</sizeUnit>
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'utterances')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/utterance1</sizeUnit>
@@ -2429,6 +2583,31 @@
         </LanguageDescriptionMediaPart>
     </xsl:template>
 
+    <!-- template:NGramModel -->
+    <xsl:template name="NGramModel">
+        <xsl:param name="el" />
+        <!-- ldSubclassType -->
+        <ldSubclassType>NGramModel</ldSubclassType>
+        <!-- ******************************************************************************************** -->
+        <!-- "baseItem" minOccurs="1" maxOccurs="unbounded"                                               -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[50]                                 elg[restrict]                            -->
+        <!-- ******************************************************************************************** -->
+        <xsl:for-each select="$el/ms:ngramInfo">
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="./ms:baseItem" />
+                <xsl:with-param name="elementName" select="'baseItem'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- ******************************************************************************************** -->
+        <!-- "order" minOccurs="1" maxOccurs="1"                                                          -->
+        <!-- ******************************************************************************************** -->
+        <xsl:call-template name="ElementCopy">
+            <xsl:with-param name="el" select="$el/ms:ngramInfo/ms:order" />
+            <xsl:with-param name="elementName" select="'order'" />
+        </xsl:call-template>
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -2762,7 +2941,8 @@
                     <!-- LRSubclass -->
                     <LRSubclass>
                         <!-- Corpus  -->
-                        <xsl:if test="$resourceType = 'corpus' ">
+                        <xsl:if test="($resourceType = 'corpus' and
+                                   not($corpusInfo/ms:corpusMediaType/ms:corpusTextNgramInfo))">
                             <Corpus>
                                 <!-- lrType  -->
                                 <lrType>Corpus</lrType>
@@ -2820,7 +3000,7 @@
                                         </xsl:call-template>
                                     </xsl:for-each>
                                     <!-- CorpusMediaPart | corpusTextNgramInfo -->
-                                    <!-- QUESTION() Where to map corpusTextNgramInfo? -->
+                                    <!-- THIS IS NOW IN LanguageDescription/LanguageDescriptionSubclass/NGramModel -->
                                 </xsl:for-each>
                                 <!-- DatasetDistribution -->
                                 <xsl:call-template name="DatasetDistribution"/>
@@ -2885,8 +3065,6 @@
                                             <xsl:with-param name="el" select="." />
                                         </xsl:call-template>
                                     </xsl:for-each>
-                                    <!-- annotation | corpusTextNgramInfo -->
-                                    <!-- ToBeDefined -->
                                 </xsl:for-each>
                                 <!-- append at least one mandatory annotation -->
                                 <xsl:if test=
@@ -2911,16 +3089,30 @@
                             </Corpus>
                         </xsl:if>
                         <!-- LanguageDescription  -->
-                        <xsl:if test="$resourceType = 'languageDescription' ">
+                        <xsl:if test="$resourceType = 'languageDescription' or
+                                     ($corpusInfo/ms:corpusMediaType/ms:corpusTextNgramInfo)">
                             <LanguageDescription>
                                 <!-- lrType  -->
                                 <lrType>LanguageDescription</lrType>
                                 <!-- languageDescriptionSubclass : QUESTION() how to deduce this information ? -->
                                 <LanguageDescriptionSubclass>
-                                    <Grammar>
-                                        <ldSubclassType>Grammar</ldSubclassType>
-                                        <encodingLevel>http://w3id.org/meta-share/meta-share/morphology</encodingLevel>
-                                    </Grammar>
+                                    <xsl:choose>
+                                        <!-- NGramModel -->
+                                        <xsl:when test="($corpusInfo/ms:corpusMediaType/ms:corpusTextNgramInfo)">
+                                            <NGramModel>
+                                                <xsl:call-template name="NGramModel">
+                                                    <xsl:with-param name="el" select="$corpusInfo/ms:corpusMediaType/ms:corpusTextNgramInfo" />
+                                                </xsl:call-template>
+                                            </NGramModel>
+                                        </xsl:when>
+                                        <!-- Grammar -->
+                                        <xsl:otherwise>
+                                            <Grammar>
+                                                <ldSubclassType>Grammar</ldSubclassType>
+                                                <encodingLevel>http://w3id.org/meta-share/meta-share/morphology</encodingLevel>
+                                            </Grammar>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
                                 </LanguageDescriptionSubclass>
                                 <!-- languageDescriptionMediaType -->
                                 <xsl:for-each select="$languageDescriptionInfo/ms:languageDescriptionMediaType">
@@ -2943,6 +3135,16 @@
                                         <xsl:call-template name="LanguageDescriptionMediaPart">
                                             <xsl:with-param name="el" select="." />
                                             <xsl:with-param name="languageDescriptionMediaType" select="'LanguageDescriptionVideoPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                </xsl:for-each>
+                                <!-- languageDescriptionMediaType | corpusMediaType = corpusTextNgram -->
+                                <xsl:for-each select="$corpusInfo/ms:corpusMediaType">
+                                    <!-- LanguageDescriptionMediaPart | LanguageDescriptionTextPart -->
+                                    <xsl:for-each select="./ms:corpusTextNgramInfo">
+                                        <xsl:call-template name="LanguageDescriptionMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="languageDescriptionMediaType" select="'LanguageDescriptionTextPart'" />
                                         </xsl:call-template>
                                     </xsl:for-each>
                                 </xsl:for-each>
