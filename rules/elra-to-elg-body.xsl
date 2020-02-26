@@ -1926,9 +1926,15 @@
                     <xsl:with-param name="elementName" select="'sourceChannel'" />
                 </xsl:call-template>
             </xsl:for-each>
-            <!-- "sourceChannelType" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "sourceChannelType" minOccurs="0" maxOccurs="unbounded"                                      -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- occurs:    meta[0:unbounded]                        elg[0:1]                                 -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- restrict:  meta[3G]                                 elg[ThreeG]                              -->
+            <!-- ******************************************************************************************** -->
             <xsl:variable name="sourceChannelTypeMaps">
-               <entry><source>3G</source><target>ThreeG</target></entry>
+                <entry><source>3G</source><target>ThreeG</target></entry>
             </xsl:variable>
             <xsl:for-each select="(./ms:recordingInfo/ms:sourceChannelType)[1]">
                 <xsl:call-template name="ElementMetaShare">
