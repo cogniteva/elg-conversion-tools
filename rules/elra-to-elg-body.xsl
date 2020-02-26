@@ -1937,7 +1937,11 @@
                     <xsl:with-param name="elementName" select="'sourceChannelType'" />
                 </xsl:call-template>
             </xsl:for-each>
-            <!-- "sourceChannelName" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "sourceChannelName" minOccurs="0" maxOccurs="unbounded"                                      -->
+            <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+            <!-- maxlength: meta[30]                                 elg[100]                                 -->
+            <!-- ******************************************************************************************** -->
             <xsl:for-each select="./ms:recordingInfo/ms:sourceChannelName">
                 <xsl:call-template name="ElementCopyWithDefaultLang">
                     <xsl:with-param name="el" select="." />
