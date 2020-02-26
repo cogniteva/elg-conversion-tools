@@ -205,6 +205,19 @@
         </xsl:if>
     </xsl:function>
 
+    <!-- function:ms:node-type -->
+    <xsl:function name="ms:node-type">
+        <xsl:param name="node"/>
+        <xsl:choose>
+            <xsl:when test="$node instance of element()">
+                <xsl:value-of select="'element'" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="''" />
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
     <!-- function:get-meta-share-mimetype -->
     <xsl:function name="ms:get-meta-share-mimetype">
         <xsl:param name="text" />
@@ -245,12 +258,6 @@
             <xsl:when test="contains(lower-case(normalize-space($text)), 'mpeg3')">
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/mpg'"/>
             </xsl:when>
-            <xsl:when test="contains(lower-case(normalize-space($text)), 'video')">
-                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/mpg'"/>
-            </xsl:when>
-            <xsl:when test="contains(lower-case(normalize-space($text)), 'text')">
-                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Text'"/>
-            </xsl:when>
             <xsl:when test="contains(lower-case(normalize-space($text)), 'plain')">
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Text'"/>
             </xsl:when>
@@ -258,6 +265,19 @@
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Pdf'"/>
             </xsl:when>
             <!-- NOTE() Add here as much mappings as needed -->
+            <!-- DO NOT PUT ANYTHING MORE BELOW -->
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'audio/')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/AudioFormat'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'image/')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Pdf'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'text/')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Text'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'video/')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/mpg'"/>
+            </xsl:when>
             <xsl:otherwise>
                 <!-- otherwise return an empty string -->
                 <xsl:value-of select="''"/>
@@ -360,6 +380,7 @@
                 </xsl:for-each>
             </xsl:otherwise>
         </xsl:choose>
+        <!-- PersonalIdentifier -->
         <!-- email -->
         <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
     </xsl:template>
@@ -488,29 +509,32 @@
         <xsl:param name="mappings" />
         <xsl:param name="prefix" />
         <xsl:if test="normalize-space($el) != ''">
-            <xsl:element name="{$elementName}">
-                <xsl:copy-of  select="$el/@*"/>
+            <xsl:variable name="value">
                 <xsl:choose>
-                    <xsl:when test="normalize-space($prefix) = ''">
-                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',ms:map-with($el,$mappings))" />
+                    <xsl:when test="((normalize-space($prefix) = '') or (normalize-space($prefix) = 'meta'))">
+                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ms:map-with($el,$mappings))" />
+                    </xsl:when>
+                    <xsl:when test="normalize-space($prefix) = 'omtd'">
+                        <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', ms:map-with($el,$mappings))" />
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="concat($prefix,ms:map-with($el,$mappings))" />
                     </xsl:otherwise>
                 </xsl:choose>
-            </xsl:element>
-        </xsl:if>
-    </xsl:template>
-
-    <!-- template:ElementOmtdShare -->
-    <xsl:template name="ElementOmtdShare">
-        <xsl:param name="el" />
-        <xsl:param name="elementName" />
-        <xsl:if test="normalize-space($el) != ''">
-            <xsl:element name="{$elementName}">
-                <xsl:copy-of  select="$el/@*"/>
-                <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/',normalize-space($el))" />
-            </xsl:element>
+            </xsl:variable>
+            <xsl:choose>
+                <xsl:when test="(ms:node-type($el) = 'element')">
+                    <xsl:element name="{$elementName}">
+                        <xsl:copy-of   select="$el/@*"/>
+                        <xsl:value-of  select="$value"/>
+                    </xsl:element>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:element name="{$elementName}">
+                        <xsl:value-of  select="$value"/>
+                    </xsl:element>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:if>
     </xsl:template>
 
@@ -521,9 +545,10 @@
         <xsl:param name="elementName" />
         <xsl:choose>
             <xsl:when test="normalize-space($el) = ''">
-                <xsl:element name="{$elementName}">
-                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',$default)" />
-                </xsl:element>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="$default" />
+                    <xsl:with-param name="elementName" select="$elementName" />
+                </xsl:call-template>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:call-template name="ElementMetaShare">
