@@ -1988,7 +1988,12 @@
                 <xsl:with-param name="elementLang" select="'en'" />
                 <xsl:with-param name="elementName" select="'capturingDeviceTypeDetails'" />
             </xsl:call-template>
-            <!-- "capturingDetails" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "capturingDetails" minOccurs="0" maxOccurs="1"                                               -->
+            <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+            <!-- occurs:    meta[0:1]                                elg[0:unbounded]                         -->
+            <!-- maxlength: meta[400]                                elg[500]                                 -->
+            <!-- ******************************************************************************************** -->
             <xsl:call-template name="ElementCopyWithDefaultLang">
                 <xsl:with-param name="el" select="./ms:captureInfo/ms:capturingDetails" />
                 <xsl:with-param name="elementLang" select="'en'" />
