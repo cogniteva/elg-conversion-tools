@@ -372,16 +372,22 @@
             <!-- ATTENTION DO NOT PUT A BUNCH OF ORGANIZATIONS HERE -->
             <!-- THIS IS JUST TO TRANSFORM CERTAIN WELL-KNOWN VALUES -->
             <!-- a more efficient approach would be to use a WRL model -->
-            <xsl:when test="(contains(lower-case(normalize-space($el)), 'ilsp') or
-                            (contains(lower-case(normalize-space($el)), 'institute for language and speech processing')))">
+            <xsl:when test="(contains(lower-case(normalize-space($el)), 'dfki') or
+                            (contains(lower-case(normalize-space($el)), 'forschungszentrum für künstliche intelligenz')))">
                 <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
-                    <xsl:value-of select="'ILSP'" />
+                    <xsl:value-of select="'DFKI'" />
                 </OrganizationIdentifier>
             </xsl:when>
             <xsl:when test="(contains(lower-case(normalize-space($el)), 'elra') or
                             (contains(lower-case(normalize-space($el)), 'european language resources association')))">
                 <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
                     <xsl:value-of select="'ELRA'" />
+                </OrganizationIdentifier>
+            </xsl:when>
+            <xsl:when test="(contains(lower-case(normalize-space($el)), 'ilsp') or
+                            (contains(lower-case(normalize-space($el)), 'institute for language and speech processing')))">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
+                    <xsl:value-of select="'ILSP'" />
                 </OrganizationIdentifier>
             </xsl:when>
             <xsl:when test="$asDefault = 'true'">
@@ -2091,7 +2097,8 @@
             <!-- ******************************************************************************************** -->
             <xsl:for-each select="./ms:captureInfo/ms:personSourceSetInfo/ms:dialectAccentOfPersons">
                 <xsl:call-template name="ElementCopyWithDefaultLang">
-                    <xsl:with-param name="el" select="substring(., 1, 150)" />
+                    <!-- SHOULD BE substring(., 1, 150) -->
+                    <xsl:with-param name="el" select="." />
                     <xsl:with-param name="elementLang" select="'en'" />
                     <xsl:with-param name="elementName" select="'dialectAccentOfParticipants'" />
                 </xsl:call-template>
@@ -2233,6 +2240,195 @@
         </CorpusMediaPart>
     </xsl:template>
 
+    <!-- template:LanguageDescriptionPartStart -->
+    <xsl:template name="LanguageDescriptionPartStart">
+        <xsl:param name="el" />
+        <xsl:param name="languageDescriptionMediaType" />
+        <!-- languageDescriptionMediaType  -->
+        <ldMediaType><xsl:value-of select="$languageDescriptionMediaType" /></ldMediaType>
+        <!-- mediaType: LanguageDescriptionTextPart -->
+        <xsl:if test="$languageDescriptionMediaType = 'LanguageDescriptionTextPart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/text</mediaType>
+        </xsl:if>
+        <!-- mediaType: LanguageDescriptionImagePart -->
+        <xsl:if test="$languageDescriptionMediaType = 'LanguageDescriptionImagePart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/image</mediaType>
+        </xsl:if>
+        <!-- mediaType: LanguageDescriptionVideoPart -->
+        <xsl:if test="$languageDescriptionMediaType = 'LanguageDescriptionVideoPart'">
+            <mediaType>http://w3id.org/meta-share/meta-share/video</mediaType>
+        </xsl:if>
+        <!-- lingualityType  -->
+        <xsl:call-template name="ElementMetaShareDefault">
+            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:lingualityType" />
+            <xsl:with-param name="default" select="'monolingual'" />
+            <xsl:with-param name="elementName" select="'lingualityType'" />
+        </xsl:call-template>
+        <!-- multilingualityType -->
+        <xsl:if test="normalize-space($el/ms:lingualityInfo/ms:multilingualityType) != ''">
+            <multilingualityType>
+                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', $el/ms:lingualityInfo/ms:multilingualityType)" />
+            </multilingualityType>
+        </xsl:if>
+        <!-- multilingualityTypeDetails -->
+        <xsl:call-template name="ElementCopyWithDefaultLang">
+            <xsl:with-param name="el" select="$el/ms:lingualityInfo/ms:multilingualityTypeDetails" />
+            <xsl:with-param name="elementLang" select="'en'" />
+            <xsl:with-param name="elementName" select="'multilingualityTypeDetails'" />
+        </xsl:call-template>
+        <!-- language -->
+        <xsl:choose>
+            <xsl:when test="count($el/ms:languageInfo) > 0">
+                <xsl:for-each select="$el/ms:languageInfo">
+                    <language>
+                        <xsl:call-template name="Language">
+                            <xsl:with-param name="el" select="." />
+                        </xsl:call-template>
+                    </language>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+                <language><languageTag>und</languageTag></language>
+            </xsl:otherwise>
+        </xsl:choose>
+        <!-- languageVariety -->
+        <xsl:for-each select="$el/ms:languageInfo/ms:languageVarietyInfo">
+            <languageVariety>
+                <!-- languageVarietyType -->
+                <languageVarietyType>
+                    <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/', ./ms:languageVarietyType)" />
+                </languageVarietyType>
+                <!-- languageVarietyName -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="./ms:languageVarietyName" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'languageVarietyName'" />
+                </xsl:call-template>
+            </languageVariety>
+        </xsl:for-each>
+        <!-- metalanguage -->
+        <metalanguage><languageTag>und</languageTag></metalanguage>
+        <!-- modalityType -->
+        <xsl:for-each select="$el/ms:modalityInfo">
+            <xsl:for-each select="./ms:modalityType">
+                <xsl:call-template name="ElementMetaShareDefault">
+                    <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="default" select="'other'" />
+                    <xsl:with-param name="elementName" select="'modalityType'" />
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:for-each>
+    </xsl:template>
+
+    <!-- template:LanguageDescriptionPartMid -->
+    <xsl:template name="LanguageDescriptionPartMid">
+        <xsl:param name="el" />
+        <xsl:param name="languageDescriptionMediaType" />
+        <!-- LanguageDescriptionImagePart -->
+        <xsl:if test="$languageDescriptionMediaType = 'LanguageDescriptionImagePart'">
+            <!-- "typeOfImageContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:imageContentInfo)">
+                <typeOfImageContent xml:lang="en">undefined</typeOfImageContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:imageContentInfo/ms:typeOfImageContent">
+                <typeOfImageContent xml:lang="und"><xsl:value-of select="." /></typeOfImageContent>
+            </xsl:for-each>
+            <!-- "textIncludedInImage" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:imageContentInfo/ms:textIncludedInImage">
+                <xsl:call-template name="TextIncludedInImage">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "staticElement" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with staticElementInfo -->
+        </xsl:if>
+        <!-- LanguageDescriptionVideoPart -->
+        <xsl:if test="$languageDescriptionMediaType = 'LanguageDescriptionVideoPart'">
+            <!-- "typeOfVideoContent" maxOccurs="unbounded" -->
+            <!-- QUESTION() what would be a default value ?  -->
+            <xsl:if test="not(./ms:videoContentInfo)">
+                <typeOfVideoContent xml:lang="en">undefined</typeOfVideoContent>
+            </xsl:if>
+            <xsl:for-each select="./ms:videoContentInfo/ms:typeOfVideoContent">
+                <typeOfVideoContent xml:lang="und"><xsl:value-of select="." /></typeOfVideoContent>
+            </xsl:for-each>
+            <!-- "textIncludedInVideo" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:videoContentInfo/ms:textIncludedInVideo">
+                <xsl:call-template name="TextIncludedInVideo">
+                    <xsl:with-param name="el" select="." />
+                </xsl:call-template>
+            </xsl:for-each>
+            <!-- "dynamicElement" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- ToBeMapped with /videoContentInfoType/dynamicElementInfo[0:] -->
+        </xsl:if>
+    </xsl:template>
+
+    <!-- template:LanguageDescriptionPartEnd -->
+    <!-- common elements at the end of each LanguageDescriptionPart -->
+    <xsl:template name="LanguageDescriptionPartEnd">
+        <xsl:param name="el" />
+        <xsl:param name="languageDescriptionMediaType" />
+        <!-- "creationMode" minOccurs="0" -->
+        <xsl:call-template name="ElementMetaShare">
+            <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationMode" />
+            <xsl:with-param name="elementName" select="'creationMode'" />
+        </xsl:call-template>
+        <!-- "creationDetails" minOccurs="0" maxOccurs="unbounded" -->
+        <xsl:call-template name="ElementCopyWithDefaultLang">
+            <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationModeDetails" />
+            <xsl:with-param name="elementLang" select="'en'" />
+            <xsl:with-param name="elementName" select="'creationDetails'" />
+        </xsl:call-template>
+        <!-- "isCreatedBy" -->
+        <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+        <!-- ******************************************************************************************** -->
+        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
+        <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
+        <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+        <!-- maxlength: meta[4500]                               elg[500]                                 -->
+        <!-- ******************************************************************************************** -->
+        <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
+                <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+            </xsl:call-template>
+        </xsl:for-each>
+        <!-- "linkToOtherMedia" minOccurs="0" maxOccurs="unbounded" -->
+        <xsl:call-template name="LinkToOtherMedia">
+            <xsl:with-param name="el" select="$el/ms:linkToOtherMediaInfo" />
+        </xsl:call-template>
+    </xsl:template>
+
+    <!-- template:LanguageDescriptionMediaPart -->
+    <xsl:template name="LanguageDescriptionMediaPart">
+        <xsl:param name="el" />
+        <xsl:param name="languageDescriptionMediaType" />
+        <!-- LanguageDescriptionMediaPart -->
+        <LanguageDescriptionMediaPart>
+            <!-- languageDescriptionMediaType -->
+            <xsl:element name="{$languageDescriptionMediaType}">
+                <!-- common languageDescription start elements  -->
+                <xsl:call-template name="LanguageDescriptionPartStart">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="languageDescriptionMediaType" select="$languageDescriptionMediaType" />
+                </xsl:call-template>
+                <!-- common languageDescription middle elements  -->
+                <xsl:call-template name="LanguageDescriptionPartMid">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="languageDescriptionMediaType" select="$languageDescriptionMediaType" />
+                </xsl:call-template>
+                <!-- common languageDescription end elements  -->
+                <xsl:call-template name="LanguageDescriptionPartEnd">
+                    <xsl:with-param name="el" select="$el" />
+                    <xsl:with-param name="languageDescriptionMediaType" select="$languageDescriptionMediaType" />
+                </xsl:call-template>
+            </xsl:element>
+        </LanguageDescriptionMediaPart>
+    </xsl:template>
+
     <!-- MetadataRecord  -->
     <xsl:template match="/*">
         <xsl:copy>
@@ -2355,7 +2551,7 @@
                     <!-- NoMapAvalaible -->
                     <!-- discussionURL -->
                     <!-- NoMapAvalaible -->
-                    <!-- citation -->
+                    <!-- citationText -->
                     <xsl:for-each select="$resourceDocumentationInfo/ms:citation/ms:documentUnstructured">
                         <citationText xml:lang="und"><xsl:value-of select="." /></citationText>
                     </xsl:for-each>
@@ -2713,6 +2909,77 @@
                                     <!-- hasSubset | corpusTextNumericalInfo -->
                                 <!-- </xsl:for-each> -->
                             </Corpus>
+                        </xsl:if>
+                        <!-- LanguageDescription  -->
+                        <xsl:if test="$resourceType = 'languageDescription' ">
+                            <LanguageDescription>
+                                <!-- lrType  -->
+                                <lrType>LanguageDescription</lrType>
+                                <!-- languageDescriptionSubclass : QUESTION() how to deduce this information ? -->
+                                <LanguageDescriptionSubclass>
+                                    <Grammar>
+                                        <ldSubclassType>Grammar</ldSubclassType>
+                                        <encodingLevel>http://w3id.org/meta-share/meta-share/morphology</encodingLevel>
+                                    </Grammar>
+                                </LanguageDescriptionSubclass>
+                                <!-- languageDescriptionMediaType -->
+                                <xsl:for-each select="$languageDescriptionInfo/ms:languageDescriptionMediaType">
+                                    <!-- LanguageDescriptionMediaPart | LanguageDescriptionTextPart -->
+                                    <xsl:for-each select="./ms:languageDescriptionTextInfo">
+                                        <xsl:call-template name="LanguageDescriptionMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="languageDescriptionMediaType" select="'LanguageDescriptionTextPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LanguageDescriptionMediaPart | LanguageDescriptionImagePart -->
+                                    <xsl:for-each select="./ms:languageDescriptionImageInfo">
+                                        <xsl:call-template name="LanguageDescriptionMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="languageDescriptionMediaType" select="'LanguageDescriptionImagePart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                    <!-- LanguageDescriptionMediaPart | LanguageDescriptionVideoPart -->
+                                    <xsl:for-each select="./ms:languageDescriptionVideoInfo">
+                                        <xsl:call-template name="LanguageDescriptionMediaPart">
+                                            <xsl:with-param name="el" select="." />
+                                            <xsl:with-param name="languageDescriptionMediaType" select="'LanguageDescriptionVideoPart'" />
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                </xsl:for-each>
+                                <!-- DatasetDistribution -->
+                                <xsl:call-template name="DatasetDistribution"/>
+                                <!-- personalDataIncluded -->
+                                <!-- ToBeDefined : QUESTION() could be false by default? -->
+                                <personalDataIncluded>false</personalDataIncluded>
+                                <!-- personalDataDetails -->
+                                <!-- ToBeDefined -->
+                                <!-- sensitiveDataIncluded -->
+                                <!-- ToBeDefined : QUESTION() could be false by default? -->
+                                <sensitiveDataIncluded>false</sensitiveDataIncluded>
+                                <!-- ToBeDefined -->
+                                <!-- sensitiveDataDetails -->
+                                <!-- anonymized -->
+                                <!-- anonymizationDetails -->
+                                <!-- isAnalysedBy -->
+                                <!-- isEditedBy -->
+                                <!-- isElicitedBy -->
+                                <!-- isAlignedVersionOf -->
+                                <!-- isConvertedVersionOf -->
+                                <!-- timeCoverage -->
+                                <xsl:for-each select="$languageDescriptionInfo/ms:languageDescriptionMediaType//ms:timeCoverageInfo">
+                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                        <xsl:with-param name="el" select="./ms:timeCoverage" />
+                                        <xsl:with-param name="elementLang" select="'en'" />
+                                        <xsl:with-param name="elementName" select="'timeCoverage'" />
+                                    </xsl:call-template>
+                                </xsl:for-each>
+                                <!-- hasSubset -->
+                                <!-- <xsl:for-each select="$languageDescriptionInfo/ms:languageDescriptionMediaType"> -->
+                                    <!-- hasSubset | languageDescriptionTextInfo -->
+                                    <!-- hasSubset | languageDescriptionVideoInfo -->
+                                    <!-- hasSubset | languageDescriptionImageInfo -->
+                                <!-- </xsl:for-each> -->
+                            </LanguageDescription>
                         </xsl:if>
                         <!-- lexicalConceptualResource  -->
                         <xsl:if test="$resourceType = 'lexicalConceptualResource' ">
