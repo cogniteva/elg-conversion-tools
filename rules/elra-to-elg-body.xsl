@@ -1144,23 +1144,6 @@
         </xsl:for-each>
     </xsl:template>
 
-    <!-- template:CapturingDeviceType -->
-    <xsl:template name="CapturingDeviceType">
-        <xsl:param name="el" />
-        <!-- capturingDeviceType -->
-        <xsl:choose>
-            <xsl:when test="contains(lower-case(normalize-space(.)), 'microphone')">
-                <capturingDeviceType>http://w3id.org/meta-share/meta-share/microphone1</capturingDeviceType>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="ElementMetaShare">
-                    <xsl:with-param name="el" select="." />
-                    <xsl:with-param name="elementName" select="'capturingDeviceType'" />
-                </xsl:call-template>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
     <!-- template:TextIncludedInImage -->
     <xsl:template name="TextIncludedInImage">
         <xsl:param name="el" />
@@ -1975,10 +1958,23 @@
                        ($corpusMediaType = 'CorpusVideoPart') or
                        ($corpusMediaType = 'CorpusTextNumericalPart') or
                        ($corpusMediaType = 'CorpusImagePart'))">
-            <!-- "capturingDeviceType" minOccurs="0" -->
+            <!-- ******************************************************************************************** -->
+            <!-- "capturingDeviceType" minOccurs="0" maxOccurs="unbounded"                                    -->
+            <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+            <!-- occurs:    meta[0:unbounded]                        elg[0:1]                                 -->
+            <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+            <!-- restrict:  meta[laryngograph]                       elg[laryngograph1]                       -->
+            <!-- restrict:  meta[microphone]                         elg[microphone1]                         -->
+            <!-- ******************************************************************************************** -->
+            <xsl:variable name="capturingDeviceTypeMaps">
+                <entry><source>laryngograph</source><target>laryngograph1</target></entry>
+                <entry><source>microphone</source><target>microphone1</target></entry>
+            </xsl:variable>
             <xsl:for-each select="(./ms:captureInfo/ms:capturingDeviceType)[1]">
-                <xsl:call-template name="CapturingDeviceType">
+                <xsl:call-template name="ElementMetaShare">
                     <xsl:with-param name="el" select="." />
+                    <xsl:with-param name="mappings" select="$capturingDeviceTypeMaps" />
+                    <xsl:with-param name="elementName" select="'capturingDeviceType'" />
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "capturingDeviceTypeDetails" minOccurs="0" maxOccurs="unbounded" -->
@@ -1990,13 +1986,11 @@
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "capturingDetails" minOccurs="0" maxOccurs="unbounded" -->
-            <xsl:for-each select="./ms:captureInfo/ms:capturingDetails">
-                <xsl:call-template name="ElementCopyWithDefaultLang">
-                    <xsl:with-param name="el" select="." />
-                    <xsl:with-param name="elementLang" select="'en'" />
-                    <xsl:with-param name="elementName" select="'capturingDetails'" />
-                </xsl:call-template>
-            </xsl:for-each>
+            <xsl:call-template name="ElementCopyWithDefaultLang">
+                <xsl:with-param name="el" select="./ms:captureInfo/ms:capturingDetails" />
+                <xsl:with-param name="elementLang" select="'en'" />
+                <xsl:with-param name="elementName" select="'capturingDetails'" />
+            </xsl:call-template>
             <!-- "capturingEnvironment" minOccurs="0" -->
             <!-- ToBeMapped -->
             <!-- "sensorTechnology" minOccurs="0" -->
@@ -2012,6 +2006,10 @@
                        ($corpusMediaType = 'CorpusVideoPart') or
                        ($corpusMediaType = 'CorpusTextNumericalPart'))">
             <!-- "numberOfParticipants" minOccurs="0" -->
+            <xsl:call-template name="ElementCopy">
+                <xsl:with-param name="el" select="$el/ms:captureInfo/ms:personSourceSetInfo/ms:numberOfPersons" />
+                <xsl:with-param name="elementName" select="'numberOfParticipants'" />
+            </xsl:call-template>
             <!-- "ageGroupOfParticipants" minOccurs="0" -->
             <!-- "ageRangeStartOfParticipants" minOccurs="0" -->
             <!-- "ageRangeEndOfParticipants" minOccurs="0" -->
@@ -2022,6 +2020,7 @@
             <!-- "hearingImpairmentOfParticipants" minOccurs="0" -->
             <!-- "speakingImpairmentOfParticipants" minOccurs="0" -->
             <!-- "numberOfTrainedSpeakers" minOccurs="0" -->
+            <xsl:copy-of select="$el/ms:captureInfo/ms:personSourceSetInfo/ms:numberOfTrainedSpeakers"/>
             <!-- "speechInfluence" minOccurs="0" -->
             <!-- "participant" minOccurs="0" maxOccurs="unbounded" -->
         </xsl:if>
