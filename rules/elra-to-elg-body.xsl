@@ -486,10 +486,18 @@
         <xsl:param name="el" />
         <xsl:param name="elementName" />
         <xsl:param name="mappings" />
+        <xsl:param name="prefix" />
         <xsl:if test="normalize-space($el) != ''">
             <xsl:element name="{$elementName}">
                 <xsl:copy-of  select="$el/@*"/>
-                <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',ms:map-with($el,$mappings))" />
+                <xsl:choose>
+                    <xsl:when test="normalize-space($prefix) = ''">
+                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',ms:map-with($el,$mappings))" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="concat($prefix,ms:map-with($el,$mappings))" />
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:element>
         </xsl:if>
     </xsl:template>
@@ -1666,60 +1674,65 @@
     <xsl:template name="annotation">
         <xsl:param name="el" />
         <xsl:for-each select="$el/ms:annotationInfo">
-            <!-- var:annotationType -->
-            <xsl:variable name="annotationType">
-               <!-- DO NOT CHANGER ORDER DECLARATION -->
-               <xsl:choose>
-                    <xsl:when test="lower-case(./ms:annotationType) = 'other'">
-                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'alignment')">
-                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'bodymovements')">
-                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'handarmgestures')">
-                        <xsl:value-of select="'DomainSpecificAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'lemma')">
-                        <xsl:value-of select="'Lemma'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'postag')">
-                        <xsl:value-of select="'PartOfSpeech'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'morphosyntacticannotation')">
-                        <xsl:value-of select="'MorphologicalAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'segmentation')">
-                        <xsl:value-of select="'Sentence'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'semanticannotation')">
-                        <xsl:value-of select="'SemanticAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'speechannotation')">
-                        <xsl:value-of select="'SpeechAct'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'structuralannotation')">
-                        <xsl:value-of select="'StructuralAnnotationType'" />
-                    </xsl:when>
-                    <xsl:when test="contains(lower-case(./ms:annotationType),'syntacticannotation')">
-                        <xsl:value-of select="'SyntacticAnnotationType'" />
-                    </xsl:when>
-                    <xsl:otherwise>
-                      <xsl:value-of select="./ms:annotationType" />
-                    </xsl:otherwise>
-                </xsl:choose>
+            <xsl:variable name="annotationTypeMaps">
+                <entry><source>alignment</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>discourseAnnotation-audienceReactions</source><target>AudienceReaction</target></entry>
+                <entry><source>discourseAnnotation-coreference</source><target>Coreference</target></entry>
+                <entry><source>discourseAnnotation-dialogueActs</source><target>DialogueAct</target></entry>
+                <entry><source>discourseAnnotation-discourseRelations</source><target>DiscourceRelation</target></entry>
+                <entry><source>lemmatization</source><target>Lemma</target></entry>
+                <entry><source>modalityAnnotation-bodyMovements</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>modalityAnnotation-facialExpressions</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>modalityAnnotation-gazeEyeMovements</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>modalityAnnotation-handArmGestures</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>modalityAnnotation-handManipulationOfObjects</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>modalityAnnotation-headMovements</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>modalityAnnotation-lipMovements</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>morphosyntacticAnnotation-bPosTagging</source><target>PartOfSpeech</target></entry>
+                <entry><source>morphosyntacticAnnotation-posTagging</source><target>PartOfSpeech</target></entry>
+                <entry><source>other</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>segmentation</source><target>Sentence</target></entry>
+                <entry><source>semanticAnnotation-certaintyLevel</source><target>CertaintyLevel</target></entry>
+                <entry><source>semanticAnnotation-emotions</source><target>Emotion</target></entry>
+                <entry><source>semanticAnnotation-entityMentions</source><target>EntityMentionPair</target></entry>
+                <entry><source>semanticAnnotation-events</source><target>Event</target></entry>
+                <entry><source>semanticAnnotation-namedEntities</source><target>NamedEntity</target></entry>
+                <entry><source>semanticAnnotation-polarity</source><target>Polarity</target></entry>
+                <entry><source>semanticAnnotation-questionTopicalTarget</source><target>QuestionTopicalTarget</target></entry>
+                <entry><source>semanticAnnotation-semanticClasses</source><target>SemanticClass</target></entry>
+                <entry><source>semanticAnnotation-semanticRelations</source><target>Relation</target></entry>
+                <entry><source>semanticAnnotation-semanticRoles</source><target>SemanticRole</target></entry>
+                <entry><source>semanticAnnotation-speechActs</source><target>SpeechAct</target></entry>
+                <entry><source>semanticAnnotation-temporalExpressions</source><target>TemporalExpression</target></entry>
+                <entry><source>semanticAnnotation-textualEntailment</source><target>SemanticAnnotationType</target></entry>
+                <entry><source>semanticAnnotation-wordSenses</source><target>WordSense</target></entry>
+                <entry><source>speechAnnotation-orthographicTranscription</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-paralanguageAnnotation</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-phoneticTranscription</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-prosodicAnnotation</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-soundEvents</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-soundToTextAlignment</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-speakerIdentification</source><target>SpeechAct</target></entry>
+                <entry><source>speechAnnotation-speakerTurns</source><target>SpeechAct</target></entry>
+                <entry><source>stemming</source><target>Stem</target></entry>
+                <entry><source>structuralAnnotation</source><target>StructuralAnnotationType</target></entry>
+                <entry><source>syntacticAnnotation-constituencyTrees</source><target>ConstituencyTree</target></entry>
+                <entry><source>syntacticAnnotation-dependencyTrees</source><target>DependencyTree</target></entry>
+                <entry><source>syntacticAnnotation-subcategorizationFrames</source><target>SubcategorizationFrame</target></entry>
+                <entry><source>syntacticAnnotation-shallowParsing</source><target>SyntacticAnnotationType</target></entry>
+                <entry><source>syntacticAnnotation-treebanks</source><target>SyntacticAnnotationType</target></entry>
+                <entry><source>syntacticosemanticAnnotation-links</source><target>SyntacticoSemanticLink</target></entry>
+                <entry><source>translation</source><target>DomainSpecificAnnotationType</target></entry>
+                <entry><source>transliteration</source><target>DomainSpecificAnnotationType</target></entry>
             </xsl:variable>
-            <!-- NOTE() castable is avalaible only using Saxon-SA -->
-            <!-- <xsl:if test="not($annotationType castable as ms:AnnotationType)"> -->
-            <!-- </xsl:if> -->
-            <!-- annotation -->
             <annotation>
                 <!-- annotationType -->
-                <annotationType>
-                    <xsl:value-of select="concat('http://w3id.org/meta-share/omtd-share/', $annotationType)" />
-                </annotationType>
+                <xsl:call-template name="ElementMetaShare">
+                    <xsl:with-param name="el" select="./ms:annotationType" />
+                    <xsl:with-param name="mappings" select="$annotationTypeMaps" />
+                    <xsl:with-param name="elementName" select="'annotationType'" />
+                    <xsl:with-param name="prefix" select="'http://w3id.org/meta-share/omtd-share/'" />
+                </xsl:call-template>
                 <!-- annotatedElements -->
                 <xsl:call-template name="AnnotatedElements">
                     <xsl:with-param name="el" select="./ms:annotatedElements" />
