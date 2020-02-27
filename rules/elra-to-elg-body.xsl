@@ -414,6 +414,11 @@
                     <xsl:value-of select="'ILSP'" />
                 </OrganizationIdentifier>
             </xsl:when>
+            <xsl:when test="(contains(lower-case(normalize-space($el)), 'tilde'))">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/tilde">
+                    <xsl:value-of select="'Tilde'" />
+                </OrganizationIdentifier>
+            </xsl:when>
             <xsl:when test="$asDefault = 'true'">
                 <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
                     <xsl:value-of select="normalize-space($el)" />
@@ -594,10 +599,12 @@
         <!-- projectName -->
         <xsl:copy-of select="$el/ms:projectName" />
         <!-- projectName -->
-        <xsl:call-template name="ElementCopy">
-            <xsl:with-param name="el" select="$el/ms:projectShortName" />
-            <xsl:with-param name="elementName" select="'projectName'" />
-        </xsl:call-template>
+        <xsl:for-each select="$el/ms:projectShortName">
+            <xsl:call-template name="ElementCopy">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="elementName" select="'projectName'" />
+            </xsl:call-template>
+        </xsl:for-each>
         <!-- ******************************************************************************************** -->
         <!-- "ProjectIdentifier" minOccurs="0" maxOccurs="unbounded"                                      -->
         <!-- name:      meta[projectID]                          elg[ProjectIdentifier]                   -->
