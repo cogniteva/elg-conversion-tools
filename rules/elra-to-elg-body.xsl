@@ -415,7 +415,7 @@
                 </OrganizationIdentifier>
             </xsl:when>
             <xsl:when test="(contains(lower-case(normalize-space($el)), 'tilde'))">
-                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/tilde">
+                <OrganizationIdentifier  ms:OrganizationIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
                     <xsl:value-of select="'Tilde'" />
                 </OrganizationIdentifier>
             </xsl:when>
