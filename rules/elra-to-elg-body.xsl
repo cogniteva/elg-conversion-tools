@@ -760,6 +760,26 @@
         </xsl:call-template>
     </xsl:template>
 
+    <xsl:template name="VisualModelling">
+        <xsl:param name="el" />
+        <!-- ******************************************************************************************** -->
+        <!-- "visualModelling" minOccurs="0" maxOccurs="1"                                                -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+        <!-- restrict:  meta[2D]                                 elg[TwoD]                                -->
+        <!-- restrict:  meta[3D]                                 elg[ThreeD]                              -->
+        <!-- ******************************************************************************************** -->
+        <xsl:variable name="visualModellingMaps">
+            <entry><source>2D</source><target>TwoD</target></entry>
+            <entry><source>3D</source><target>ThreeD</target></entry>
+        </xsl:variable>
+        <xsl:call-template name="ElementMetaShare">
+            <xsl:with-param name="el" select="$el" />
+            <xsl:with-param name="mappings" select="$visualModellingMaps" />
+            <xsl:with-param name="elementName" select="'visualModelling'" />
+        </xsl:call-template>
+    </xsl:template>
+
     <!-- template:DistributionVideoFeature -->
     <xsl:template name="DistributionVideoFeature">
         <xsl:param name="el" />
@@ -791,6 +811,10 @@
                                 </dataFormat>
                             </xsl:otherwise>
                         </xsl:choose>
+                        <!-- visualModelling -->
+                        <xsl:call-template name="VisualModelling">
+                            <xsl:with-param name="el" select="./ms:visualModelling" />
+                        </xsl:call-template>
                         <!-- compressed: QUESTION() Why this is mandatory? -->
                         <compressed>
                             <xsl:value-of select="if (./ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/>
@@ -839,6 +863,10 @@
                                 </dataFormat>
                             </xsl:otherwise>
                         </xsl:choose>
+                        <!-- visualModelling -->
+                        <xsl:call-template name="VisualModelling">
+                            <xsl:with-param name="el" select="./ms:visualModelling" />
+                        </xsl:call-template>
                         <!-- compressed: QUESTION() Why this is mandatory? -->
                         <compressed>
                             <xsl:value-of select="if (./ms:compressionInfo/ms:compression = 'true') then 'true' else 'false'"/>
@@ -3580,6 +3608,7 @@
                                     <xsl:with-param name="default" select="'http://w3id.org/meta-share/meta-share/morphology'" />
                                 </xsl:call-template>
                                 <!-- ContentType -->
+                                <!-- ToBeMapped with lexicalConceptualResourceEncodingInfo/linguisticInformation -->
                                 <!-- extratextualInformation -->
                                 <xsl:call-template name="ExtratextualInformation">
                                     <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
