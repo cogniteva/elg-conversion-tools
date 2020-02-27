@@ -2189,6 +2189,21 @@
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "dynamicElement" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:for-each select="./ms:videoContentInfo/ms:dynamicElementInfo">
+                <dynamicElement>
+                    <!-- ******************************************************************************************** -->
+                    <!-- "typeOfElement" minOccurs="1" maxOccurs="unbounded"                                          -->
+                    <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+                    <!-- ******************************************************************************************** -->
+                    <xsl:for-each select="./ms:typeOfElement">
+                        <xsl:call-template name="ElementCopyWithDefaultLang">
+                            <xsl:with-param name="el" select="." />
+                            <xsl:with-param name="elementLang" select="'en'" />
+                            <xsl:with-param name="elementName" select="'typeOfElement'" />
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </dynamicElement>
+            </xsl:for-each>
         </xsl:if>
         <!-- CorpusAudioPart | CorpusVideoPart -->
         <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
