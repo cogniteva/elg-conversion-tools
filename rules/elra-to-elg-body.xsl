@@ -1198,7 +1198,7 @@
                 </xsl:for-each>
                 <!-- licenceTerms -->
                 <xsl:for-each select="./ms:licenceInfo">
-                    <!-- licenceTermsName -->
+                    <!-- var:licenseName -->
                     <xsl:variable name="licenseName">
                       <xsl:choose>
                         <xsl:when test="normalize-space(./ms:version) != ''"><xsl:value-of select="upper-case(concat(./ms:licence,'-', ./ms:version))" /></xsl:when>
@@ -1211,9 +1211,6 @@
                             <!-- licenceTermsName -->
                             <xsl:choose>
                                 <xsl:when test="(contains($licenseName,'PUBLICDOMAIN'))">
-                                    <licenceTermsName xml:lang="en">
-                                        <xsl:value-of select="normalize-space(./ms:licence)" />
-                                    </licenceTermsName>
                                     <licenceTermsName xml:lang="en">
                                         <xsl:value-of select="'CC0-1.0'" />
                                     </licenceTermsName>
@@ -1232,6 +1229,15 @@
                                     </licenceTermsName>
                                 </xsl:otherwise>
                             </xsl:choose>
+                            <!-- licenceTermsName -->
+                            <!-- THIS COMES FROM ELRC otherLicenceName -->
+                            <xsl:for-each select="./ms:otherLicenceName">
+                                <xsl:call-template name="ElementCopyWithDefaultLang">
+                                    <xsl:with-param name="el" select="." />
+                                    <xsl:with-param name="elementLang" select="'en'" />
+                                    <xsl:with-param name="elementName" select="'licenceTermsName'" />
+                                </xsl:call-template>
+                            </xsl:for-each>
                             <!-- licenceTermsURL -->
                             <xsl:variable name="restrictions">
                                 <xsl:call-template name="StringValuesConcat">
