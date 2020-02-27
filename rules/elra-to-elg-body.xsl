@@ -1574,6 +1574,33 @@
         </xsl:for-each>
     </xsl:template>
 
+    <!-- template:ExtratextualInformationUnit -->
+    <xsl:template name="ExtratextualInformationUnit">
+        <xsl:param name="el" />
+        <!-- ******************************************************************************************** -->
+        <!-- "extraTextualInformationUnit" minOccurs="0" maxOccurs="unbounded"                            -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+        <!-- restrict:  meta[lemma]                              elg[lemma1]                              -->
+        <!-- restrict:  meta[semantics]                          elg[semanticUnit]                        -->
+        <!-- restrict:  meta[syntax]                             elg[syntacticUnit]                       -->
+        <!-- restrict:  meta[word]                               elg[word2]                               -->
+        <!-- ******************************************************************************************** -->
+        <xsl:variable name="extraTextualInformationUnitMaps">
+            <entry><source>lemma</source><target>lemma1</target></entry>
+            <entry><source>semantics</source><target>semanticUnit</target></entry>
+            <entry><source>syntax</source><target>syntacticUnit</target></entry>
+            <entry><source>word</source><target>word2</target></entry>
+        </xsl:variable>
+        <xsl:for-each select="$el/ms:extratextualInformationUnit">
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="mappings" select="$extraTextualInformationUnitMaps" />
+                <xsl:with-param name="elementName" select="'extraTextualInformationUnit'" />
+            </xsl:call-template>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:SignalEncoding -->
     <xsl:template name="SignalEncoding">
         <xsl:param name="el" />
@@ -3553,7 +3580,11 @@
                                 </xsl:call-template>
                                 <!-- ContentType -->
                                 <!-- extratextualInformation -->
-                               <xsl:call-template name="ExtratextualInformation">
+                                <xsl:call-template name="ExtratextualInformation">
+                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
+                                </xsl:call-template>
+                                <!-- extratextualInformationUnit -->
+                                <xsl:call-template name="ExtratextualInformationUnit">
                                     <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
                                 </xsl:call-template>
                                 <!-- lexicalConceptualResourceMediaPart -->
