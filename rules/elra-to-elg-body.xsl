@@ -3070,7 +3070,20 @@
                     <xsl:for-each select="$resourceDocumentationInfo/ms:citation/ms:documentUnstructured">
                         <citationText xml:lang="und"><xsl:value-of select="." /></citationText>
                     </xsl:for-each>
-                    <!-- iprHolder -->
+                    <!-- ******************************************************************************************** -->
+                    <!-- "iprholder" minOccurs="0" maxOccurs="unbounded"                                              -->
+                    <!-- type:      meta[ms:actorInfoType]                   elg[ms:Actor]                            -->
+                    <!-- ******************************************************************************************** -->
+                    <!-- Note that this is an intended feature. For now, iprHolders coming from ELRA's                -->
+                    <!-- resources will not be exported                                                               -->
+                    <xsl:if test="not(contains(string-join($identificationInfo/ms:identifier, ' '), 'ELRA'))">
+                        <xsl:for-each select="$distributionInfo/*">
+                            <xsl:call-template name="Actor">
+                                <xsl:with-param name="el" select="./ms:iprHolder" />
+                                <xsl:with-param name="actorElement" select="'iprHolder'" />
+                            </xsl:call-template>
+                        </xsl:for-each>
+                    </xsl:if>
                     <!-- NotToBeMapped -->
                     <!-- keyword -->
                     <keyword xml:lang="en"><xsl:value-of select="lower-case($resourceType)" /></keyword>
