@@ -246,6 +246,9 @@
             <xsl:when test="contains(lower-case(normalize-space($text)), 'xml')">
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Xml'"/>
             </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'tbx')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Xml'"/>
+            </xsl:when>
             <xsl:when test="contains(lower-case(normalize-space($text)), 'msaccess')">
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/MsAccessDatabase'"/>
             </xsl:when>
@@ -588,7 +591,24 @@
     <!-- template:GenericProject -->
     <xsl:template name="GenericProject">
         <xsl:param name="el" />
+        <!-- projectName -->
         <xsl:copy-of select="$el/ms:projectName" />
+        <!-- projectName -->
+        <xsl:call-template name="ElementCopy">
+            <xsl:with-param name="el" select="$el/ms:projectShortName" />
+            <xsl:with-param name="elementName" select="'projectName'" />
+        </xsl:call-template>
+        <!-- ******************************************************************************************** -->
+        <!-- "ProjectIdentifier" minOccurs="0" maxOccurs="unbounded"                                      -->
+        <!-- name:      meta[projectID]                          elg[ProjectIdentifier]                   -->
+        <!-- type:      meta[xs:string]                          elg[ms:ProjectIdentifier]                -->
+        <!-- ******************************************************************************************** -->
+        <xsl:for-each select="$el/ms:projectID">
+            <ProjectIdentifier ms:ProjectIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
+                <xsl:value-of select="." />
+            </ProjectIdentifier>
+         </xsl:for-each>
+        <!-- url -->
         <xsl:for-each select="$el/ms:url">
             <website><xsl:value-of select="." /></website>
         </xsl:for-each>
@@ -1183,6 +1203,14 @@
                         <licenceTerms>
                             <!-- licenceTermsName -->
                             <xsl:choose>
+                                <xsl:when test="(contains($licenseName,'PUBLICDOMAIN'))">
+                                    <licenceTermsName xml:lang="en">
+                                        <xsl:value-of select="normalize-space(./ms:licence)" />
+                                    </licenceTermsName>
+                                    <licenceTermsName xml:lang="en">
+                                        <xsl:value-of select="'CC0-1.0'" />
+                                    </licenceTermsName>
+                                </xsl:when>
                                 <xsl:when test="((substring($licenseName,1,2) != 'MS')    and
                                                  (substring($licenseName,1,5) != 'OTHER') and
                                                  (substring($licenseName,1,5) != 'PROPR')
@@ -1209,6 +1237,14 @@
                                                 ((substring($licenseName,1,5) = 'PROPR')))">
                                     <licenceTermsURL><xsl:value-of select="'https://example.org/licenses/other.html'" /></licenceTermsURL>
                                     <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"><xsl:value-of select="'other'" /></LicenceIdentifier>
+                                </xsl:when>
+                                <xsl:when test="($licenseName = 'PUBLICDOMAIN')">
+                                    <licenceTermsURL>
+                                        <xsl:value-of select="concat('https://spdx.org/licenses/','CC0-1.0.html')" />
+                                    </licenceTermsURL>
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX">
+                                        <xsl:value-of select="'CC0-1.0'" />
+                                    </LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:when test="substring($licenseName,1,3) = 'CC-'">
                                     <licenceTermsURL><xsl:value-of select="concat('https://spdx.org/licenses/',$licenseName, '.html')" /></licenceTermsURL>
@@ -1678,6 +1714,9 @@
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'minutes')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/minute</sizeUnit>
+                    </xsl:when>
+                    <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'segments')">
+                      <sizeUnit>http://w3id.org/meta-share/meta-share/entry</sizeUnit>
                     </xsl:when>
                     <xsl:when test="contains(lower-case(normalize-space($el/ms:sizeUnit)), 'sentences')">
                       <sizeUnit>http://w3id.org/meta-share/meta-share/sentence1</sizeUnit>
