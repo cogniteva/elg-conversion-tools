@@ -1579,6 +1579,7 @@
         <xsl:param name="el" />
         <!-- ******************************************************************************************** -->
         <!-- "extraTextualInformationUnit" minOccurs="0" maxOccurs="unbounded"                            -->
+        <!-- name:      meta[extraTextualInformationUnit]        elg[extratextualInformationUnit]         -->
         <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
         <!-- maxlength: meta[30]                                 elg[restrict]                            -->
         <!-- restrict:  meta[lemma]                              elg[lemma1]                              -->
@@ -1592,11 +1593,11 @@
             <entry><source>syntax</source><target>syntacticUnit</target></entry>
             <entry><source>word</source><target>word2</target></entry>
         </xsl:variable>
-        <xsl:for-each select="$el/ms:extratextualInformationUnit">
+        <xsl:for-each select="$el/ms:extraTextualInformationUnit">
             <xsl:call-template name="ElementMetaShare">
                 <xsl:with-param name="el" select="." />
                 <xsl:with-param name="mappings" select="$extraTextualInformationUnitMaps" />
-                <xsl:with-param name="elementName" select="'extraTextualInformationUnit'" />
+                <xsl:with-param name="elementName" select="'extratextualInformationUnit'" />
             </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
