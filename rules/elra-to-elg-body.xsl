@@ -1215,10 +1215,7 @@
                                         <xsl:value-of select="'CC0-1.0'" />
                                     </licenceTermsName>
                                 </xsl:when>
-                                <xsl:when test="((substring($licenseName,1,2) != 'MS')    and
-                                                 (substring($licenseName,1,5) != 'OTHER') and
-                                                 (substring($licenseName,1,5) != 'PROPR')
-                                                 )">
+                                <xsl:when test="substring($licenseName,1,3) = 'CC-'">
                                     <licenceTermsName xml:lang="en">
                                         <xsl:value-of select="$licenseName" />
                                     </licenceTermsName>
@@ -1248,23 +1245,51 @@
                             <xsl:choose>
                                 <xsl:when test="((substring($licenseName,1,5) = 'OTHER') or
                                                 ((substring($licenseName,1,5) = 'PROPR')))">
-                                    <licenceTermsURL><xsl:value-of select="'https://example.org/licenses/other.html'" /></licenceTermsURL>
+                                    <!-- licenceTermsURL -->
+                                    <licenceTermsURL>
+                                        <xsl:value-of select="'https://example.org/licenses/other.html'" />
+                                    </licenceTermsURL>
+                                    <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
+                                    <xsl:call-template name="ElementCopy">
+                                        <xsl:with-param name="el" select="./ms:nonStandardLicenceTermsURL" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsURL'" />
+                                    </xsl:call-template>
+                                    <!--  LicenceIdentifier -->
                                     <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"><xsl:value-of select="'other'" /></LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:when test="($licenseName = 'PUBLICDOMAIN')">
+                                    <!-- licenceTermsURL -->
                                     <licenceTermsURL>
                                         <xsl:value-of select="concat('https://spdx.org/licenses/','CC0-1.0.html')" />
                                     </licenceTermsURL>
+                                    <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
+                                    <xsl:call-template name="ElementCopy">
+                                        <xsl:with-param name="el" select="./ms:nonStandardLicenceTermsURL" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsURL'" />
+                                    </xsl:call-template>
+                                    <!--  LicenceIdentifier -->
                                     <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX">
                                         <xsl:value-of select="'CC0-1.0'" />
                                     </LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:when test="substring($licenseName,1,3) = 'CC-'">
-                                    <licenceTermsURL><xsl:value-of select="concat('https://spdx.org/licenses/',$licenseName, '.html')" /></licenceTermsURL>
-                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX"><xsl:value-of select="$licenseName" /></LicenceIdentifier>
+                                    <!-- licenceTermsURL -->
+                                    <licenceTermsURL>
+                                        <xsl:value-of select="concat('https://spdx.org/licenses/',$licenseName, '.html')" />
+                                    </licenceTermsURL>
+                                    <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
+                                    <xsl:call-template name="ElementCopy">
+                                        <xsl:with-param name="el" select="./ms:nonStandardLicenceTermsURL" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsURL'" />
+                                    </xsl:call-template>
+                                    <!--  LicenceIdentifier -->
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX">
+                                        <xsl:value-of select="$licenseName" />
+                                    </LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:when test="substring($licenseName,1,3) = 'MS-'">
                                     <xsl:choose>
+                                        <!-- licenceTermsURL -->
                                         <xsl:when test="contains($licenseName,'MS-NC-NORED')">
                                             <licenceTermsURL>
                                                 <xsl:value-of select="'http://www.meta-share.org/assets/pdf/META-SHARE_NonCommercial_NoRedistribution_v2.0.pdf'" />
@@ -1281,10 +1306,25 @@
                                             </licenceTermsURL>
                                         </xsl:otherwise>
                                     </xsl:choose>
-                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"><xsl:value-of select="normalize-space(./ms:licence)" /></LicenceIdentifier>
+                                    <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
+                                    <xsl:call-template name="ElementCopy">
+                                        <xsl:with-param name="el" select="./ms:nonStandardLicenceTermsURL" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsURL'" />
+                                    </xsl:call-template>
+                                     <!--  LicenceIdentifier -->
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
+                                        <xsl:value-of select="normalize-space(./ms:licence)" />
+                                    </LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <licenceTermsURL>http://example.org/licenses/<xsl:value-of select="translate(upper-case($licenseName),'_','-')" />#<xsl:value-of select="lower-case($restrictions)" /></licenceTermsURL>
+                                    <licenceTermsURL>
+                                        <xsl:value-of select="concat('http://example.org/licenses/', translate(upper-case($licenseName),'_','-'),'#', lower-case($restrictions))" />
+                                    </licenceTermsURL>
+                                    <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
+                                    <xsl:call-template name="ElementCopy">
+                                        <xsl:with-param name="el" select="./ms:nonStandardLicenceTermsURL" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsURL'" />
+                                    </xsl:call-template>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </licenceTerms>
@@ -2134,7 +2174,6 @@
                 </xsl:call-template>
             </xsl:for-each>
             <!-- "dynamicElement" minOccurs="0" maxOccurs="unbounded" -->
-            <!-- ToBeMapped with /videoContentInfoType/dynamicElementInfo[0:] -->
         </xsl:if>
         <!-- CorpusAudioPart | CorpusVideoPart -->
         <xsl:if test="(($corpusMediaType = 'CorpusAudioPart') or
