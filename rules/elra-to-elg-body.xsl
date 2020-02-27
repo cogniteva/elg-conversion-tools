@@ -1549,6 +1549,31 @@
         </xsl:choose>
     </xsl:template>
 
+    <!-- template:ExtratextualInformation -->
+    <xsl:template name="ExtratextualInformation">
+        <xsl:param name="el" />
+        <!-- ******************************************************************************************** -->
+        <!-- "extratextualInformation" minOccurs="0" maxOccurs="unbounded"                                -->
+        <!-- type:      meta[xs:string]                          elg[xs:anyURI]                           -->
+        <!-- maxlength: meta[30]                                 elg[restrict]                            -->
+        <!-- restrict:  meta[images]                             elg[image1]                              -->
+        <!-- restrict:  meta[soundRecordings]                    elg[soundRecording]                      -->
+        <!-- restrict:  meta[videos]                             elg[video1]                              -->
+        <!-- ******************************************************************************************** -->
+        <xsl:variable name="extratextualInformationMaps">
+            <entry><source>images</source><target>image1</target></entry>
+            <entry><source>soundRecordings</source><target>soundRecording</target></entry>
+            <entry><source>videos</source><target>video1</target></entry>
+        </xsl:variable>
+        <xsl:for-each select="$el/ms:extratextualInformation">
+            <xsl:call-template name="ElementMetaShare">
+                <xsl:with-param name="el" select="." />
+                <xsl:with-param name="mappings" select="$extratextualInformationMaps" />
+                <xsl:with-param name="elementName" select="'extratextualInformation'" />
+            </xsl:call-template>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- template:SignalEncoding -->
     <xsl:template name="SignalEncoding">
         <xsl:param name="el" />
@@ -3527,6 +3552,10 @@
                                     <xsl:with-param name="default" select="'http://w3id.org/meta-share/meta-share/morphology'" />
                                 </xsl:call-template>
                                 <!-- ContentType -->
+                                <!-- extratextualInformation -->
+                               <xsl:call-template name="ExtratextualInformation">
+                                    <xsl:with-param name="el" select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceEncodingInfo" />
+                                </xsl:call-template>
                                 <!-- lexicalConceptualResourceMediaPart -->
                                 <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType">
                                     <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceTextPart -->
