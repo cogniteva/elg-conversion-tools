@@ -1272,6 +1272,21 @@
                                         <xsl:value-of select="'CC0-1.0'" />
                                     </LicenceIdentifier>
                                 </xsl:when>
+                                <xsl:when test="contains($licenseName, 'PSI')">
+                                    <!-- licenceTermsURL -->
+                                    <licenceTermsURL>
+                                        <xsl:value-of select="'https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32019L1024'" />
+                                    </licenceTermsURL>
+                                    <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
+                                    <xsl:call-template name="ElementCopy">
+                                        <xsl:with-param name="el" select="./ms:nonStandardLicenceTermsURL" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsURL'" />
+                                    </xsl:call-template>
+                                    <!--  LicenceIdentifier -->
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg">
+                                        <xsl:value-of select="'openUnder-PSI'" />
+                                    </LicenceIdentifier>
+                                </xsl:when>
                                 <xsl:when test="substring($licenseName,1,3) = 'CC-'">
                                     <!-- licenceTermsURL -->
                                     <licenceTermsURL>
