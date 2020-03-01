@@ -1442,7 +1442,7 @@
         <!-- restrict:  meta[syllable]                           elg[syllable1]                           -->
         <!-- restrict:  meta[token]                              elg[token1]                              -->
         <!-- restrict:  meta[topic]                              elg[?]                                   -->
-        <!-- restrict:  meta[word]                               elg[word1]                               -->
+        <!-- restrict:  meta[]                                   elg[word1]                               -->
         <!-- ******************************************************************************************** -->
         <xsl:variable name="segmentationLevelMaps">
             <entry><source>phoneme</source><target>phoneme1</target></entry>
