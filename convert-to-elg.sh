@@ -106,11 +106,16 @@ java net.sf.saxon.Transform -o:"$OUTPUT_XML_NAME" -s:"$OUTPUT_XML_NAME_ROOT" \
 # =============================================================================
 # minimize xml result
 minimize_elg_xml=${MINIMIZE_ELG_XML:-1}
+# =============================================================================
+# output folder
+output_elg_xml_folder=${OUTPUT_ELG_XML_FOLDER:-./elg-xml}
+mkdir -p "$output_elg_xml_folder"
+# =============================================================================
 if [ "$minimize_elg_xml" == "1" ]; then
   echo "Minimizing $OUTPUT_XML_NAME..."
-  xmllint --noblanks "$OUTPUT_XML_NAME" > "elg-xml/$OUTPUT_XML_NAME"
+  xmllint --noblanks "$OUTPUT_XML_NAME" > "$output_elg_xml_folder/$OUTPUT_XML_NAME"
 else
-  cp "$OUTPUT_XML_NAME" "elg-xml/$OUTPUT_XML_NAME"
+  cp "$OUTPUT_XML_NAME" "$output_elg_xml_folder/$OUTPUT_XML_NAME"
 fi
 
 # =============================================================================
