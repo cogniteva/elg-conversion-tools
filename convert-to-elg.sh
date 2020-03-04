@@ -82,6 +82,12 @@ if [ $# -eq 2 ]; then
 fi
 # =============================================================================
 INPUT_XML="$1"
+# test if the XML file exists
+if [ ! -e "$INPUT_XML" ]; then
+  echo "$INPUT_XML file not found"
+  clean_exit
+fi
+# =============================================================================
 INPUT_XML_NAME=$(basename -- "$INPUT_XML")
 INPUT_XML_EXT="${INPUT_XML_NAME##*.}"
 INPUT_XML_NAME="${INPUT_XML_NAME%.*}"
