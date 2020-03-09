@@ -572,12 +572,14 @@
         <xsl:param name="el" />
         <xsl:param name="elementLang" />
         <xsl:param name="elementName" />
+        <xsl:param name="elementValue" />
         <xsl:if test="normalize-space($el) != ''">
             <xsl:choose>
                 <xsl:when test="$el/@lang">
                     <xsl:element name="{$elementName}">
                         <xsl:copy-of  select="$el/@*"/>
-                        <xsl:value-of select="normalize-space($el)"/>
+                        <xsl:value-of select="if (normalize-space($elementValue) = '') then
+                            normalize-space($el) else normalize-space($elementValue)"/>
                     </xsl:element>
                 </xsl:when>
                 <xsl:otherwise>
@@ -586,7 +588,8 @@
                             <xsl:value-of select="$elementLang"/>
                         </xsl:attribute>
                         <xsl:copy-of  select="$el/@*"/>
-                        <xsl:value-of select="normalize-space($el)"/>
+                        <xsl:value-of select="if (normalize-space($elementValue) = '') then
+                            normalize-space($el) else normalize-space($elementValue)"/>
                     </xsl:element>
                 </xsl:otherwise>
             </xsl:choose>
@@ -3452,12 +3455,32 @@
                                 </xsl:for-each>
                                 <!-- relatedLR -->
                                 <relatedLR>
-                                    <!-- resourceName -->
-                                    <xsl:call-template name="ElementCopyWithDefaultLang">
-                                        <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
-                                        <xsl:with-param name="elementLang" select="'en'" />
-                                        <xsl:with-param name="elementName" select="'resourceName'" />
-                                    </xsl:call-template>
+                                    <xsl:choose>
+                                        <!-- ELRC resources with numeric targetResourceNameURI -->
+                                        <xsl:when test="((contains(string-join($identificationInfo/ms:identifier, ' '), 'ELRC')) and
+                                                         (string(number(./ms:relatedResource/ms:targetResourceNameURI)) != 'NaN'))">
+                                            <!-- resourceName -->
+                                            <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
+                                                <xsl:with-param name="elementLang" select="'en'" />
+                                                <xsl:with-param name="elementName" select="'resourceName'" />
+                                                <xsl:with-param name="elementValue" select="concat('ELRC-',./ms:relatedResource/ms:targetResourceNameURI)" />
+                                            </xsl:call-template>
+                                            <!-- LRIdentifier -->
+                                            <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
+                                                <xsl:value-of select="concat('ELRC_',./ms:relatedResource/ms:targetResourceNameURI)" />
+                                            </LRIdentifier>
+                                        </xsl:when>
+                                        <!-- ELRC resources with non numeric targetResourceNameURI and Other resources -->
+                                        <xsl:otherwise>
+                                            <!-- resourceName -->
+                                            <xsl:call-template name="ElementCopyWithDefaultLang">
+                                                <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
+                                                <xsl:with-param name="elementLang" select="'en'" />
+                                                <xsl:with-param name="elementName" select="'resourceName'" />
+                                            </xsl:call-template>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
                                 </relatedLR>
                             </relation>
                         </xsl:if>
