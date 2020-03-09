@@ -3259,6 +3259,17 @@
                                 <xsl:with-param name="elementLang" select="'en'" />
                                 <xsl:with-param name="elementName" select="'categoryLabel'" />
                             </xsl:call-template>
+                            <!-- Use conformanceToClassificationScheme -->
+                            <xsl:if test="((normalize-space(./ms:conformanceToClassificationScheme) != '') and
+                                           (normalize-space(./ms:domainId) != ''))">
+                                <xsl:element name="DomainIdentifier">
+                                    <xsl:attribute name="ms:DomainClassificationScheme">
+                                        <xsl:value-of select="concat('http://w3id.org/meta-share/meta-share/',
+                                                     normalize-space(./ms:conformanceToClassificationScheme))"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="normalize-space(./ms:domainId)"/>
+                                </xsl:element>
+                            </xsl:if>
                         </domain>
                     </xsl:for-each>
                     <!-- subject -->
