@@ -388,6 +388,37 @@
         <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
     </xsl:template>
 
+    <!-- template:GenericLanguageResource  -->
+    <xsl:template name="GenericLanguageResource">
+        <xsl:param name="el" />
+        <xsl:choose>
+            <!-- ELRC resources with numeric targetResourceNameURI -->
+            <xsl:when test="((contains(string-join($identificationInfo/ms:identifier, ' '), 'ELRC')) and
+                             (string(number($el/ms:targetResourceNameURI)) != 'NaN'))">
+                <!-- resourceName -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="$el/ms:targetResourceNameURI" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'resourceName'" />
+                    <xsl:with-param name="elementValue" select="concat('ELRC-',$el/ms:targetResourceNameURI)" />
+                </xsl:call-template>
+                <!-- LRIdentifier -->
+                <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
+                    <xsl:value-of select="concat('ELRC_', $el/ms:targetResourceNameURI)" />
+                </LRIdentifier>
+            </xsl:when>
+            <!-- ELRC resources with non numeric targetResourceNameURI and Other resources -->
+            <xsl:otherwise>
+                <!-- resourceName -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <xsl:with-param name="el" select="$el/ms:targetResourceNameURI" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'resourceName'" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:OrganizationIdentifier -->
     <xsl:template name="OrganizationIdentifier">
         <xsl:param name="el" />
@@ -3455,32 +3486,9 @@
                                 </xsl:for-each>
                                 <!-- relatedLR -->
                                 <relatedLR>
-                                    <xsl:choose>
-                                        <!-- ELRC resources with numeric targetResourceNameURI -->
-                                        <xsl:when test="((contains(string-join($identificationInfo/ms:identifier, ' '), 'ELRC')) and
-                                                         (string(number(./ms:relatedResource/ms:targetResourceNameURI)) != 'NaN'))">
-                                            <!-- resourceName -->
-                                            <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
-                                                <xsl:with-param name="elementLang" select="'en'" />
-                                                <xsl:with-param name="elementName" select="'resourceName'" />
-                                                <xsl:with-param name="elementValue" select="concat('ELRC-',./ms:relatedResource/ms:targetResourceNameURI)" />
-                                            </xsl:call-template>
-                                            <!-- LRIdentifier -->
-                                            <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
-                                                <xsl:value-of select="concat('ELRC_',./ms:relatedResource/ms:targetResourceNameURI)" />
-                                            </LRIdentifier>
-                                        </xsl:when>
-                                        <!-- ELRC resources with non numeric targetResourceNameURI and Other resources -->
-                                        <xsl:otherwise>
-                                            <!-- resourceName -->
-                                            <xsl:call-template name="ElementCopyWithDefaultLang">
-                                                <xsl:with-param name="el" select="./ms:relatedResource/ms:targetResourceNameURI" />
-                                                <xsl:with-param name="elementLang" select="'en'" />
-                                                <xsl:with-param name="elementName" select="'resourceName'" />
-                                            </xsl:call-template>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
+                                    <xsl:call-template name="GenericLanguageResource">
+                                        <xsl:with-param name="el" select="./ms:relatedResource" />
+                                    </xsl:call-template>
                                 </relatedLR>
                             </relation>
                         </xsl:if>
