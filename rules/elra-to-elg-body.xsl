@@ -1957,6 +1957,7 @@
                 <entry><source>morphosyntacticAnnotation-posTagging</source><target>PartOfSpeech</target></entry>
                 <entry><source>other</source><target>DomainSpecificAnnotationType</target></entry>
                 <entry><source>segmentation</source><target>Sentence</target></entry>
+                <entry><source>semanticAnnotation</source><target>SemanticAnnotationType</target></entry>
                 <entry><source>semanticAnnotation-certaintyLevel</source><target>CertaintyLevel</target></entry>
                 <entry><source>semanticAnnotation-emotions</source><target>Emotion</target></entry>
                 <entry><source>semanticAnnotation-entityMentions</source><target>EntityMentionPair</target></entry>
@@ -3209,6 +3210,7 @@
                         <additionalInfo><email><xsl:value-of select="." /></email></additionalInfo>
                     </xsl:for-each>
                     <!-- contact -->
+                    <!-- FIXME() this would probably be /ms:contactPerson and not /ms:MetadataRecord/ms:contactPerson -->
                     <xsl:for-each select="//ms:MetadataRecord/ms:contactPerson">
                         <contact>
                             <Person>
@@ -3571,18 +3573,6 @@
                                         </xsl:call-template>
                                     </xsl:for-each>
                                 </xsl:for-each>
-                                <!-- append at least one mandatory annotation -->
-                                <xsl:if test=
-                        "((count($corpusInfo/ms:corpusMediaType/ms:corpusTextInfo/ms:annotationInfo) = 0) and
-                        (count($corpusInfo/ms:corpusMediaType/ms:corpusAudioInfo/ms:annotationInfo)  = 0) and
-                        (count($corpusInfo/ms:corpusMediaType/ms:corpusVideoInfo/ms:annotationInfo)  = 0) and
-                        (count($corpusInfo/ms:corpusMediaType/ms:corpusImageInfo/ms:annotationInfo)  = 0) and
-                        (count($corpusInfo/ms:corpusMediaType/ms:corpusTextNumericalInfo/ms:annotationInfo) = 0))">
-                                    <annotation>
-                                        <!-- QUESTION() What could the best default value for a non-annotated LR?-->
-                                        <annotationType>http://w3id.org/meta-share/omtd-share/DomainSpecificAnnotationType</annotationType>
-                                    </annotation>
-                                </xsl:if>
                                 <!-- hasSubset -->
                                 <!-- <xsl:for-each select="$corpusInfo/ms:corpusMediaType"> -->
                                     <!-- hasSubset | corpusTextInfo -->
