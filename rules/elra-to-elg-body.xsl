@@ -1240,7 +1240,7 @@
                             <xsl:choose>
                                 <xsl:when test="(contains($licenseName,'PUBLICDOMAIN'))">
                                     <licenceTermsName xml:lang="en">
-                                        <xsl:value-of select="'CC0-1.0'" />
+                                        <xsl:value-of select="'publicDomain'" />
                                     </licenceTermsName>
                                 </xsl:when>
                                 <xsl:when test="substring($licenseName,1,3) = 'CC-'">
@@ -1257,11 +1257,13 @@
                             <!-- licenceTermsName -->
                             <!-- THIS COMES FROM ELRC otherLicenceName -->
                             <xsl:for-each select="./ms:otherLicenceName">
-                                <xsl:call-template name="ElementCopyWithDefaultLang">
-                                    <xsl:with-param name="el" select="." />
-                                    <xsl:with-param name="elementLang" select="'en'" />
-                                    <xsl:with-param name="elementName" select="'licenceTermsName'" />
-                                </xsl:call-template>
+                                <xsl:if test="not(contains(lower-case(normalize-space(.)), 'terms for public domain resources'))">
+                                    <xsl:call-template name="ElementCopyWithDefaultLang">
+                                        <xsl:with-param name="el" select="." />
+                                        <xsl:with-param name="elementLang" select="'en'" />
+                                        <xsl:with-param name="elementName" select="'licenceTermsName'" />
+                                    </xsl:call-template>
+                                 </xsl:if>
                             </xsl:for-each>
                             <!-- licenceTermsURL -->
                             <xsl:variable name="restrictions">
@@ -1288,7 +1290,7 @@
                                 <xsl:when test="($licenseName = 'PUBLICDOMAIN')">
                                     <!-- licenceTermsURL -->
                                     <licenceTermsURL>
-                                        <xsl:value-of select="concat('https://spdx.org/licenses/','CC0-1.0.html')" />
+                                        <xsl:value-of select="'https://example.org/licenses/publicdomain.html'" />
                                     </licenceTermsURL>
                                     <!-- nonStandardLicenceTermsURL as licenceTermsUrl -->
                                     <xsl:call-template name="ElementCopy">
@@ -1296,9 +1298,7 @@
                                         <xsl:with-param name="elementName" select="'licenceTermsURL'" />
                                     </xsl:call-template>
                                     <!--  LicenceIdentifier -->
-                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/SPDX">
-                                        <xsl:value-of select="'CC0-1.0'" />
-                                    </LicenceIdentifier>
+                                    <LicenceIdentifier ms:LicenceIdentifierScheme="http://w3id.org/meta-share/meta-share/elg"><xsl:value-of select="'publicDomain'" /></LicenceIdentifier>
                                 </xsl:when>
                                 <xsl:when test="contains($licenseName, 'PSI')">
                                     <!-- licenceTermsURL -->
