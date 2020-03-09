@@ -388,6 +388,41 @@
         <xsl:copy-of select="$el/ms:communicationInfo/ms:email" />
     </xsl:template>
 
+    <!-- template:LRIdentifier  -->
+    <xsl:template name="LRIdentifier">
+        <xsl:param name="el" />
+        <xsl:param name="default" />
+        <xsl:choose>
+            <xsl:when test="substring(lower-case(normalize-space($el)),1,3) = 'doi'">
+                <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/doi">
+                    <xsl:value-of select="normalize-space($el)" />
+                </LRIdentifier>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el)),1,4) = 'http'">
+                <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/url">
+                    <xsl:value-of select="normalize-space($el)" />
+                </LRIdentifier>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el)),1,4) = 'isbn'">
+                <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/isbn">
+                    <xsl:value-of select="normalize-space($el)" />
+                </LRIdentifier>
+            </xsl:when>
+            <xsl:when test="substring(lower-case(normalize-space($el)),1,4) = 'issn'">
+                <LRIdentifier ms:LRIdentifierScheme="http://purl.org/spar/datacite/issn">
+                    <xsl:value-of select="normalize-space($el)" />
+                </LRIdentifier>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:if test="normalize-space($default) != ''">
+                    <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
+                        <xsl:value-of select="normalize-space($default)" />
+                    </LRIdentifier>
+                </xsl:if>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:GenericLanguageResource  -->
     <xsl:template name="GenericLanguageResource">
         <xsl:param name="el" />
@@ -403,9 +438,10 @@
                     <xsl:with-param name="elementValue" select="concat('ELRC-',$el/ms:targetResourceNameURI)" />
                 </xsl:call-template>
                 <!-- LRIdentifier -->
-                <LRIdentifier ms:LRIdentifierScheme="http://w3id.org/meta-share/meta-share/other">
-                    <xsl:value-of select="concat('ELRC_', $el/ms:targetResourceNameURI)" />
-                </LRIdentifier>
+                <xsl:call-template name="LRIdentifier">
+                    <xsl:with-param name="el" select="$el/ms:targetResourceNameURI" />
+                    <xsl:with-param name="default" select="concat('ELRC_', $el/ms:targetResourceNameURI)" />
+                </xsl:call-template>
             </xsl:when>
             <!-- ELRC resources with non numeric targetResourceNameURI and Other resources -->
             <xsl:otherwise>
@@ -414,6 +450,10 @@
                     <xsl:with-param name="el" select="$el/ms:targetResourceNameURI" />
                     <xsl:with-param name="elementLang" select="'en'" />
                     <xsl:with-param name="elementName" select="'resourceName'" />
+                </xsl:call-template>
+                <!-- LRIdentifier -->
+                <xsl:call-template name="LRIdentifier">
+                    <xsl:with-param name="el" select="$el/ms:targetResourceNameURI" />
                 </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>
@@ -2075,10 +2115,8 @@
                 <!-- isAnnotatedBy -->
                 <xsl:for-each select="./ms:annotationTool">
                     <isAnnotatedBy>
-                        <xsl:call-template name="ElementCopyWithDefaultLang">
-                            <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                            <xsl:with-param name="elementLang" select="'en'" />
-                            <xsl:with-param name="elementName" select="'resourceName'" />
+                        <xsl:call-template name="GenericLanguageResource">
+                            <xsl:with-param name="el" select="." />
                         </xsl:call-template>
                     </isAnnotatedBy>
                 </xsl:for-each>
