@@ -2697,6 +2697,39 @@
         </xsl:if>
     </xsl:template>
 
+    <!-- template:hasOriginalSourceORoriginalSourceDescription -->
+    <xsl:template name="hasOriginalSourceORoriginalSourceDescription">
+        <xsl:param name="el" />
+        <xsl:variable name="languageResource">
+            <xsl:call-template name="GenericLanguageResource">
+                <xsl:with-param name="el" select="$el" />
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:choose>
+            <!-- test if both resourceName and LRIdentifier elements were created -->
+            <xsl:when test="(($languageResource/ms:resourceName) and ($languageResource/ms:LRIdentifier))">
+                <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+                <hasOriginalSource>
+                    <xsl:copy-of select="$languageResource" />
+                </hasOriginalSource>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- ******************************************************************************************** -->
+                <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
+                <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
+                <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
+                <!-- maxlength: meta[4500]                               elg[500]                                 -->
+                <!-- ******************************************************************************************** -->
+                <xsl:call-template name="ElementCopyWithDefaultLang">
+                    <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
+                    <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
+                    <xsl:with-param name="elementLang" select="'en'" />
+                    <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+                </xsl:call-template>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- template:CorpusPartEnd -->
     <!-- common elements at the end of each CorpusPart -->
     <xsl:template name="CorpusPartEnd">
@@ -2708,19 +2741,11 @@
             <xsl:with-param name="elementName" select="'creationMode'" />
         </xsl:call-template>
         <!-- "isCreatedBy" minOccurs="0" maxOccurs="unbounded" -->
-        <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
-        <!-- ******************************************************************************************** -->
-        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
-        <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
-        <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
-        <!-- maxlength: meta[4500]                               elg[500]                                 -->
-        <!-- ******************************************************************************************** -->
         <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
-            <xsl:call-template name="ElementCopyWithDefaultLang">
-                <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
-                <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                <xsl:with-param name="elementLang" select="'en'" />
-                <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+            <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:call-template name="hasOriginalSourceORoriginalSourceDescription">
+                <xsl:with-param name="el" select="." />
             </xsl:call-template>
         </xsl:for-each>
         <!-- "syntheticData" minOccurs="0" -->
@@ -2915,19 +2940,11 @@
             <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationMode" />
             <xsl:with-param name="elementName" select="'creationMode'" />
         </xsl:call-template>
-        <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
-        <!-- ******************************************************************************************** -->
-        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
-        <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
-        <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
-        <!-- maxlength: meta[4500]                               elg[500]                                 -->
-        <!-- ******************************************************************************************** -->
         <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
-            <xsl:call-template name="ElementCopyWithDefaultLang">
-                <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
-                <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                <xsl:with-param name="elementLang" select="'en'" />
-                <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+            <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:call-template name="hasOriginalSourceORoriginalSourceDescription">
+                <xsl:with-param name="el" select="." />
             </xsl:call-template>
         </xsl:for-each>
         <!-- "creationDetails" minOccurs="0" maxOccurs="unbounded" -->
@@ -3106,19 +3123,11 @@
             <xsl:with-param name="elementName" select="'creationDetails'" />
         </xsl:call-template>
         <!-- "isCreatedBy" -->
-        <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
-        <!-- ******************************************************************************************** -->
-        <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded"                              -->
-        <!-- name:      meta[targetResourceNameURI]              elg[originalSourceDescription]           -->
-        <!-- type:      meta[xs:string]                          elg[ms:langString]                       -->
-        <!-- maxlength: meta[4500]                               elg[500]                                 -->
-        <!-- ******************************************************************************************** -->
         <xsl:for-each select="$el/ms:creationInfo/ms:originalSource">
-            <xsl:call-template name="ElementCopyWithDefaultLang">
-                <!-- TODO() MUST BE substring(./ms:targetResourceNameURI, 1, 500) -->
-                <xsl:with-param name="el" select="./ms:targetResourceNameURI" />
-                <xsl:with-param name="elementLang" select="'en'" />
-                <xsl:with-param name="elementName" select="'originalSourceDescription'" />
+            <!-- "hasOriginalSource" minOccurs="0" maxOccurs="unbounded" -->
+            <!-- "originalSourceDescription" minOccurs="0" maxOccurs="unbounded" -->
+            <xsl:call-template name="hasOriginalSourceORoriginalSourceDescription">
+                <xsl:with-param name="el" select="." />
             </xsl:call-template>
         </xsl:for-each>
         <!-- "linkToOtherMedia" minOccurs="0" maxOccurs="unbounded" -->
@@ -3751,7 +3760,7 @@
                                     </xsl:call-template>
                                 </xsl:for-each>
                                 <!-- geographicCoverage -->
-                                <!-- creationMode, creationDetails, hasOriginalSource, hasOriginalSourceDescription, isCreatedBy -->
+                                <!-- creationMode, creationDetails, hasOriginalSource, OriginalSourceDescription, isCreatedBy -->
                                 <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType">
                                     <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceTextPart -->
                                     <xsl:for-each select="./ms:lexicalConceptualResourceTextInfo">
