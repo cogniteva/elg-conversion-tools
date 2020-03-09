@@ -2206,7 +2206,10 @@
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>
-                    <language><languageTag>und</languageTag></language>
+                    <language>
+                        <languageTag>und</languageTag>
+                        <languageId>und</languageId>
+                    </language>
                 </xsl:otherwise>
             </xsl:choose>
             <!-- languageVariety -->
@@ -2840,7 +2843,10 @@
                 </xsl:for-each>
             </xsl:when>
             <xsl:otherwise>
-                <language><languageTag>und</languageTag></language>
+                <language>
+                    <languageTag>und</languageTag>
+                    <languageId>und</languageId>
+                </language>
             </xsl:otherwise>
         </xsl:choose>
         <!-- languageVariety -->
@@ -3027,7 +3033,10 @@
                 </xsl:for-each>
             </xsl:when>
             <xsl:otherwise>
-                <language><languageTag>und</languageTag></language>
+                <language>
+                    <languageTag>und</languageTag>
+                    <languageId>und</languageId>
+                </language>
             </xsl:otherwise>
         </xsl:choose>
         <!-- languageVariety -->
