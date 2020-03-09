@@ -2762,7 +2762,10 @@
             </languageVariety>
         </xsl:for-each>
         <!-- metalanguage -->
-        <metalanguage><languageTag>und</languageTag></metalanguage>
+        <metalanguage>
+            <languageTag>und</languageTag>
+            <languageId>und</languageId>
+        </metalanguage>
         <!-- modalityType -->
         <xsl:for-each select="$el/ms:modalityInfo">
             <xsl:for-each select="./ms:modalityType">
@@ -2954,7 +2957,10 @@
             </languageVariety>
         </xsl:for-each>
         <!-- metalanguage -->
-        <metalanguage><languageTag>und</languageTag></metalanguage>
+        <metalanguage>
+            <languageTag>und</languageTag>
+            <languageId>und</languageId>
+        </metalanguage>
         <!-- modalityType -->
         <xsl:for-each select="$el/ms:modalityInfo">
             <xsl:for-each select="./ms:modalityType">
