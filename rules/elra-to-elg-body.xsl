@@ -573,10 +573,12 @@
     <xsl:template name="ElementCopy">
         <xsl:param name="el" />
         <xsl:param name="elementName" />
+         <xsl:param name="elementValue" />
         <xsl:if test="normalize-space($el) != ''">
             <xsl:element name="{$elementName}">
                 <xsl:copy-of  select="$el/@*"/>
-                <xsl:value-of select="normalize-space($el)"/>
+                <xsl:value-of select="if (normalize-space($elementValue) = '') then
+                    normalize-space($el) else normalize-space($elementValue)"/>
             </xsl:element>
         </xsl:if>
     </xsl:template>
@@ -3246,8 +3248,17 @@
                     <!-- physicalResource  -->
                     <!-- ToBeDefined -->
                     <!-- resourceName  -->
+                    <!-- ******************************************************************************************** -->
+                    <!-- "resourceName" minOccurs="1" maxOccurs="unbounded"                                           -->
+                    <!-- type:      meta[ms:myString]                        elg[ms:langString]                       -->
+                    <!-- maxlength: meta[500]                                elg[300]                                 -->
+                    <!-- ******************************************************************************************** -->
                     <xsl:for-each select="$identificationInfo/ms:resourceName">
-                        <resourceName xml:lang="{./@xml:lang}" ><xsl:value-of select="." /></resourceName>
+                        <xsl:call-template name="ElementCopy">
+                            <xsl:with-param name="el" select="." />
+                            <xsl:with-param name="elementName" select="'resourceName'" />
+                            <xsl:with-param name="elementValue" select="substring(., 1, 300)" />
+                        </xsl:call-template>
                     </xsl:for-each>
                     <!-- resourceShortName  -->
                     <xsl:for-each select="$identificationInfo/ms:resourceShortName">
