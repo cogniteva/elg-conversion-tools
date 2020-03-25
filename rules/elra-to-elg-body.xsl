@@ -225,6 +225,21 @@
         <!-- QUESTION() what about mimeType = 'other'? -->
         <!-- DO NOT CHANGE ORDER DECLARATION -->
         <xsl:choose>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'emma')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Emma'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'pls')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Pls'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'rdf+xml')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Rdf_xml'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'tei')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Tei'"/>
+            </xsl:when>
+            <xsl:when test="contains(lower-case(normalize-space($text)), 'rtf')">
+                <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/Rtf'"/>
+            </xsl:when>
             <xsl:when test="contains(lower-case(normalize-space($text)), 'xcesilsp')">
                 <xsl:value-of select="'http://w3id.org/meta-share/omtd-share/XcesIlspVariant'"/>
             </xsl:when>
