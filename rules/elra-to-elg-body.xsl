@@ -988,6 +988,7 @@
                 <xsl:with-param name="elementName" select="'size'" />
             </xsl:call-template>
         </xsl:for-each>
+        <!-- TODO() durationOfAudio -->
         <!-- audioFormat -->
         <xsl:choose>
             <!-- if there are audioFormatInfo information -->
