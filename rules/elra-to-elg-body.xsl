@@ -2958,7 +2958,6 @@
     <!-- common elements at the end of each LexicalConceptualResourceEnd -->
     <xsl:template name="LexicalConceptualResourceEnd">
         <xsl:param name="el" />
-        <xsl:param name="lexicalConceptualResourceMediaType" />
         <!-- "creationMode" minOccurs="0" -->
         <xsl:call-template name="ElementMetaShare">
             <xsl:with-param name="el" select="$el/ms:creationInfo/ms:creationMode" />
@@ -3804,35 +3803,10 @@
                                 </xsl:for-each>
                                 <!-- geographicCoverage -->
                                 <!-- creationMode, creationDetails, hasOriginalSource, OriginalSourceDescription, isCreatedBy -->
-                                <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType">
-                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceTextPart -->
-                                    <xsl:for-each select="./ms:lexicalConceptualResourceTextInfo">
-                                        <xsl:call-template name="LexicalConceptualResourceEnd">
-                                            <xsl:with-param name="el" select="." />
-                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceTextPart'" />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
-                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceAudioPart -->
-                                    <xsl:for-each select="./ms:lexicalConceptualResourceAudioInfo">
-                                        <xsl:call-template name="LexicalConceptualResourceEnd">
-                                            <xsl:with-param name="el" select="." />
-                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceAudioPart'" />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
-                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceVideoPart -->
-                                    <xsl:for-each select="./ms:lexicalConceptualResourceVideoInfo">
-                                        <xsl:call-template name="LexicalConceptualResourceEnd">
-                                            <xsl:with-param name="el" select="." />
-                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceVideoPart'" />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
-                                    <!-- LexicalConceptualResourceMediaPart | LexicalConceptualResourceImagePart -->
-                                    <xsl:for-each select="./ms:lexicalConceptualResourceImageInfo">
-                                        <xsl:call-template name="LexicalConceptualResourceEnd">
-                                            <xsl:with-param name="el" select="." />
-                                            <xsl:with-param name="lexicalConceptualResourceMediaType" select="'LexicalConceptualResourceImagePart'" />
-                                        </xsl:call-template>
-                                    </xsl:for-each>
+                                <xsl:for-each select="$lexicalConceptualResourceInfo">
+                                    <xsl:call-template name="LexicalConceptualResourceEnd">
+                                        <xsl:with-param name="el" select="." />
+                                    </xsl:call-template>
                                 </xsl:for-each>
                                 <!-- hasSubset -->
                                 <!-- <xsl:for-each select="$lexicalConceptualResourceInfo/ms:lexicalConceptualResourceMediaType"> -->
