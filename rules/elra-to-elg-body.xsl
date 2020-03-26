@@ -1871,7 +1871,7 @@
         <xsl:if test="normalize-space($el/ms:region) != ''">
             <xsl:choose>
                 <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'latin america')">
-                <!-- DO NOT MAP -->
+                    <regionId>419</regionId>
                 </xsl:when>
                 <xsl:when test="contains(lower-case(normalize-space($el/ms:region)), 'brazil')">
                     <regionId>BR</regionId>
